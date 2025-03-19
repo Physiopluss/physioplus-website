@@ -1,0 +1,86 @@
+export const Reviews = [
+	{
+		id: 1,
+		name: "Sumitra Devi",
+		img: "https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/depositphotos_682855896-stock-photo-portrait-happy-indian-woman-saree.jpg",
+		rating: 4,
+		review:
+			"I was so grateful for PhysioPlus sending a therapist to my home. It made recovery so much easier, and I didn't have to worry about getting to and from appointments.",
+		patientType: "",
+	},
+	{
+		id: 2,
+		name: "Neeraj Singh",
+		img: "https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/426935051_18269169994203270_7319081164341378410_n.jpg",
+		rating: 5,
+		review:
+			"The home care therapist was very knowledgeable and patient. They helped me understand my condition and develop a personalized treatment plan.",
+		patientType: "Athelete",
+	},
+	{
+		id: 3,
+		name: "Lalita Sharma",
+		img: "https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/2792.png",
+		rating: 5,
+		review: "I was impressed with the quality of care I received at home. It was just as good as going to a clinic.",
+		patientType: "",
+	},
+	{
+		id: 4,
+		name: "Ram Kumar",
+		img: "/review-1.svg",
+		rating: 4,
+		review: "The clinic was clean and welcoming. The staff was friendly and professional.",
+		patientType: "Athelete",
+	},
+	{
+		id: 5,
+		name: "Sunita Verma",
+		img: "/review-2.svg",
+		rating: 4,
+		review: "My physiotherapist was excellent. They listened to my concerns and provided effective treatment.",
+		patientType: "Athelete",
+	},
+	{
+		id: 6,
+		name: "Vivek Singh",
+		img: "/review-3.svg",
+		rating: 4,
+		review: "I've seen a significant improvement in my condition since starting treatment at PhysioPlus.",
+		patientType: "Athelete",
+	},
+	{
+		id: 7,
+		name: "Neha Joshi",
+		img: "/review-1.svg",
+		rating: 4,
+		review:
+			"The educational blogs were very informative. They helped me understand my condition better and learn about self-care techniques.",
+		patientType: "Athelete",
+	},
+	{
+		id: 8,
+		name: "Amit Tiwari",
+		img: "/review-2.svg",
+		rating: 4,
+		review: "The YouTube videos were easy to follow and provided valuable tips for managing pain.",
+		patientType: "Athelete",
+	},
+	{
+		id: 9,
+		name: "Prashant Yadav",
+		img: "/review-2.svg",
+		rating: 4,
+		review: "The awareness camp was a great opportunity to learn about physiotherapy and its benefits.",
+		patientType: "Athelete",
+	},
+	{
+		id: 10,
+		name: "Anjali Singh",
+		img: "/review-3.svg",
+		rating: 4,
+		review:
+			"I'm so glad I attended the camp. It helped me realize that physiotherapy can be a valuable part of my healthcare routine",
+		patientType: "Athelete",
+	},
+];
