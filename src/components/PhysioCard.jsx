@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPhysioDetail } from "../slices/physioSlice";
-import { FaShoppingBag, FaStar } from "react-icons/fa";
+import { FaShoppingBag, FaStar,FaCircle } from "react-icons/fa";
 import { Button } from "@material-tailwind/react";
 import { ImLocation } from "react-icons/im";
 import { IoMdTrendingUp } from "react-icons/io";
@@ -78,60 +78,119 @@ const PhysioCard = ({ id, physio }) => {
 							</p>
 						</div>
 						<div className="pt-1 md:pt-0 gap-1.5 flex justify-around items-center md:flex-col md:items-start">
-							{/* rating and reviews */}
-							<div className="text-sm flex items-center gap-2.5">
-								{/* <div className=" text-nowrap gap-1.5 text-sm hidden md:flex">
-									<p>Total Rating</p>
-									<p>74</p>
-								</div> */}
-								<div className="py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
-									<FaStar className="w-3 h-3" />
-									{physio.rating ? physio.rating : "Recently Added"}
-								</div>
-							</div>
 							{/* location */}
 							{physio.city == null ? null : (
 								<div className="flex items-start gap-1">
 									<div className="rounded-full bg-lightGreen w-5 h-5 flex items-center justify-center">
 										<ImLocation className="w-4 h-4 p-0.5 text-green" />
 									</div>
-									<div className="text-sm">
+									<div className="text-sm flex flex-row gap-4">
+										<div>
 										{physio.city}{" "}
 										{physio.home.zipCode != 0 && physio.home.zipCode != null && "- " + physio?.home?.zipCode}
+										</div>
+										<div className="flex flex-row gap-2">
+										<FaCircle className="h-1.5 w-2 mt-2"/>
+                                        {physio.clinic.address}
+										</div>
 									</div>
 								</div>
 							)}
+							{/* rating and reviews */}
+							<div className="text-sm flex items-center gap-2.5">
+								{/* <div className=" text-nowrap gap-1.5 text-sm hidden md:flex">
+									<p>Total Rating</p>
+									<p>74</p>
+								</div> */}
+								<div className="py-1 px-1 border-white border text-nowrap text-black rounded-2xl text-sm  flex items-center gap-1.5">
+									<FaStar className="w-3 h-3 text-green" />
+									{physio.rating ? physio.rating : "Recently Added"}
+								</div>
+							</div>
+							
 						</div>
 					</div>
 				</div>
 			</div>
 			{/* price and button */}
-			<div className="col-span-2 md:col-span-1 flex flex-col justify-around text-nowrap gap-1 sm:gap-1.5 text-xs sm:text-sm min-w-10 pt-2 md:pt-0 md:ps-4">
-				<div className="flex flex-row md:flex-col justify-center items-center gap-2 md:gap-2.5">
-					<p className="text-center font-semibold text-lg">Consultaion Fees</p>
-					{/* <p className="text-sm text-center text-gray-600">(Valid for first 3 consultant)</p> */}
-				</div>
-				<p className="flex justify-center items-center gap-1.5">
-					<span className="text-base text-green font-semibold">
-						₹ {physio.clinic.charges ? physio.clinic.charges : physio.home.charges}
-					</span>
-					{/* <span className="strikethrough-diagonal">
-						₹ {physio.clinic.charges ? physio.clinic.charges : physio.home.charges}
-					</span>
-					<span className="text-green">75% OFF</span> */}
-				</p>
-
-				<Button
-					onClick={
-						userToken == null || userToken?.length == 0
-							? () => navigate(`/signup`) && dispatch(setPhysioDetail({ id, physio }))
-							: () => navigate(`/physios/${physio?.slug}`)
-					}
-					className="bg-green rounded-full font-normal hover:shadow-none"
-				>
-					Book Appointment
-				</Button>
+			<div className="col-span-1 sm:col-span-2 md:col-span-1 flex flex-col justify-around text-nowrap gap-1 sm:gap-1.5 text-xs sm:text-sm min-w-10 pt-2 sm:pt-0 sm:ps-4">
+			<div className="flex flex-row sm:flex-col items-center justify-between mr-8 sm:gap-2.5">
+			  <p className="text-center font-semibold text-lg">Consultation Fees</p>
+			  <div className="lg:hidden">
+				{physio.city == null ? null : (
+				  <div className="flex items-center  border-white border text-nowrap bg-[#E6F4EC] rounded-2xl text-sm text-green p-1">
+					<div className="rounded-full bg-lightGreen w-5 h-5 flex items-center justify-center">
+					  <ImLocation className="w-4 h-4 p-0.5 text-green" />
+					</div>
+					{/* <p>{location}</p> */}
+					{/* {distance && <p>Distance to Clinic: {distance}</p>} */}
+				  </div>
+				)}
+			  </div>
 			</div>
+	
+			{physio.serviceType == "home" && (
+			  <Button
+				onClick={
+				  userToken == null || userToken?.length == 0
+					? () =>
+						navigate(`/signup`) &&
+						dispatch(setPhysioDetail({ id, physio }))
+					: () => navigate(`/physios/${physio?.slug}`)
+				}
+				className="bg-[#E6F4EC] rounded-full font-normal hover:shadow-none border-green-500 text-light-green-900 hover:bg-green-50"
+			  >
+				Book Home Consultation at ₹ {physio.home.charges}
+			  </Button>
+			)}
+	
+			{physio.serviceType == "clinic" && (
+			  <Button
+				onClick={
+				  userToken == null || userToken?.length == 0
+					? () =>
+						navigate(`/signup`) &&
+						dispatch(setPhysioDetail({ id, physio }))
+					: () => navigate(`/physios/${physio?.slug}`)
+				}
+				className="bg-green rounded-full font-normal hover:shadow-none border-green-500 text-white hover:bg-green-50"
+			  >
+				Book Clinic Consultation at ₹ {physio.clinic.charges}
+			  </Button>
+			)}
+	
+			<div className="flex flex-col gap-3 min-w-[220px]">
+			  {physio.serviceType != "home" && physio.serviceType != "clinic" && (
+				<>
+				  <Button
+					onClick={
+					  userToken == null || userToken?.length == 0
+						? () =>
+							navigate(`/signup`) &&
+							dispatch(setPhysioDetail({ id, physio }))
+						: () => navigate(`/physios/${physio?.slug}`)
+					}
+					className="bg-[#E6F4EC] rounded-full font-normal hover:shadow-none border-green-500 text-light-green-900 hover:bg-green-50"
+				  >
+					Book Home Consultation at ₹ {physio.home.charges}
+				  </Button>
+	
+				  <Button
+					onClick={
+					  userToken == null || userToken?.length == 0
+						? () =>
+							navigate(`/signup`) &&
+							dispatch(setPhysioDetail({ id, physio }))
+						: () => navigate(`/physios/${physio?.slug}`)
+					}
+					className="bg-green rounded-full font-normal hover:shadow-none border-green-500 text-white hover:bg-green-50"
+				  >
+					Book Clinic Consultation at ₹ {physio.clinic.charges}
+				  </Button>
+				</>
+			  )}
+			</div>
+		  </div>
 		</div>
 	);
 };
