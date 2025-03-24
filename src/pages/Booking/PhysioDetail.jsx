@@ -1,10 +1,10 @@
 import ReactGA from "react-ga4";
 import { Link, useParams } from "react-router-dom";
-import { useFetchSinglePhysioDataQuery } from "../../api/physios";
+import { useFetchSinglePhysioDataQuery,useGetPhysioReviewsQuery } from "../../api/physios";
 import { setPhysioDetail } from "../../slices/physioSlice";
 import { useDispatch } from "react-redux";
 import { Reviews } from "../../Mock/ReviewData";
-import { FaShoppingBag, FaStar } from "react-icons/fa";
+import { FaShoppingBag, FaStar,FaCircle } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -26,8 +26,37 @@ const PhysioDetail = () => {
 	const dispatch = useDispatch();
 	const physioData = data?.data;
 	const physioId = data?.data?._id;
-
-	dispatch(setPhysioDetail({ physioId, physioData }));
+	// const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useGetPhysioReviewsQuery(physioId);
+	// useEffect(() => {
+	// 	dispatch(setPhysioDetail({ physioId, physioData }));
+	//   }, [physioId, physioData, dispatch]);
+	
+	// dispatch(setPhysioDetail({ physioId, physioData }));
+	// Get reviews data
+const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } = useGetPhysioReviewsQuery(physioId, {
+	skip: !physioId // Skip if physioId is not available
+  });
+  
+  // Extract reviews from the response
+  const reviews = reviewsResponse?.data || [];
+  
+  // Log reviews to console
+  useEffect(() => {
+	if (reviewsResponse) {
+	  if (reviews.length > 0) {
+		console.log("Reviews:", reviews);
+	  } else {
+		console.log("no reviews");
+	  }
+	}
+  }, [reviewsResponse, reviews]);
+  
+  // Dispatch physio data only once when available
+  useEffect(() => {
+	if (physioId && physioData) {
+	  dispatch(setPhysioDetail({ physioId, physioData }));
+	}
+  }, [physioId, physioData, dispatch]);
 	const [truncate, setTruncate] = useState(false);
 	const [imageLoaded, setImageLoaded] = useState(true);
 
@@ -79,124 +108,157 @@ const PhysioDetail = () => {
 			</div>
 			<div className="gap-4 justify-center grid grid-cols-1 lg:grid-cols-3 mx-4 md:mx-8 lg:mx-16 -mt-12">
 				{/* top */}
-				<div className="lg:col-span-2 grid sm:grid-cols-3 bg-white border rounded-lg p-8 shadow-md h-fit">
-					{/* image and name */}
-					<div className="flex gap-4 col-span-1 sm:col-span-2">
-						{/* image with experience */}
-						<div className="relative h-fit">
-							<div className="w-28 h-28">
-								{!imageLoaded && <Skeleton className="w-28 h-28 rounded-lg" />}
+				<div className="lg:col-span-2 grid sm:grid-cols-3 bg-white border rounded-lg p-8 shadow-md h-fit relative">
+  {/* Distance Section - Top Right */}
+  <div className="absolute top-4 right-4 flex items-center gap-1 text-sm text-gray-600">
+    <ImLocation className="w-4 h-4 text-green" />
+    <span>{physioData.city}</span>
+    {physioData.home.zipCode != 0 && physioData.home.zipCode != null && (
+      <span>- {physioData.home.zipCode}</span>
+    )}
+  </div>
 
-								<img
-									loading="lazy"
-									className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer ${
-										!imageLoaded ? "hidden" : "block"
-									}`}
-									src={physioData.profileImage ? physioData.profileImage : "/mockPhysioMale.png"}
-									alt={physioData.fullName}
-									onLoad={handleImageLoad}
-									onError={handleImageError}
-									onClick={() => setIsModalOpen(true)}
-								/>
-							</div>
+  {/* Image and Name Section */}
+  <div className="flex gap-4 col-span-1 sm:col-span-2">
+    {/* Image with Experience */}
+    <div className="relative h-fit">
+      <div className="w-28 h-28">
+        {!imageLoaded && <Skeleton className="w-28 h-28 rounded-lg" />}
+        <img
+          loading="lazy"
+          className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer ${
+            !imageLoaded ? "hidden" : "block"
+          }`}
+          src={physioData.profileImage ? physioData.profileImage : "/mockPhysioMale.png"}
+          alt={physioData.fullName}
+          onLoad={handleImageLoad}
+          onError={handleImageError}
+          onClick={() => setIsModalOpen(true)}
+        />
+      </div>
 
-							{isModalOpen && (
-								<div
-									className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 w-[100vw] h-[100vh] object-contain"
-									onClick={() => setIsModalOpen(false)}
-								>
-									<div className="relative">
-										<button
-											className="absolute top-4 right-4 text-white bg-green px-2.5 rounded-full text-2xl"
-											onClick={() => setIsModalOpen(false)}
-										>
-											&times;
-										</button>
-										<img
-											src={physioData.profileImage}
-											alt={physioData.fullName}
-											className="max-w-[100vw] max-h-[90vh] aspect-sauare"
-										/>
-									</div>
-								</div>
-							)}
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 w-[100vw] h-[100vh] object-contain"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div className="relative">
+            <button
+              className="absolute top-4 right-4 text-white bg-green px-2.5 rounded-full text-2xl"
+              onClick={() => setIsModalOpen(false)}
+            >
+              &times;
+            </button>
+            <img
+              src={physioData.profileImage}
+              alt={physioData.fullName}
+              className="max-w-[100vw] max-h-[90vh] aspect-square"
+            />
+          </div>
+        </div>
+      )}
 
-							<div className="absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
-								<FaShoppingBag className="w-3 h-3" />
-								{physioData.workExperience ? physioData.workExperience : 1}+ Years
-							</div>
-						</div>
-						{/* name and speciality */}
-						<div className="flex flex-col gap-1 text-gray-900 font-medium text-base sm:text-xl capitalize">
-							<div className="font-bold">
-								<p>{physioData?.fullName}</p>
-							</div>
-							{/* speciality */}
-							<div className="flex flex-col gap-1 text-black">
-								<p className="text-base text-nowrap">Specialities </p>
-								<p className="flex flex-wrap flex-row gap-1.5 text-sm">
-									{physioData.specialization.length !== 0 ? (
-										physioData.specialization.slice(0, 2)?.map((p, i) => (
-											<p
-												className="text-xs sm:text-sm rounded-full py-2 px-4 bg-[#F1F9F4] text-center sm:text-left sm:text-nowrap w-fit"
-												key={i}
-											>
-												{p.name}
-											</p>
-										))
-									) : (
-										<p className="rounded-full py-2 px-4 bg-[#F1F9F4] text-nowrap w-fit">General Pain</p>
-									)}
-								</p>
-							</div>
-							{/* rating and reviews */}
-							<div className="text-sm flex items-center gap-2.5 lg:flex-col lg:items-start">
-								{/* <div className=" text-nowrap gap-1.5 text-sm hidden md:flex">
-									<p>Total Rating</p>
-									<p>74</p>
-								</div> */}
+      <div className="absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
+        <FaShoppingBag className="w-3 h-3" />
+        {physioData.workExperience ? physioData.workExperience : 1}+ Years
+      </div>
+    </div>
+    {/* Name and Speciality */}
+    <div className="flex flex-col gap-1 text-gray-900 font-medium text-base sm:text-xl capitalize">
+      <div className="font-bold">
+        <p>{physioData?.fullName}</p>
+      </div>
+      {/* Speciality */}
+      <div className="flex flex-col gap-1 text-black">
+        <p className="text-base text-nowrap">Specialities </p>
+        <p className="flex flex-wrap flex-row gap-1.5 text-sm">
+          {physioData.specialization.length !== 0 ? (
+            physioData.specialization.slice(0, 2)?.map((p, i) => (
+              <p
+                className="text-xs sm:text-sm rounded-full py-2 px-4 bg-[#F1F9F4] text-center sm:text-left sm:text-nowrap w-fit"
+                key={i}
+              >
+                {p.name}
+              </p>
+            ))
+          ) : (
+            <p className="rounded-full py-2 px-4 bg-[#F1F9F4] text-nowrap w-fit">General Pain</p>
+          )}
+        </p>
+      </div>
+      {/* Rating and Reviews */}
+      <div className="text-sm flex items-center gap-2.5 lg:flex-col lg:items-start">
+        <div className="py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
+          <FaStar className="w-3 h-3" />
+          {physioData.rating ? physioData.rating : "Recently Added"}
+        </div>
+		{/* {physioData.city == null ? null : (
+        <div className="flex items-start gap-1">
+          <div>
+            <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+          </div>
+          <div className="text-sm">
+            {physioData.city}{" "}
+            {physioData.home.zipCode != 0 &&
+              physioData.home.zipCode != null &&
+              "- " + physioData?.home?.zipCode}
+          </div>
+		  <div className="flex flex-row gap-2">
+												<FaCircle className="h-1.5 w-2 mt-2"/>
+												  {physioData.clinic.address}
+												</div>
+        </div>
+      )} */}
+	    {physioData?.serviceType?.includes("clinic") ? (
+  physioData.clinic && (
+    <div className="flex items-start gap-1">
+      <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+	  <div className="text-sm flex flex-row">
+        <div className="font-medium">{physioData.clinic.name}</div><div className="flex flex-row gap-1"><FaCircle className="h-1.5 w-2 mt-2 ml-2 "/> {physioData.clinic.address}</div>
+      </div>
+    </div>
+  )
+) : physioData?.serviceType?.includes("home") ? (
+  physioData.city && (
+    <div className="flex items-start gap-1">
+      <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+      <div className="text-sm">
+        {physioData.city}{" "}
+        {physioData.home?.zipCode && physioData.home.zipCode !== 0 && `- ${physioData.home.zipCode}`}
+      </div>
+    </div>
+  )
+) : null}
 
-								<div className="py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
-									<FaStar className="w-3 h-3" />
-									{physioData.rating ? physioData.rating : "Recently Added"}
-								</div>
-							</div>
-							{physioData.city == null ? null : (
-								<div className="flex items-start gap-1">
-									<div>
-										<ImLocation className="w-4 h-4 pt-0.5 text-green" />
-									</div>
-									<div className="text-sm">
-										{physioData.city}{" "}
-										{physioData.home.zipCode != 0 &&
-											physioData.home.zipCode != null &&
-											"- " + physioData?.home?.zipCode}
-									</div>
-								</div>
-							)}
-						</div>
-					</div>
-					<hr className="border-gray-200 block sm:hidden my-2" />
-					<div className="col-span-1 flex flex-row sm:flex-col  justify-around overflow-hidden gap-1.5">
-						<div className="hidden sm:block font-medium rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2">
-							IAP Registered : {physioData?.iapNumber ? "Yes" : "No"}
-						</div>
-						<div className="flex flex-wrap flex-row gap-1.5 text-sm">
-							{physioData?.degree?.degreeId?.length !== 0 ? (
-								physioData?.degree?.degreeId?.slice(0, 3)?.map((p, i) => (
-									<span
-										className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full"
-										key={i}
-									>
-										{p.name}
-									</span>
-								))
-							) : (
-								<span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
-							)}
-						</div>
-					</div>
-				</div>
+      </div>
+    </div>
+  </div>
+
+
+  {/* Degree Section Aligned to Start */}
+  <div className="flex flex-wrap gap-0 justify-start mt-2 col-span-1 sm:col-span-3">
+    <div className="bg-green-50 text-green-700 text-sm px-1 py-1 rounded-full">
+      <span className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full">
+        IAP Registered : {physioData?.iapNumber ? "Yes" : "No"}
+      </span>
+    </div>
+    <div className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full">
+      {physioData?.degree?.degreeId?.length !== 0 ? (
+        physioData?.degree?.degreeId?.slice(0, 3)?.map((p, i) => (
+          <span
+            className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full "
+            key={i}
+          >
+            {p.name}
+          </span>
+        ))
+      ) : (
+        <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
+      )}
+    </div>
+  </div>
+</div>
+				
 				{/* right side */}
 				<div className="row-span-2">
 					<SlotComponent physioData={physioData} />
@@ -245,30 +307,31 @@ const PhysioDetail = () => {
 					<hr className="my-4" />
 
 					{/* speciality section */}
-					<div className="my-6">
-						<p className="text-xl font-semibold mb-4">Speciality</p>
-						<p>
-							Our expert physiotherapists specialize in providing effective pain relief strategies for conditions such
-							as back pain, neck pain, and joint discomfort. Through targeted exercises and hands-on techniques, we aim
-							to alleviate pain and restore your quality of life
-						</p>
-						<div className="mt-2 flex gap-2 flex-wrap">
-							{physioData?.specialization?.length > 0 ? (
-								physioData?.specialization?.map((p, i) => (
-									<p
-										key={i}
-										className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-lightGreen py-1 px-4"
-									>
-										{p.name}
-									</p>
-								))
-							) : (
-								<p className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-[#F8FAFC] py-1 px-4">
-									General Pain
-								</p>
-							)}
-						</div>
-					</div>
+				<div className="my-6">
+  <p className="text-xl font-semibold mb-4">Speciality</p>
+  <p>
+    Our expert physiotherapists specialize in providing effective pain relief strategies for conditions such
+    as back pain, neck pain, and joint discomfort. Through targeted exercises and hands-on techniques, we aim
+    to alleviate pain and restore your quality of life
+  </p>
+  <div className="mt-2 flex gap-2 flex-wrap">
+    {/* Map subspecialization IDs directly */}
+    {physioData?.subspecializationId?.length > 0 ? (
+      physioData?.subspecializationId?.map((item, i) => (
+        <p
+          key={i}
+          className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-lightGreen py-1 px-4"
+        >
+          {item.name} {/* Display the ID directly */}
+        </p>
+      ))
+    ) : (
+      <p className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-[#F8FAFC] py-1 px-4">
+        No Subspecialization Available
+      </p>
+    )}
+  </div>
+</div>
 
 					{/* <hr className="my-4" /> */}
 					{/* Treatment Charges */}
@@ -283,66 +346,132 @@ const PhysioDetail = () => {
 							<span className="text-base font-medium">₹ 450</span>
 						</div>
 					</div> */}
-
-					{physioData?.achievement?.length > 0 && <hr className="my-4" />}
-
-					{/* Certificate Images */}
-					{physioData?.achievement?.length > 0 && (
-						<div className="my-6">
-							<p className="text-xl font-semibold mb-4">Certificate & Awards or Recoginazation</p>
-							<div className="flex gap-2 rounded-md my-2 overflow-x-hidden">
-								<MediaGallery
-									items={physioData.achievement}
-									type="achievements"
-								/>
-							</div>
-						</div>
-					)}
+						{/* <hr className="my-4" /> */}
+{/* Treatment Charges Section */}
+{/* <div className="my-6">
+  <p className="text-xl font-semibold mb-4">Treatment Charges</p>
+  <div className="space-y-2">
+    {[450, 450, 450, 450, 450, 450].map((charge, index) => (
+      <div key={index} className="flex justify-between items-center px-3 py-2 border border-gray-300 rounded-lg">
+        <span className="text-base">Treatment name</span>
+        <span className="text-base font-medium">₹ {charge}</span>
+      </div>
+    ))}
+  </div>
+</div> */}
+{/* <hr className="my-4" /> */}
+{/* Certificate Images */}
+{physioData?.achievement?.length > 0 && (
+  <div className="my-6">
+    <p className="text-xl font-semibold mb-4">Certificate & Awards or Recognition</p>
+    <div className="flex gap-2 rounded-md my-2 overflow-x-hidden">
+      {physioData.achievement.map((achievement, index) => (
+        <div key={index} className="flex flex-col items-center">
+          <img
+            src={achievement.achievementImage}
+            alt={achievement.title}
+            className="w-32 h-32 object-cover rounded-lg"
+          />
+          <p className="text-sm mt-2">{achievement.title}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
 					<hr className="my-4" />
 
 					{/* reviews */}
-					<section className="my-8">
+					{/* <section className="my-8">
 						<p className="text-xl font-semibold mb-4">Reviews & Ratings</p>
 
 						<Swiper
-							spaceBetween={10}
-							slidesPerView={1}
-							breakpoints={{
-								540: {
-									slidesPerView: 1,
-									spaceBetween: 10,
-								},
-								720: {
-									slidesPerView: 2,
-									spaceBetween: 20,
-								},
-								960: {
-									slidesPerView: 2,
-									spaceBetween: 30,
-								},
-								1140: {
-									slidesPerView: 2,
-									spaceBetween: 40,
-								},
-							}}
-							className="max-w-[280px] sm:max-w-[440px] md:max-w-[400px] lg:max-w-[360px] xl:max-w-[520px] !mx-0 px-0"
-						>
-							{Reviews.slice(0, 4)?.map((review) => (
-								<SwiperSlide key={review.id}>
-									<ReviewCardTwo
-										id={review.id}
-										name={review.name}
-										img={review.img}
-										rating={review.rating}
-										review={review.review}
-										patientType={review.patientType}
-										page={"physioDetail"}
-									/>
-								</SwiperSlide>
-							))}
-						</Swiper>
-					</section>
+    spaceBetween={10}
+    slidesPerView={1}
+    breakpoints={{
+      540: {
+        slidesPerView: 1,
+        spaceBetween: 10,
+      },
+      720: {
+        slidesPerView: 2,
+        spaceBetween: 20,
+      },
+      960: {
+        slidesPerView: 2,
+        spaceBetween: 30,
+      },
+      1140: {
+        slidesPerView: 2,
+        spaceBetween: 40,
+      },
+    }}
+    className="max-w-[280px] sm:max-w-[440px] md:max-w-[400px] lg:max-w-[360px] xl:max-w-[520px] !mx-0 px-0"
+  >
+    {reviewsLoading ? (
+      <SwiperSlide>
+        <div>Loading reviews...</div>
+      </SwiperSlide>
+    ) : reviewsError ? (
+      <SwiperSlide>
+        <div>Error loading reviews</div>
+      </SwiperSlide>
+    ) : reviewsData?.data?.length > 0 ? (
+      reviewsData.data.slice(0, 4).map((review) => (
+        <SwiperSlide key={review._id}>
+          <ReviewCardTwo
+            id={review._id}
+            name={review.userName || "Anonymous"}
+            img={review.userImage || "/default-user.png"}
+            rating={review.rating}
+            review={review.reviewText}
+            patientType={review.patientType || "Regular Patient"}
+			 date={review.createdAt}
+            page={"physioDetail"}
+          />
+        </SwiperSlide>
+      ))
+    ) : (
+      <SwiperSlide>
+        <div>No reviews yet</div>
+      </SwiperSlide>
+    )}
+  </Swiper>
+  
+					</section> */}
+					<Swiper
+  spaceBetween={10}
+  slidesPerView={1}
+  breakpoints={{
+    540: { slidesPerView: 1, spaceBetween: 10 },
+    720: { slidesPerView: 2, spaceBetween: 20 },
+    960: { slidesPerView: 2, spaceBetween: 30 },
+    1140: { slidesPerView: 2, spaceBetween: 40 },
+  }}
+  className="max-w-[280px] sm:max-w-[440px] md:max-w-[400px] lg:max-w-[360px] xl:max-w-[520px] !mx-0 px-0"
+>
+  {reviewsLoading ? (
+    <SwiperSlide><div>Loading reviews...</div></SwiperSlide>
+  ) : reviewsError ? (
+    <SwiperSlide><div>Error loading reviews</div></SwiperSlide>
+  ) : reviews.length > 0 ? (
+    reviews.slice(0, 4).map((review) => (
+      <SwiperSlide key={review._id}>
+        <ReviewCardTwo
+          id={review._id}
+          name={`Patient ${review.patientId?.slice(-4)}` || "Anonymous"}
+          img="/default-user.png"
+          rating={review.rating}
+          review={review.comment}  // Using 'comment' from API
+          patientType="Patient"
+          date={review.createdAt}
+        />
+      </SwiperSlide>
+    ))
+  ) : (
+    <SwiperSlide><div>No reviews yet</div></SwiperSlide>
+  )}
+</Swiper>
 				</div>
 			</div>
 		</>

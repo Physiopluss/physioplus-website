@@ -148,8 +148,8 @@ const ListAllPhysios = () => {
 					<div className="w-full bg-[#FFFCF0]">
 						<div className="flex flex-col gap-2 md:gap-4 py-12 mx-auto px-4 sm:px-6 lg:px-8 max-w-[85%]">
 							{/* name & location search box */}
-							<h4 className="font-semibold text-3xl md:text-5xl text-center">Find Your Perfect Physiotherapist,</h4>
-							<h5 className="font-semibold text-3xl md:text-5xl text-green text-center">Anytime, Anywhere!</h5>
+							<h4 className="font-semibold text-3xl md:text-5xl text-center">Search & Book Certified <span className="text-green"> Physiotherapist </span></h4>
+							<h5 className="font-semibold text-3xl md:text-5xl text-green text-center">Near You</h5>
 							{/* search physios on basis of location and name */}
 							<form className="mt-8 ms:mt-4 w-full flex flex-col sm:flex-wrap sm:flex-row items-stretch gap-4 rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
 								<div className="flex flex-col flex-1 gap-1">
@@ -197,7 +197,7 @@ const ListAllPhysios = () => {
 							</form>
 
 							{/* popular searches */}
-							<div className=" justify-center items-center text-base gap-4 hidden md:flex">
+							{/* <div className=" justify-center items-center text-base gap-4 hidden md:flex">
 								<h6 className="text-nowrap">Popular Search :</h6>
 								<Swiper
 									spaceBetween={8}
@@ -247,15 +247,15 @@ const ListAllPhysios = () => {
 										</SwiperSlide>
 									))}
 								</Swiper>
-							</div>
+							</div> */}
 						</div>
 					</div>
 					<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-w-[85%]">
 						<div className="flex items-center justify-between pt-12 ">
 							<div className="flex flex-col md:flex-row flex-1 justify-between gap-2 ">
-								<p className="text-lg font-semibold tracking-tight text-black">Nearby Physios</p>
+								<p className="text-lg font-semibold tracking-tight text-black">{error ? "No physio found" : data && data.data && "Best " + data?.physioCount + " Physios in " } {location}</p>
 								<p className="text-base font-semibold tracking-tight text-black">
-									{error ? "No physio found" : data && data.data && "Showing " + data?.physioCount + " physios Nearby"}
+									
 								</p>
 							</div>
 							{/* sort */}

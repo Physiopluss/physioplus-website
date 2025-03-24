@@ -41,7 +41,12 @@ export const physioDataApi = createApi({
 		fetchSinglePhysioData: builder.query({
 			query: (id) => `web/physio/physioByid?slug=${id}`,
 		}),
+		// In your api/physios.js or similar file
+		getPhysioReviews: builder.query({
+	query: (physioId) => `web/physio/getPhysioReviews?physioId=${physioId}`,
+	// providesTags: ['PhysioReviews'],
+  }),
 	}),
 });
 
-export const { useFetchPhysioDataQuery, useFetchSinglePhysioDataQuery } = physioDataApi;
+export const { useFetchPhysioDataQuery,useGetPhysioReviewsQuery, useFetchSinglePhysioDataQuery } = physioDataApi;

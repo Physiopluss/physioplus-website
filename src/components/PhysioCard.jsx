@@ -23,6 +23,7 @@ const PhysioCard = ({ id, physio }) => {
 		e.target.src = physio.gender === "male" ? "/mockPhysioMale.png" : "/mockPhysioFemale.png";
 		setImageLoaded(true);
 	};
+	
 
 	return (
 		<div className="bg-white my-4 sm:my-6 p-4 rounded-lg grid gap-4 grid-cols-2 md:grid-cols-3 border border-[#EAEBEC] shadow-md divide-y-2 md:divide-y-0 md:divide-x-2">
@@ -79,23 +80,27 @@ const PhysioCard = ({ id, physio }) => {
 						</div>
 						<div className="pt-1 md:pt-0 gap-1.5 flex justify-around items-center md:flex-col md:items-start">
 							{/* location */}
-							{physio.city == null ? null : (
-								<div className="flex items-start gap-1">
-									<div className="rounded-full bg-lightGreen w-5 h-5 flex items-center justify-center">
-										<ImLocation className="w-4 h-4 p-0.5 text-green" />
-									</div>
-									<div className="text-sm flex flex-row gap-4">
-										<div>
-										{physio.city}{" "}
-										{physio.home.zipCode != 0 && physio.home.zipCode != null && "- " + physio?.home?.zipCode}
-										</div>
-										<div className="flex flex-row gap-2">
-										<FaCircle className="h-1.5 w-2 mt-2"/>
-                                        {physio.clinic.address}
-										</div>
-									</div>
-								</div>
-							)}
+							{physio?.serviceType?.includes("clinic") ? (
+  physio.clinic && (
+    <div className="flex items-start gap-1">
+      <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+      <div className="text-sm flex flex-row">
+        <div className="font-medium">{physio.clinic.name}</div><div className="flex flex-row gap-1"><FaCircle className="h-1.5 w-2 mt-2 ml-2 "/> {physio.clinic.address}</div>
+      </div>
+    </div>
+  )
+) : physio?.serviceType?.includes("home") ? (
+  physio.city && (
+    <div className="flex items-start gap-1">
+      <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+      <div className="text-sm">
+        {physio.city}{" "}
+        {physio.home?.zipCode && physio.home.zipCode !== 0 && `- ${physio.home.zipCode}`}
+      </div>
+    </div>
+  )
+) : null}
+
 							{/* rating and reviews */}
 							<div className="text-sm flex items-center gap-2.5">
 								{/* <div className=" text-nowrap gap-1.5 text-sm hidden md:flex">
@@ -107,7 +112,7 @@ const PhysioCard = ({ id, physio }) => {
 									{physio.rating ? physio.rating : "Recently Added"}
 								</div>
 							</div>
-							
+							{/* <FaCircle className="h-1.5 w-2 mt-2"/> */}
 						</div>
 					</div>
 				</div>
