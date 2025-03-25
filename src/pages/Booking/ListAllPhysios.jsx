@@ -88,6 +88,7 @@ const ListAllPhysios = () => {
 		specializationFilter,
 		subSpecializationFilter,
 		mode,
+		
 	});
 
 	const handlePosition = useCallback((position) => {

@@ -110,13 +110,14 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
 				{/* top */}
 				<div className="lg:col-span-2 grid sm:grid-cols-3 bg-white border rounded-lg p-8 shadow-md h-fit relative">
   {/* Distance Section - Top Right */}
-  <div className="absolute top-4 right-4 flex items-center gap-1 text-sm text-gray-600">
-    <ImLocation className="w-4 h-4 text-green" />
-    <span>{physioData.city}</span>
-    {physioData.home.zipCode != 0 && physioData.home.zipCode != null && (
-      <span>- {physioData.home.zipCode}</span>
-    )}
-  </div>
+  <div className="absolute top-4 right-4 hidden md:flex items-center gap-1 text-sm text-gray-600">
+  <ImLocation className="w-4 h-4 text-green" />
+  <span>{physioData.city}</span>
+  {physioData.home.zipCode !== 0 && physioData.home.zipCode !== null && (
+    <span>- {physioData.home.zipCode}</span>
+  )}
+</div>
+
 
   {/* Image and Name Section */}
   <div className="flex gap-4 col-span-1 sm:col-span-2">
@@ -164,6 +165,7 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
       </div>
     </div>
     {/* Name and Speciality */}
+    <div className="hidden sm:block">
     <div className="flex flex-col gap-1 text-gray-900 font-medium text-base sm:text-xl capitalize">
       <div className="font-bold">
         <p>{physioData?.fullName}</p>
@@ -232,21 +234,83 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
 
       </div>
     </div>
+    </div>
+    <div className="block sm:hidden">
+  <div className="flex flex-col gap-1 flex-1">
+    <div
+      className="font-bold text-lg cursor-pointer"
+      onClick={() => navigate(`/physios/${physioData?.slug}`)}
+    >
+      {physioData?.fullName}
+    </div>
+    <p className="text-sm text-gray-600">Specialities</p>
+    <div className="flex flex-wrap gap-1.5 p-0 mt-1">
+      {physioData?.specialization?.length !== 0 ? (
+        physioData?.specialization?.slice(0, 2).map((p, i) => (
+          <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-sm" key={i}>
+            {p.name}
+          </span>
+        ))
+      ) : (
+        <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-xs">General Pain</span>
+      )}
+    </div>
+    {/* Clinic Info */}
+    <div className="hidden md:block">
+          <div className="flex items-start gap-2">
+            <ImLocation className="w-8 h-4 mt-0.5 text-green" />
+            <div className="text-sm">
+              {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
+                <div className="flex">
+                  <span className="text-sm">{physioData.clinic.name}</span>
+            <FaCircle className="h-1.5 w-2 mt-2 ml-2 mr-2"/>
+                  {physioData.clinic.address}
+                </div>
+              ) : (
+                <div className="text-sm">
+                  {physioData.city}
+                  {physioData.home?.zipCode && physioData.home.zipCode !== 0 && ` - ${physioData.home.zipCode}`}
+                </div>
+              )}
+            </div>
+          </div>
+          </div>
+  </div>
+</div>
+
   </div>
 
 
   {/* Degree Section Aligned to Start */}
-  <div className="flex flex-wrap gap-0 justify-start mt-2 col-span-1 sm:col-span-3">
+  
+  <div className="flex flex-wrap gap-2 justify-start mt-2 col-span-1 sm:col-span-3">
+  <div className="flex items-start gap-2 md:hidden mt-1">
+            <ImLocation className="w-5 h-5 mt-0.5 text-green"/>
+            <div className="text-sm">
+              {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
+                <div className="flex">
+                  <span className="text-sm">{physioData.clinic.name}</span>
+            <FaCircle className="h-1.5 w-2 mt-2 ml-2 mr-2"/>
+                  {physioData.clinic.address}
+                </div>
+              ) : (
+                <div className="text-sm">
+                  {physioData.city}
+                  {physioData.home?.zipCode && physioData.home.zipCode !== 0 && ` - ${physioData.home.zipCode}`}
+                </div>
+              )}
+            </div>
+          </div>
     <div className="bg-green-50 text-green-700 text-sm px-1 py-1 rounded-full">
-      <span className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full">
+      <span className="text-sm sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full">
         IAP Registered : {physioData?.iapNumber ? "Yes" : "No"}
       </span>
     </div>
-    <div className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full">
+    <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">
       {physioData?.degree?.degreeId?.length !== 0 ? (
         physioData?.degree?.degreeId?.slice(0, 3)?.map((p, i) => (
           <span
-            className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 text-nowrap w-fit sm:w-full "
+            className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 gap-2 text-nowrap w-fit sm:w-full "
             key={i}
           >
             {p.name}
@@ -258,7 +322,8 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
     </div>
   </div>
 </div>
-				
+	
+           
 				{/* right side */}
 				<div className="row-span-2">
 					<SlotComponent physioData={physioData} />
@@ -314,23 +379,23 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
     as back pain, neck pain, and joint discomfort. Through targeted exercises and hands-on techniques, we aim
     to alleviate pain and restore your quality of life
   </p>
-  <div className="mt-2 flex gap-2 flex-wrap">
-    {/* Map subspecialization IDs directly */}
-    {physioData?.subspecializationId?.length > 0 ? (
-      physioData?.subspecializationId?.map((item, i) => (
-        <p
-          key={i}
-          className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-lightGreen py-1 px-4"
-        >
-          {item.name} {/* Display the ID directly */}
-        </p>
-      ))
-    ) : (
-      <p className="w-full sm:w-fit border text-[#515662] border-[#EAEBEC] bg-[#F8FAFC] py-1 px-4">
-        No Subspecialization Available
+  <div className="mt-2 grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+  {/* Map subspecialization IDs directly */}
+  {physioData?.subspecializationId?.length > 0 ? (
+    physioData?.subspecializationId?.map((item, i) => (
+      <p
+        key={i}
+        className="border text-[#515662] border-[#EAEBEC] bg-lightGreen py-1 px-4 text-center sm:text-left"
+      >
+        {item.name}
       </p>
-    )}
-  </div>
+    ))
+  ) : (
+    <p className="col-span-2 sm:w-fit border text-[#515662] border-[#EAEBEC] bg-[#F8FAFC] py-1 px-4">
+      No Subspecialization Available
+    </p>
+  )}
+</div>
 </div>
 
 					{/* <hr className="my-4" /> */}

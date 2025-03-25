@@ -20,6 +20,8 @@ export const physioDataApi = createApi({
 				specializationFilter,
 				subSpecializationFilter,
 				mode,
+				latitude,
+				longitude,
 			}) => {
 				return {
 					url: `web/physio/filter`,
@@ -34,6 +36,8 @@ export const physioDataApi = createApi({
 						specialization: specializationFilter,
 						subspecializationId: subSpecializationFilter,
 						serviceType: mode,
+						latitude,
+				longitude,
 					},
 				};
 			},
