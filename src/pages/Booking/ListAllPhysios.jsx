@@ -67,6 +67,9 @@ const ListAllPhysios = () => {
 		}
 	}, [state]);
 
+	const [latitude, setLatitude] = useState();
+  const [longitude, setLongitude] = useState();
+
 	// google analytics
 	useEffect(() => {
 		ReactGA.send({
@@ -88,6 +91,8 @@ const ListAllPhysios = () => {
 		specializationFilter,
 		subSpecializationFilter,
 		mode,
+		latitude,
+		longitude,
 	});
 
 	const handlePosition = useCallback((position) => {
@@ -96,6 +101,8 @@ const ListAllPhysios = () => {
 				item.types.includes("locality")
 			).short_name;
 			setLocation(locality);
+			setLatitude(position.coords.latitude);
+			setLongitude(position.coords.longitude);
 		});
 	}, []);
 

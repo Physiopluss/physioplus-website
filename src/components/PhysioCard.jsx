@@ -50,6 +50,7 @@ const PhysioCard = ({ id, physio }) => {
 						<div className="absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
 							<FaShoppingBag className="w-3 h-3" />
 							{physio.workExperience ? physio.workExperience : 1}+ Years
+							{physio.travelDistance && ` - Distance: ${physio.travelDistance}`}
 						</div>
 					</div>
 					{/* name and speciality */}
