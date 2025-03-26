@@ -258,7 +258,7 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
     {/* Clinic Info */}
     <div className="hidden md:block">
           <div className="flex items-start gap-2">
-            <ImLocation className="w-8 h-4 mt-0.5 text-green" />
+            <ImLocation className="w-4 h-4 mt-0.5 text-green" />
             <div className="text-sm">
               {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
                 <div className="flex">
@@ -285,7 +285,7 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
   
   <div className="flex flex-wrap gap-2 justify-start mt-2 col-span-1 sm:col-span-3">
   <div className="flex items-start gap-2 md:hidden mt-1">
-            <ImLocation className="w-5 h-5 mt-0.5 text-green"/>
+            <ImLocation className="w-4 h-4 mt-0.5 text-green"/>
             <div className="text-sm">
               {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
                 <div className="flex">

@@ -49,7 +49,11 @@ const ListAllPhysios = () => {
 	const [mode, setMode] = useState([]); //mode
 	const [page, setPage] = useState(1);
 	const [totalPage, setTotalPage] = useState();
-
+	const [latitude, setLatitude] = useState();
+	const [longitude, setLongitude] = useState();
+	
+	
+		
 	useEffect(() => {
 		if (state) {
 			if (state.location) {
@@ -88,7 +92,8 @@ const ListAllPhysios = () => {
 		specializationFilter,
 		subSpecializationFilter,
 		mode,
-		
+		longitude,
+		latitude,
 	});
 
 	const handlePosition = useCallback((position) => {
@@ -97,6 +102,8 @@ const ListAllPhysios = () => {
 				item.types.includes("locality")
 			).short_name;
 			setLocation(locality);
+			setLatitude(position.coords.latitude);
+ setLongitude(position.coords.longitude);
 		});
 	}, []);
 

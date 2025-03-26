@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setPhysioDetail } from "../slices/physioSlice";
-import { FaShoppingBag, FaStar,FaCircle } from "react-icons/fa";
+import { FaShoppingBag, FaStar,FaCircle,FaCalendar } from "react-icons/fa";
 import { Button } from "@material-tailwind/react";
 import { ImLocation } from "react-icons/im";
 import { IoMdTrendingUp } from "react-icons/io";
@@ -50,9 +50,10 @@ const PhysioCard = ({ id, physio }) => {
           <div className="absolute -bottom-3 right-1/2 translate-x-1/2 py-1 px-3 border-white border text-nowrap bg-green rounded-2xl text-xs text-white w-fit flex items-center gap-1">
             <FaShoppingBag className="w-2.5 h-2.5" />
             {physio.workExperience ? physio.workExperience : 1}+ Years
+            {/* {physio.travelDistance && ` - Distance: ${physio.travelDistance}`} */}
           </div>
         </div>
-        
+       
         {/* Name and Speciality */}
         <div className="flex flex-col gap-1 flex-1">
           <div 
@@ -107,7 +108,25 @@ const PhysioCard = ({ id, physio }) => {
 	  </div>
       </div>
 	  <div className="md:hidden border-t border-gray-200 "></div>
-
+    <div className="flex justify-between items-center mt-0 mb-0">
+		{/* <div className="flex"> */}
+	  <div className="py-1 px-1 border-white border text-nowrap text-black rounded-2xl text-sm  flex items-center gap-1.5">
+	  <FaCalendar className="w-3 h-3 text-green" />
+	Available Today
+      </div>
+      {/* physio.travelDistance && (
+      <div className="absolute top-0 right-0 bg-[#E6F4EC] text-green-700 text-sm font-medium px-3 py-1.5 rounded-full flex items-center gap-1">
+        <ImLocation className="w-4 h-4 text-green" />
+        {physio.travelDistance} Km far away
+      </div>
+    )} */}
+    {physio.travelDistance && (
+	  <div className="py-1 px-1 bg-[#E6F4EC] border-white border text-nowrap text-black rounded-2xl text-sm  flex items-center gap-1.5">
+    <ImLocation className="w-4 h-4 text-green" />
+    {physio.travelDistance && `  ${physio.travelDistance} far away`}
+      </div>
+    )}
+      </div>
       {/* Consultation Buttons */}
  {/* Mobile View - Price and Button Section */}
 <div className="md:hidden">
@@ -170,7 +189,15 @@ const PhysioCard = ({ id, physio }) => {
 
   {/* Desktop View */}
   <div className="hidden md:grid gap-4 grid-cols-2 lg:grid-cols-3 divide-y-0 divide-x-2">
-    <div className="flex col-span-2">
+  <div className="flex col-span-2 flex-col relative">
+    
+    {/* Location Tag - Styled Like the Reference */}
+    {physio.travelDistance && (
+      <div className="absolute top-0 right-0 bg-[#E6F4EC] text-green text-sm font-medium px-3 py-1.5 rounded-full flex items-center gap-1">
+        <ImLocation className="w-4 h-4 text-green" />
+        {physio.travelDistance} far away
+      </div>
+    )}
       {/* Your existing desktop content remains unchanged */}
       {/* image and name */}
       <div className="flex gap-4">
@@ -194,6 +221,7 @@ const PhysioCard = ({ id, physio }) => {
           <div className="absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
             <FaShoppingBag className="w-3 h-3" />
             {physio.workExperience ? physio.workExperience : 1}+ Years
+            
           </div>
         </div>
         {/* name and speciality */}
