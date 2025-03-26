@@ -112,7 +112,8 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
   {/* Distance Section - Top Right */}
   <div className="absolute top-4 right-4 hidden md:flex items-center gap-1 text-sm text-gray-600">
   <ImLocation className="w-4 h-4 text-green" />
-  <span>{physioData.city}</span>
+  <span>{physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)}</span>
+
   {physioData.home.zipCode !== 0 && physioData.home.zipCode !== null && (
     <span>- {physioData.home.zipCode}</span>
   )}
