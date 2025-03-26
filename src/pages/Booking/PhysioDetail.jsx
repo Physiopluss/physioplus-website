@@ -379,23 +379,48 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
     as back pain, neck pain, and joint discomfort. Through targeted exercises and hands-on techniques, we aim
     to alleviate pain and restore your quality of life
   </p>
-  <div className="mt-2 grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
-  {/* Map subspecialization IDs directly */}
-  {physioData?.subspecializationId?.length > 0 ? (
-    physioData?.subspecializationId?.map((item, i) => (
-      <p
-        key={i}
-        className="border text-[#515662] border-[#EAEBEC] bg-lightGreen py-1 px-4 text-center sm:text-left"
-      >
-        {item.name}
-      </p>
-    ))
-  ) : (
-    <p className="col-span-2 sm:w-fit border text-[#515662] border-[#EAEBEC] bg-[#F8FAFC] py-1 px-4">
-      No Subspecialization Available
-    </p>
-  )}
-</div>
+  <div className="sm:hidden w-full mt-1">
+          {physioData?.subspecializationId?.length > 0 ? (
+          <div className="relative">
+            <Swiper
+            slidesPerView={"auto"}
+            spaceBetween={8}
+            freeMode={true}
+            grabCursor={true}
+            className="specialization-swiper"
+            >
+            {physioData.subspecializationId.map((item, i) => (
+              <SwiperSlide key={i} className="!w-auto">
+              <div className="border text-[#515662] border-[#EAEBEC] bg-[#F1F9F4] py-1.5 px-3 text-sm sm:text-sm rounded-full whitespace-nowrap">
+                {item.name}
+              </div>
+              </SwiperSlide>
+            ))}
+            </Swiper>
+            <div className="text-xs text-gray-400 text-center mt-1">
+            ← Swipe to see more →
+            </div>
+          </div>
+          ) : (
+          <div className="text-sm text-gray-500">No specializations listed</div>
+          )}
+        </div>
+          {/* Desktop Grid View (shows only on desktop) */}
+				 
+         <div className="hidden sm:flex flex-wrap gap-2">
+              {physioData?.subspecializationId?.length > 0 ? (
+                physioData.subspecializationId.map((item, i) => (
+                  <div
+                    key={i}
+                    className="border text-[#515662] border-[#EAEBEC] bg-[#F1F9F4] py-1.5 px-3 text-xs sm:text-sm rounded-full"
+                  >
+                    {item.name}
+                  </div>
+                ))
+              ) : (
+                <div className="text-sm text-gray-500">No specializations listed</div>
+              )}
+            </div>
 </div>
 
 					{/* <hr className="my-4" /> */}
@@ -534,7 +559,7 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
       </SwiperSlide>
     ))
   ) : (
-    <SwiperSlide><div>No reviews yet</div></SwiperSlide>
+    <SwiperSlide><div></div></SwiperSlide>
   )}
 </Swiper>
 				</div>

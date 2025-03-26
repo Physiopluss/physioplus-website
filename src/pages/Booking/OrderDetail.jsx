@@ -173,6 +173,8 @@ const OrderDetail = () => {
 					</div>
 				</div>
 			</div>
+			
+				
 			<div>
 				<p className="capitalize">
 					<span className="font-semibold">Date - </span>

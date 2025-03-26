@@ -14,12 +14,14 @@ import Loading from "../../components/Loading";
 import ReactGA from "react-ga4";
 import { jwtDecode } from "jwt-decode";
 import Modal from "../../components/Modal";
-
+import axios from "axios";
 const Booking = () => {
 	const [paymentType, setPaymentType] = useState("online");
 	const [couponName, setCouponName] = useState("");
 	const [couponResponse, setCouponResponse] = useState();
 	const [amountToPay, setAmountToPay] = useState();
+	const [loading, setLoading] = useState(false);
+
 	const { slug } = useParams();
 	const dispatch = useDispatch();
 	const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal visibility
@@ -103,10 +105,19 @@ const Booking = () => {
 			gender: null, //number
 			phone: null, //number
 			painNotes: "", //string
+			state: "",
+            city: "",
+            pincode: "",
+
 		},
 		validationSchema: Yup.object().shape({
 			patientName: Yup.string().min(3, "Too Short!").max(50, "Too Long!").required("name is required"),
 			age: Yup.number().required("Age is required"),
+			state: Yup.string().required("State is required"),
+            city: Yup.string().required("City is required"),
+            pincode: Yup.string()
+                .matches(/^\d{6}$/, "Pincode must be a 6-digit number")
+                .required("Pincode is required"),
 			gender: Yup.number().required("Gender is required"),
 			phone: Yup.string()
 				.length(10, "Number should be 10 digits")
@@ -179,6 +190,32 @@ const Booking = () => {
 				}
 		},
 	});
+	   // Function to fetch state and city from pincode
+	   useEffect(() => {
+        const fetchLocation = async () => {
+            if (formik.values.pincode.length === 6) {
+                setLoading(true);
+                try {
+                    const response = await axios.get(`https://api.postalpincode.in/pincode/${formik.values.pincode}`);
+                    const data = response.data;
+                    if (data[0].Status === "Success") {
+                        formik.setFieldValue("state", data[0].PostOffice[0].State);
+                        formik.setFieldValue("city", data[0].PostOffice[0].District);
+                    } else {
+                        formik.setFieldValue("state", "");
+                        formik.setFieldValue("city", "");
+                    }
+                } catch (error) {
+                    console.error("Error fetching location:", error);
+                    formik.setFieldValue("state", "");
+                    formik.setFieldValue("city", "");
+                }
+                setLoading(false);
+            }
+        };
+
+        fetchLocation();
+    }, [formik.values.pincode]);
 	return isLoading ? (
 		<Loading />
 	) : error ? (
@@ -259,7 +296,42 @@ const Booking = () => {
 								<span className="text-red-500 text-sm">{formik.errors.age}</span>
 							)}
 						</div>
+ <div>
+                <label htmlFor="pincode" className="text-sm">Pincode</label>
+                <Input
+                    size="md"
+                    name="pincode"
+                    onChange={formik.handleChange}
+                    value={formik.values.pincode}
+                    placeholder="Enter Your Pincode"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
+                />
+                {formik.errors.pincode && formik.touched.pincode && (
+                    <span className="text-red-500 text-sm">{formik.errors.pincode}</span>
+                )}
+            </div>
 
+            <div>
+                <label htmlFor="state" className="text-sm">State</label>
+                <Input
+                    size="md"
+                    name="state"
+                    value={formik.values.state}
+                    placeholder="Enter Your State"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
+                />
+            </div>
+
+            <div>
+                <label htmlFor="city" className="text-sm">City</label>
+                <Input
+                    size="md"
+                    name="city"
+                    value={formik.values.city}
+                    placeholder="Enter Your City"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
+                />
+            </div>
 						<div>
 							<label
 								htmlFor="phone"
