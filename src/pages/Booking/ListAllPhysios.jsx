@@ -71,6 +71,8 @@ const ListAllPhysios = () => {
 		}
 	}, [state]);
 
+	
+
 	// google analytics
 	useEffect(() => {
 		ReactGA.send({
