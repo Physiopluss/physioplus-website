@@ -226,7 +226,7 @@ const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } 
     <div className="flex items-start gap-1">
       <ImLocation className="w-4 h-4 pt-0.5 text-green" />
       <div className="text-sm">
-        {physioData.city}{" "}
+      <span>{physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)}</span>{" "}
         {physioData.home?.zipCode && physioData.home.zipCode !== 0 && `- ${physioData.home.zipCode}`}
       </div>
     </div>

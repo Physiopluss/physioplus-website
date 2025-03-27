@@ -3,7 +3,7 @@ import { MdLocationPin, MdMail, MdPhoneInTalk } from "react-icons/md";
 
 const PhysioConnectRightCard = () => {
 	return (
-		<div className="h-fit flex flex-col gap-4 bg-white px-4 py-4 border rounded-md w-full md:max-w-60 lg:max-w-xs xl:max-w-sm">
+		<div className="h-fit flex flex-col gap-4 bg-white px-4 py-4 border rounded-md w-full md:max-w-60 lg:max-w-sm xl:max-w-sm">
 			<p className="text-lg font-semibold">Find Us Here</p>
 			<p className="flex items-center gap-2">
 				<MdLocationPin className="min-w-4 h-4" />

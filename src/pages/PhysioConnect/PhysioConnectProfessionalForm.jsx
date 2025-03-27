@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
-import PhysioConnectRightCard from "../../components/PhysioConnectRightCard";
 import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
 import StepIndicator from "../../components/StepIndicator";
 
@@ -362,15 +361,21 @@ const PhysioConnectProfessionalForm = () => {
 
 	return (
 		<>
-			<StepIndicator currentStep={1} />
+			
+			<div className="flex flex-col md:flex-row gap-4 bg-white px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+  {/* Left side - Card */}
+  <div className="flex-1 flex justify-center">
+  <StepIndicator currentStep={2} />
+</div>
 
-			<div className="gap-4 border border-gray-200 rounded-lg bg-[#FFFDF5] px-8 py-8 justify-center flex flex-col md:flex-row mx-4 md:mx-8 lg:mx-16">
-				{/* left side */}
-				<form
+   {/* Right side - Form */}
+   <div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-[#FFFDF5] px-12 py-8">
+
+   <form
 					onSubmit={formik.handleSubmit}
 					className="flex flex-col gap-4 flex-1 max-w-screen-lg"
 				>
-					<h6 className="font-semibold text-3xl">Professional Details</h6>
+					<h6 className="font-semibold text-3xl"> Professional Details</h6>
 					<div className="flex flex-col gap-2">
 						<label
 							htmlFor="degree"
@@ -717,9 +722,10 @@ const PhysioConnectProfessionalForm = () => {
 						</Button>
 					</div>
 				</form>
-				{/* right side */}
-				<PhysioConnectRightCard />
-			</div>
+  </div>
+</div>
+			
+			
 		</>
 	);
 };

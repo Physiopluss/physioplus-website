@@ -90,7 +90,7 @@ const PhysioCard = ({ id, physio }) => {
             </div>
           ) : (
             <div className="text-sm">
-              {physio.city}
+               <span>{physio.city.charAt(0).toUpperCase() + physio.city.slice(1)}</span>
               {physio.home?.zipCode && physio.home.zipCode !== 0 && ` - ${physio.home.zipCode}`}
             </div>
           )}
@@ -266,7 +266,7 @@ const PhysioCard = ({ id, physio }) => {
                 <div className="flex items-start gap-1">
                   <ImLocation className="w-4 h-4 pt-0.5 text-green" />
                   <div className="text-sm">
-                    {physio.city}{" "}
+                  <span>{physio.city.charAt(0).toUpperCase() + physio.city.slice(1)}</span>{" "}
                     {physio.home?.zipCode && physio.home.zipCode !== 0 && `- ${physio.home.zipCode}`}
                   </div>
                 </div>

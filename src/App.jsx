@@ -41,6 +41,7 @@ const BlogDetail = lazy(() => import("./pages/Blog/BlogDetail"));
 // physioConnect flow
 const PhysioConnect = lazy(() => import("./pages/PhysioConnect/PhysioConnect"));
 const PhysioConnectProfessionalForm = lazy(() => import("./pages/PhysioConnect/PhysioConnectProfessionalForm"));
+const PhysioConnectPersonalForm = lazy(() => import("./pages/PhysioConnect/PhysioConnectPersonalForm"));
 const PhysioConnectBusinessDetails = lazy(() => import("./pages/PhysioConnect/PhysioConnectBusinessDetails"));
 const PhysioConnectWorkExperience = lazy(() => import("./pages/PhysioConnect/PhysioConnectWorkExperience"));
 const PhysioConnectPayment = lazy(() => import("./pages/PhysioConnect/PhysioConnectPayment"));
@@ -215,6 +216,14 @@ const router = createBrowserRouter([
 				element: (
 					<Suspense fallback={<Loading />}>
 						<PhysioConnect />
+					</Suspense>
+				),
+			},
+			{
+				path: "/physio-connect/personal-details",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<PhysioConnectPersonalForm />
 					</Suspense>
 				),
 			},

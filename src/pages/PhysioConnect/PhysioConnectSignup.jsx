@@ -61,7 +61,7 @@ const PhysioConnectSignup = () => {
 					setOtp("");
 					sessionStorage.setItem("physioConnectId", res.data.physio._id);
 					dispatch(setPhysioConnectPhysioId(res.data.physio._id));
-					setTimeout(() => navigate("/physio-connect/professional-details"), 1500);
+					setTimeout(() => navigate("/physio-connect/personal-details"), 1500);
 				}
 			} else if (res.status >= 400 && res.status < 500) {
 				toast.error("Invalid OTP Code", { id: "OtpErrorLogin1", className: "capitalize z-10" });
