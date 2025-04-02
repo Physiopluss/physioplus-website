@@ -171,9 +171,13 @@ const PhysioConnectPayment = () => {
 
 	return (
 		<>
-			<StepIndicator currentStep={3} />
+		<div className="flex flex-col md:flex-row gap-4 bg-white px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+				  {/* Left side - Card */}
+				  <div className="flex-1 flex justify-center">
+				  <StepIndicator currentStep={4} />
+				</div>
 
-			<div className="gap-4 border border-gray-200 rounded-lg bg-[#FFFDF5] px-8 py-8 justify-center flex flex-col md:flex-row mx-4 md:mx-8 lg:mx-16">
+			<div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-[#FFFDF5] px-12 py-8">
 				{/* left side */}
 				<form
 					className="flex flex-col gap-4"
@@ -451,6 +455,7 @@ const PhysioConnectPayment = () => {
 					});
 				}}
 			/>
+		</div>
 		</>
 	);
 };

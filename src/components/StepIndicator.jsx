@@ -7,7 +7,7 @@ const steps = [{ label: "Personal Details",
 
 const StepIndicator = ({ currentStep }) => {
 	return (
-		<div className="bg-white rounded-lg p-3 shadow-md w-72 h-[85%] max-h-[400px] flex flex-col border-1 mb-5">
+		<div className=" rounded-lg p-3 shadow-md w-72 h-[85%] max-h-[400px] flex flex-col border-1 mb-5 bg-white">
   <ol className="relative space-y-9 mt-4 p-2 mb-6">
     {steps.map((step, index) => (
       <li key={step.label} className="relative flex items-start py-1">
