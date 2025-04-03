@@ -193,105 +193,68 @@ const PhysioConnectPayment = () => {
 							<p>₹ {selectedPrice}</p>
 						</div>
 						{amoutToPay != 0 && (
-							<>
-								{showCouponInput ? (
-									<div className="relative flex w-full">
-										<input
-											name="coupon"
-											placeholder="Enter coupon code"
-											className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
-											value={coupon}
-											onChange={(e) => setCoupon(e.target.value)}
-										/>
-										<div className="absolute right-0.5 top-0 h-full flex items-center">
-											<Button
-												size="sm"
-												className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
-												onClick={(e) => {
-													e.preventDefault();
-													if (coupon) {
-														physioConnectCouponApi(coupon)
-															.then((res) => {
-																if (res.status >= 200 && res.status < 300) {
-																	setCouponResponse(res.data);
-																	setCouponApplied(res.data.couponName);
-																} else {
-																	toast.error(res.data.message);
-																}
-															})
-															.catch((err) => {
-																toast.error(err.message);
-															});
-													} else {
-														toast.error("Please enter a valid coupon code");
-													}
-												}}
-											>
-												Apply
-											</Button>
-										</div>
-									</div>
-								) : (
-									<div className="flex flex-col gap-1 w-full font-sans font-semibold">
-										<SwipeableButton
-											style={{
-												width: "100%", // Ensure it adapts to screen size
-												maxWidth: "320px", // Constrain max width
-												margin: "0 auto", // Center within parent
-											}}
-											onSuccess={() => {
-												if (coupon) {
-													physioConnectCouponApi(coupon)
-														.then((res) => {
-															if (res.status >= 200 && res.status < 300) {
-																setCouponResponse(res.data);
-																setCouponApplied(res.data.couponName);
-															} else {
-																toast.error(res.data.message);
-															}
-														})
-														.catch((err) => {
-															toast.error(err.message);
-														});
-												}
-											}}
-											text="Best Offer for You"
-											text_unlocked="You Saved ₹500 !!!"
-											sliderTextColor="#fff"
-											sliderIconColor="#fff"
-											sliderColor="green"
-											background_color="#eee"
-											borderRadius={30}
-											circle
-											autoWidth
-											disabled={false}
-											name="coupon-btn"
-										/>
-									</div>
-								)}
-								{/* add button to replace swipable with input for applying more coupon  */}
-								<div className="flex justify-end">
-									<button
-										className="text-right text-green"
-										onClick={() => {
-											!showCouponInput ? setCoupon("") : setCoupon("NEW500");
-											setShowCouponInput(!showCouponInput);
-											setCouponResponse({});
-											setCouponApplied(null);
-											SetDiscountedPrice(null);
-										}}
-									>
-										{!showCouponInput ? "Have Coupon Code" : "Didn't Have Coupon Code"}
-									</button>
-								</div>
-							</>
-						)}
+  <>
+    <div className="relative flex w-full">
+      <input
+        name="coupon"
+        placeholder="Enter coupon code"
+        className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
+        value={coupon}
+        onChange={(e) => setCoupon(e.target.value)}
+      />
+      <div className="absolute right-0.5 top-0 h-full flex items-center">
+        <Button
+          size="sm"
+          className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
+          onClick={(e) => {
+            e.preventDefault();
+            if (coupon) {
+              physioConnectCouponApi(coupon)
+                .then((res) => {
+                  if (res.status >= 200 && res.status < 300) {
+                    setCouponResponse(res.data);
+                    setCouponApplied(res.data.couponName);
+                  } else {
+                    toast.error(res.data.message);
+                  }
+                })
+                .catch((err) => {
+                  toast.error(err.message);
+                });
+            } else {
+              toast.error("Please enter a valid coupon code");
+            }
+          }}
+        >
+          Apply
+        </Button>
+      </div>
+    </div>
+    
+    {/* Optional: Add a button to reset the coupon if needed */}
+    {couponApplied && (
+      <div className="flex justify-end">
+        <button
+          className="text-right text-green"
+          onClick={() => {
+            setCoupon("");
+            setCouponResponse({});
+            setCouponApplied(null);
+            SetDiscountedPrice(null);
+          }}
+        >
+          Remove Coupon
+        </button>
+      </div>
+    )}
+  </>
+)}
 						{discountedPrice && (
 							<>
 								<hr className="border-gray-200" />
 								<div className="flex justify-between text-sm font-normal">
 									<p>Discount</p>
-									{couponResponse.couponType == 0 ? <p>₹ {discountedPrice}</p> : <p>{discountedPrice} %</p>}
+									{couponResponse.couponType == 0 ? <p> ₹ {discountedPrice}</p> : <p>{discountedPrice} %</p>}
 								</div>
 							</>
 						)}
@@ -304,15 +267,78 @@ const PhysioConnectPayment = () => {
 						</div>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+					
+				</form>
+
+				{/* Render the Modal */}
+				<Modal
+					isOpen={isModalOpen}
+					closeModal={closeModal}
+				/>
+
+<div
+	className={`h-fit flex flex-col gap-0 bg-white px-6 py-6 border rounded-lg shadow-md 
+		w-full fixed bottom-0 left-0 
+		md:static md:mt-14 md:w-full 
+		z-20 transition-transform duration-300 
+		${showPayment ? "translate-y-0" : "translate-y-full"} 
+		md:translate-y-0`}
+>
+	{/* Payment Method Header */}
+	<div className="text-lg font-semibold">Payment Method</div>
+
+	{/* Payment Option */}
+	<div className="flex items-center space-x-2">
+		<Checkbox className="w-4 h-4 hover:before:opacity-0" defaultChecked checked={true} />
+		<p className="text-base font-medium">Online</p>
+	</div>
+
+	<hr className="my-2 border-gray-300" />
+
+	{/* Terms & Conditions */}
+	<div className="flex items-start space-x-2">
+		<Checkbox className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green" defaultChecked checked={true} />
+		<p className="text-sm">
+			By proceeding, I agree to Physioplus{" "}
+			<span className="text-green underline cursor-pointer" onClick={openModal}>
+				Terms of Service
+			</span>{" "}
+			and{" "}
+			<span className="text-green underline cursor-pointer" onClick={openModal}>
+				Refund Policy
+			</span>.
+		</p>
+	</div>
+
+	{/* Pay Now Button */}
+	<div className="w-full flex justify-center">
+		<Button
+			className="w-full text-white text-base font-medium py-3 rounded-full bg-green hover:bg-green-700 transition-all duration-300"
+			onClick={() => {
+				physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied, selectedExperienceId)
+					.then(() => {
+						dispatch(setSuccessModalOpen());
+					})
+					.catch((err) => {
+						toast.error(err);
+					});
+			}}
+		>
+			Pay Now
+		</Button>
+	</div>
+</div>
+
+
+				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-8">
 						<PrincipleCard
 							section={"physioConnectPayment"}
 							img={
 								"https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/png-transparent-referral-marketing-business-service-word-of-mouth-business-leaf-service-people-thumbnail.png"
 							}
-							title={"Guaranteed Patient Referrals"}
+							title={"Expand Your Client"}
 							description={
-								"We guarantee at least 10 new patient referrals over the next few months, ensuring your practice grows steadily with our proven patient acquisition strategies."
+						"Increase your visibility and connect with more clients,offering sevices.Your practice grows steadily."
 							}
 						/>
 						<PrincipleCard
@@ -330,113 +356,12 @@ const PhysioConnectPayment = () => {
 							img={
 								"https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/refund-money-icon-vector-illustration-260nw-572781898-removebg-preview.png"
 							}
-							title={"100% Refund"}
+							title={"Elevate Your Digital Presence"}
 							description={
-								"Not Satisfied? Get a 100% Refund – No Questions Asked! guide me in creating a three word tittle or a headind for these points."
+								"In today's digital world,your online presence matters just as much as your in-clinic experise"
 							}
 						/>
 					</div>
-				</form>
-
-				{/* Render the Modal */}
-				<Modal
-					isOpen={isModalOpen}
-					closeModal={closeModal}
-				/>
-
-				<div
-					className={`h-fit flex flex-col gap-4 bg-white px-4 py-4 border rounded-md w-full 
-						fixed bottom-0 left-0 
-						md:static md:mt-14 md:min-w-52 
-						lg:max-w-xs xl:max-w-sm 
-						z-20 transition-transform duration-300 
-						${showPayment ? "translate-y-0" : "translate-y-full"} 
-						md:translate-y-0`}
-				>
-					{/* payment */}
-					<div className="text-base font-semibold">Payment Option</div>
-
-					<div className="flex justify-between">
-						<div>
-							<p className="text-base font-medium">Total Amount to pay</p>
-							<p className="text-xs font-normal">included taxes</p>
-						</div>
-						<div className="text-lg font-medium">₹{amoutToPay}</div>
-					</div>
-
-					<div className="flex flex-col gap-1">
-						<Checkbox
-							className="w-4 h-4 hover:before:opacity-0  "
-							defaultChecked
-							checked={true}
-							label="Online"
-						/>
-						<hr className="my-2" />
-						<div className="flex items-start space-x-2">
-							<Checkbox
-								className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green "
-								defaultChecked
-								checked={true}
-							/>
-							<label className="text-xs">
-								By proceeding, I agree to Physioplus,{" "}
-								<span
-									className="text-green underline cursor-pointer"
-									onClick={openModal}
-								>
-									Terms of Service
-								</span>{" "}
-								and Cancellation Policies.
-							</label>
-						</div>
-					</div>
-
-					<div className="w-full flex justify-center">
-						<Button
-							className="w-full hover:shadow-none font-normal px-12 bg-green rounded-full"
-							// onClick={() =>
-							// 	selectedPrice != 0
-							// 		? physioConnectRazorPayOrderApi(
-							// 				physioConnectPhysioId,
-							// 				amoutToPay,
-							// 				mobileNumber,
-							// 				couponApplied,
-							// 				selectedExperienceId
-							// 		  )
-							// 				.then(() => {
-							// 					dispatch(setSuccessModalOpen());
-							// 				})
-							// 				.catch((err) => {
-							// 					toast.error(err);
-							// 				})
-							// 		: physioConnectFreePayment(physioConnectPhysioId, selectedExperienceId)
-							// 				.then(() => {
-							// 					dispatch(setSuccessModalOpen());
-							// 				})
-							// 				.catch((err) => {
-							// 					toast.error(err);
-							// 				})
-							// }
-							onClick={() => {
-								physioConnectRazorPayOrderApi(
-									physioConnectPhysioId,
-									amoutToPay,
-									mobileNumber,
-									couponApplied,
-									selectedExperienceId
-								)
-									.then(() => {
-										dispatch(setSuccessModalOpen());
-									})
-									.catch((err) => {
-										toast.error(err);
-									});
-							}}
-						>
-							Pay Now
-						</Button>
-					</div>
-				</div>
 			</div>
 			<SuccessModal
 				title={"Thank you for reaching us."}

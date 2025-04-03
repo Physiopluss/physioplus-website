@@ -62,6 +62,7 @@ const PhysioConnectWorkExperience = () => {
 					             homePincode: "",
 					             homeCity: "",
 					             homeState: "",
+                                 duration:"",
 		},
 		validationSchema: Yup.object().shape({
 			serviceType: Yup.array().required("Service Type is required"),
@@ -80,6 +81,7 @@ const PhysioConnectWorkExperience = () => {
 						            homePincode: Yup.number("Home Pincode is required"),
 						            homeCity: Yup.string("Home City is required"),
 						            homeState: Yup.string("Home State is required"),
+                                    duration: Yup.number("Consultation duration needed"),
 		}),
 		//isko abhi api ke baad set krongi
 		onSubmit: (values) => {
@@ -247,14 +249,14 @@ const PhysioConnectWorkExperience = () => {
 
 	return (
 		<>
-		<div className="flex flex-col md:flex-row gap-4 bg-white px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+		<div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
 		  {/* Left side - Card */}
 		  <div className="flex-1 flex justify-center">
 		  <StepIndicator currentStep={3} />
 		</div>
 		
 
-			<div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-[#FFFDF5] px-12 py-8">
+			<div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-white px-12 py-8">
 				{/* left side */}
 				<form
 					onSubmit={formik.handleSubmit}
@@ -392,47 +394,7 @@ const PhysioConnectWorkExperience = () => {
 							  {/* Home Care */}
                               {/* {formik.values.serviceType.includes("home") && ( */}
                         <div className="">
-                            <h6 className="text-lg font-semibold">Home Care</h6>
-                            <div className="space-y-2">
-                                <label
-                                    htmlFor="homeChargesUpto5km"
-                                    className="text-sm"
-                                >
-                                    Consultation fee upto 5 km
-                                </label>
-                                <Input
-                                    id="homeChargesUpto5km"
-                                    name="homeChargesUpto5km"
-                                    placeholder="Enter Amount"
-                                    value={formik.values.homeChargesUpto5km}
-                                    onChange={formik.handleChange}
-                                    labelProps={{ className: "hidden" }}
-                                    className="border-none placeholder:text-gray-500 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
-                                />
-                                {formik.touched.homeChargesUpto5km && formik.errors.homeChargesUpto5km && (
-                                    <p className="text-red-500">{formik.errors.homeChargesUpto5km}</p>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <label
-                                    htmlFor="homeChargesUpto10km"
-                                    className="text-sm"
-                                >
-                                    Consultation fee upto 10 km
-                                </label>
-                                <Input
-                                    name="homeChargesUpto10km"
-                                    id="clinicName"
-                                    placeholder="Enter Amount"
-                                    value={formik.values.homeChargesUpto10km}
-                                    onChange={formik.handleChange}
-                                    labelProps={{ className: "hidden" }}
-                                    className="border-none placeholder:text-gray-500 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
-                                />
-                                {formik.touched.homeChargesUpto10km && formik.errors.homeChargesUpto10km && (
-                                    <p className="text-red-500">{formik.errors.homeChargesUpto10km}</p>
-                                )}
-                            </div>
+                            <h6 className="text-lg font-semibold">Home Care </h6>
                             <div className="space-y-2">
                                 <label
                                     htmlFor="homeChargesUpto10km"
@@ -489,18 +451,81 @@ const PhysioConnectWorkExperience = () => {
                                     )}
                                 </div>
                             </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="homeChargesUpto5km"
+                                    className="text-sm"
+                                >
+                                    Consultation fee upto 5 km
+                                </label>
+                                <Input
+                                    id="homeChargesUpto5km"
+                                    name="homeChargesUpto5km"
+                                    placeholder="Enter Amount"
+                                    value={formik.values.homeChargesUpto5km}
+                                    onChange={formik.handleChange}
+                                    labelProps={{ className: "hidden" }}
+                                    className="border-none placeholder:text-gray-500 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
+                                />
+                                {formik.touched.homeChargesUpto5km && formik.errors.homeChargesUpto5km && (
+                                    <p className="text-red-500">{formik.errors.homeChargesUpto5km}</p>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="homeChargesUpto10km"
+                                    className="text-sm"
+                                >
+                                    Consultation fee upto 10 km
+                                </label>
+                                <Input
+                                    name="homeChargesUpto10km"
+                                    id="clinicName"
+                                    placeholder="Enter Amount"
+                                    value={formik.values.homeChargesUpto10km}
+                                    onChange={formik.handleChange}
+                                    labelProps={{ className: "hidden" }}
+                                    className="border-none placeholder:text-gray-500 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
+                                />
+                                {formik.touched.homeChargesUpto10km && formik.errors.homeChargesUpto10km && (
+                                    <p className="text-red-500">{formik.errors.homeChargesUpto10km}</p>
+                                )}
+                            </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label
+                                    htmlFor="duration"
+                                    className="text-sm"
+                                >
+                                    Consultation Time
+                                </label>
+                                <Input
+                                    id="duration"
+                                    name="duration"
+                                    placeholder="Enter Time"
+                                    value={formik.values.duration}
+                                    onChange={formik.handleChange}
+                                    labelProps={{ className: "hidden" }}
+                                    className="border-none placeholder:text-gray-500 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
+                                />
+                                {formik.touched.duration && formik.errors.duration && (
+                                    <p className="text-red-500">{formik.errors.duration}</p>
+                                )}
+                            </div>
+                         
                         </div>
                               {/* )}
 									 */}
 					
-					<div className="w-full flex justify-center">
-						<Button
-							className="w-fit hover:shadow-none font-normal px-12 bg-green rounded-full"
-							type="submit"
-						>
-							Submit
-						</Button>
-					</div>
+                    <div className="w-full flex flex-row justify-end mt-4">
+              <Button
+                className="w-fit hover:shadow-none font-normal px-12 bg-green rounded-full"
+                type="submit"
+              >
+                Submit & Next
+              </Button>
+            </div>
 				</form>
 				{/* right side */}
 			
