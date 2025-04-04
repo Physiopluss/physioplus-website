@@ -68,46 +68,109 @@ export const physioConnectSpecializationsApi = async () => {
 	}
 };
 
-export const physioConnectProfessionalsApi = async ({
+// export const physioConnectProfessionalsApi = async ({
+// 	physioConnectPhysioId,
+// 	degree,
+// 	specialization,
+// 	serviceType,
+// 	clinicName,
+// 	clinicAddress,
+// 	clinicPincode,
+// 	clinicCity,
+// 	clinicState,
+// 	consultationFees,
+// 	treatmentCharges,
+// 	homeChargesUpto5km,
+// 	homeChargesUpto10km,
+// 	homePincode,
+// 	homeState,
+// 	homeCity,
+// 	AnotherTreatmentName,
+// 	AnotherTreatmentPrice,
+// }) => {
+// 	try {
+// 		const response = await axios.post(`${BaseUrl}web/physio/ProfessionalDetails`, {
+// 			physioId: physioConnectPhysioId,
+// 			degreeId: degree,
+// 			specializationId: specialization,
+// 			serviceType: serviceType,
+// 			clinicName: clinicName,
+// 			address: clinicAddress,
+// 			zipCode: clinicPincode,
+// 			homeZipCode: homePincode,
+// 			homeState: homeState,
+// 			homeCity: homeCity,
+// 			city: clinicCity,
+// 			state: clinicState,
+// 			charges: consultationFees,
+// 			consultationCharges: treatmentCharges,
+// 			consultationChargesUp5Km: homeChargesUpto5km,
+// 			consultationChargesUp10Km: homeChargesUpto10km,
+// 			otherTreatmentName: AnotherTreatmentName,
+// 			otherTreatmentCharges: AnotherTreatmentPrice,
+// 		});
+// 		if (response.status >= 200 && response.status < 300) {
+// 			return response;
+// 		} else if (response.status >= 400 && response.status < 500) {
+// 			return response;
+// 		} else {
+// 			return new Error("Something went wrong");
+// 		}
+// 	} catch (error) {
+// 		return error.response;
+// 	}
+// };
+
+export const physioConnectPersonalApi = async ({
+	physioConnectPhysioId,
+	fullName,
+	gender,
+	dob,
+	email,
+
+	about,
+}) => {
+	try {
+		const response = await axios.post(`${BaseUrl}web/physio/createPhysioPersonalDetails?physioId=${physioConnectPhysioId}`, {
+			physioId: physioConnectPhysioId,
+			fullName:fullName,
+			gender:gender,
+			dob:dob,
+			email:email,
+			
+			about:about,
+		});
+		if (response.status >= 200 && response.status < 300) {
+			return response;
+		} else if (response.status >= 400 && response.status < 500) {
+			return response;
+		} else {
+			return new Error("Something went wrong");
+		}
+	} catch (error) {
+		return error.response;
+	}
+};
+export const physioConnectProfessionalApi = async ({
 	physioConnectPhysioId,
 	degree,
 	specialization,
+	experience,
+	insurance,
 	serviceType,
-	clinicName,
-	clinicAddress,
-	clinicPincode,
-	clinicCity,
-	clinicState,
-	consultationFees,
-	treatmentCharges,
-	homeChargesUpto5km,
-	homeChargesUpto10km,
-	homePincode,
-	homeState,
-	homeCity,
-	AnotherTreatmentName,
-	AnotherTreatmentPrice,
+	iapMember,
+	iapNumber,
 }) => {
 	try {
-		const response = await axios.post(`${BaseUrl}web/physio/ProfessionalDetails`, {
+		const response = await axios.post(`${BaseUrl}web/physio/createPhysioProfessionalDetails?physioId=${physioConnectPhysioId}`, {
 			physioId: physioConnectPhysioId,
-			degreeId: degree,
-			specializationId: specialization,
-			serviceType: serviceType,
-			clinicName: clinicName,
-			address: clinicAddress,
-			zipCode: clinicPincode,
-			homeZipCode: homePincode,
-			homeState: homeState,
-			homeCity: homeCity,
-			city: clinicCity,
-			state: clinicState,
-			charges: consultationFees,
-			consultationCharges: treatmentCharges,
-			consultationChargesUp5Km: homeChargesUpto5km,
-			consultationChargesUp10Km: homeChargesUpto10km,
-			otherTreatmentName: AnotherTreatmentName,
-			otherTreatmentCharges: AnotherTreatmentPrice,
+			degree:degree,
+			specialization:specialization,
+			experience:experience,
+			insurance:insurance,
+			serviceType:serviceType,
+			iapMember:iapMember,
+			iapNumber:iapNumber,
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response;

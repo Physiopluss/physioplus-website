@@ -7,7 +7,9 @@ const steps = [{ label: "Personal Details",
 
 const StepIndicator = ({ currentStep }) => {
 	return (
-		<div className=" rounded-lg p-3 shadow-md w-72 h-[85%] max-h-[400px] flex flex-col border-1 mb-5 bg-white">
+    <div> 
+		{/* Keep your original desktop version but hide on mobile */}
+<div className="rounded-lg p-3 shadow-md w-72 h-[85%] max-h-[400px]  flex-col border-1 mb-5 bg-white hidden md:block">
   <ol className="relative space-y-9 mt-4 p-2 mb-6">
     {steps.map((step, index) => (
       <li key={step.label} className="relative flex items-start py-1">
@@ -35,6 +37,35 @@ const StepIndicator = ({ currentStep }) => {
       </li>
     ))}
   </ol>
+</div>
+<div className="bg-white p-4 shadow-md rounded-lg w-full mb-5 md:hidden">
+  <div className="flex justify-between items-center">
+    {steps.map((step, index) => (
+      <div key={step.label} className="flex flex-col items-center relative z-0">
+        {/* Step Indicator */}
+        <div
+          className={`w-6 h-6 border-2 rounded-md flex items-center justify-center mb-2 z-10
+            ${currentStep >= index + 1 ? "bg-green border-green" : "border-gray-400 bg-white"}
+          `}
+        >
+          {currentStep >= index + 1 && <div className="w-3 h-3 bg-white rounded-sm"></div>}
+        </div>
+
+        {/* Step Text */}
+        <p className={`text-xs font-semibold text-center 
+          ${currentStep >= index + 1 ? "text-black" : "text-gray-400"}`}>
+          {step.label}
+        </p>
+
+        {/* Connector line between steps - now touches both boxes */}
+        {index < steps.length - 1 && (
+       <div className="absolute top-3 left-1/2 w-[calc(100%+12px)] h-[2px] bg-gray-300 -translate-x-2"></div>
+        )}
+      </div>
+    ))}
+  </div>
+</div>
+
 </div>
 
 	  

@@ -14,7 +14,7 @@ import {
   getPhysioDataPhysioConnectApi,
   locationUsingPincode,
   physioConnectDegreeApi,
-  physioConnectProfessionalsApi,
+  physioConnectProfessionalApi,
   physioConnectSpecializationsApi,
 } from "../../api/physioConnect";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -108,18 +108,18 @@ const PhysioConnectProfessionalForm = () => {
       homeState: "",
       AnotherTreatmentName: "",
       AnotherTreatmentPrice: "",
-      treatInsuredPatient: true,
+      insurance: "",
       experience: "",
-      IAP: true,
-      IAP_number: "",
+      iapMember: "",
+      iapNumber: "",
       iapImage: null, // Added for image upload
     },
     validationSchema: Yup.object().shape({
-      IAP: Yup.boolean().required("IAP is required"),
-      IAP_number: Yup.string(),
+      iapMember: Yup.boolean().required("IAP is required"),
+      iapNumber: Yup.string(),
       iapImage: Yup.mixed()
         .nullable()
-        .required("IAP Certificate Image is required"), // Validation for image
+       , // Validation for image
       degree: Yup.array().required("Degree is required"),
       specialization: Yup.array().required("Specialization is required"),
       serviceType: Yup.array().required("Service Type is required"),
@@ -137,8 +137,8 @@ const PhysioConnectProfessionalForm = () => {
       homeState: Yup.string("Home State is required"),
       AnotherTreatmentName: Yup.string("Another Treatment Name is required"),
       AnotherTreatmentPrice: Yup.number("Another Treatment Price is required"),
-      treatInsuredPatient: Yup.boolean().required(
-        "treatInsuredPatient is required"
+      insurance: Yup.boolean().required(
+        "insurance is required"
       ),
       experience: Yup.string().required("experience is required"),
     }),
@@ -146,21 +146,11 @@ const PhysioConnectProfessionalForm = () => {
       const {
         degree,
         specialization,
+        experience,
+        insurance,
         serviceType,
-        clinicName,
-        clinicAddress,
-        clinicPincode,
-        clinicCity,
-        clinicState,
-        consultationFees,
-        treatmentCharges,
-        homeChargesUpto5km,
-        homeChargesUpto10km,
-        homePincode,
-        homeCity,
-        homeState,
-        AnotherTreatmentName,
-        AnotherTreatmentPrice,
+        iapMember,
+        iapNumber,
       } = values;
       if (degree?.length == 0) return toast.error("Degree is Required");
       if (specialization?.length == 0)
@@ -168,25 +158,15 @@ const PhysioConnectProfessionalForm = () => {
       if (serviceType?.length == 0)
         return toast.error("Please select treatment type");
       else {
-        physioConnectProfessionalsApi({
-          physioConnectPhysioId,
+        physioConnectProfessionalApi({
           degree,
-          specialization,
-          serviceType,
-          clinicName,
-          clinicAddress,
-          clinicPincode,
-          clinicCity,
-          clinicState,
-          consultationFees,
-          treatmentCharges,
-          homeChargesUpto5km,
-          homeChargesUpto10km,
-          homePincode,
-          homeCity,
-          homeState,
-          AnotherTreatmentName,
-          AnotherTreatmentPrice,
+        specialization,
+        experience,
+        insurance,
+        serviceType,
+        iapMember,
+        iapNumber,
+        physioConnectPhysioId,
         }).then((res) => {
           if (res.status === 200) {
             toast.success(res.data?.message);
@@ -293,9 +273,9 @@ const PhysioConnectProfessionalForm = () => {
       oldPhysioData.iapMember != undefined
     ) {
       if (oldPhysioData.iapMember == 0) {
-        formik.setFieldValue("IAP", false);
+        formik.setFieldValue("iapMember", false);
       } else {
-        formik.setFieldValue("IAP", true);
+        formik.setFieldValue("iapMember", true);
       }
     }
 
@@ -305,27 +285,27 @@ const PhysioConnectProfessionalForm = () => {
       oldPhysioData.iapNumber != null &&
       oldPhysioData.iapNumber != undefined
     ) {
-      formik.setFieldValue("IAP_number", oldPhysioData.iapNumber);
+      formik.setFieldValue("iapNumber", oldPhysioData.iapNumber);
     }
-    //  setting treatInsuredPatient from database
+    //  setting insurance from database
     if (
       oldPhysioData &&
-      oldPhysioData.treatInsuranceclaims != null &&
-      oldPhysioData.treatInsuranceclaims != undefined
+      oldPhysioData.insurance != null &&
+      oldPhysioData.insurance != undefined
     ) {
       formik.setFieldValue(
-        "treatInsuredPatient",
-        oldPhysioData.treatInsuranceclaims
+        "insurance",
+        oldPhysioData.insurance
       );
     }
 
     // setting experience from database
     if (
       oldPhysioData &&
-      oldPhysioData.workExperience != null &&
-      oldPhysioData.workExperience != undefined
+      oldPhysioData.experience != null &&
+      oldPhysioData.experience != undefined
     ) {
-      formik.setFieldValue("experience", oldPhysioData.workExperience);
+      formik.setFieldValue("experience", oldPhysioData.experience);
     }
   }, [oldPhysioData]);
 
@@ -382,13 +362,12 @@ const PhysioConnectProfessionalForm = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+      <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-2 py-4  justify-center mx-4 md:mx-8 lg:mx-16">
         {/* Left side - Card */}
         <div className="flex-1 flex justify-center">
           <StepIndicator currentStep={2} />
         </div>
 
-        {/* Right side - Form */}
         {/* Right side - Form */}
         <div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-white px-12 py-8">
           <form
@@ -397,7 +376,7 @@ const PhysioConnectProfessionalForm = () => {
           >
             <h6 className="font-semibold text-3xl">Professional Details</h6>
 
-            {/* Updated Degree Section - Multi-select Dropdown */}
+            {/* Degree Section */}
             <div className="flex flex-col gap-2">
               <label htmlFor="degree" className="text-sm">
                 Degree
@@ -621,96 +600,91 @@ const PhysioConnectProfessionalForm = () => {
                   {formik.errors.experience}
                 </div>
               ) : null}
-              <label htmlFor="treatInsuredPatient" className="text-sm">
-                Do you treat insured patients?
-              </label>
-              <div className="relative">
-                <select
-                  name="treatInsuredPatient"
-                  value={formik.values.treatInsuredPatient.toString()}
-                  onChange={(e) =>
-                    formik.setFieldValue(
-                      "treatInsuredPatient",
-                      e.target.value === "true"
-                    )
-                  }
-                  className="border border-gray-300 rounded-md px-3 py-2 w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black appearance-none pr-8 bg-white"
-                >
-                  <option value="true">Yes</option>
-                  <option value="false">No</option>
-                </select>
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                  <img
-                    src="/aboutImg/dropdown.png"
-                    className="w-4 h-4"
-                    alt=""
-                  />
+              <div className="flex flex-col gap-2">
+                <label htmlFor="insurance" className="text-sm">
+                  Want to treat patient
+                </label>
+             <select
+  name="insurance"
+  value={formik.values.insurance === "" ? "" : formik.values.insurance.toString()}
+  onChange={(e) =>
+    formik.setFieldValue(
+      "insurance",
+      e.target.value === "true"
+    )
+  }
+  className="border border-gray-300 rounded-md px-3 py-2 w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black appearance-none pr-8 bg-white"
+>
+  <option value="" disabled hidden>
+    Select an option
+  </option>
+  <option value="true">Yes</option>
+  <option value="false">No</option>
+</select>
+</div>
+{formik.touched.insurance && formik.errors.insurance ? (
+                <div className="text-red-500 mt-2">
+                  {formik.errors.insurance}
                 </div>
-              </div>
-              {formik.touched.treatInsuredPatient &&
-                formik.errors.treatInsuredPatient && (
-                  <p className="text-red-500">
-                    {formik.errors.treatInsuredPatient}
-                  </p>
-                )}
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="IAP" className="text-sm">
-                Are you registered with IAP?
-              </label>
-              <div className="flex gap-2">
-                <Radio
-                  className="w-4 h-4 hover:before:opacity-0"
-                  label="Yes"
-                  name="IAP"
-                  value={formik.values.IAP}
-                  checked={formik.values.IAP === true}
-                  onChange={() => formik.setFieldValue("IAP", true)}
-                />
-                <Radio
-                  className="w-4 h-4 hover:before:opacity-0"
-                  label="No"
-                  name="IAP"
-                  value={formik.values.IAP}
-                  checked={formik.values.IAP === false}
-                  onChange={() => {
-                    formik.setFieldValue("IAP", false);
-                    formik.setFieldValue("IAP_number", ""); // Reset IAP number
-                    formik.setFieldValue("iapImage", []); // Reset uploaded images
-                  }}
-                />
-              </div>
-            </div>
-            {formik.touched.IAP && formik.errors.IAP ? (
-              <div className="text-red-500 mt-2">{formik.errors.IAP}</div>
+  <label htmlFor="iapMember" className="text-sm">
+    Are you registered with IAP?
+  </label>
+  <div className="flex gap-2">
+    <Radio
+      className="w-4 h-4 hover:before:opacity-0"
+      label="Yes"
+      name="iapMember"
+      value="true"
+      checked={formik.values.iapMember === true}
+      onChange={() => formik.setFieldValue("iapMember", true)}
+    />
+    <Radio
+      className="w-4 h-4 hover:before:opacity-0"
+      label="No"
+      name="iapMember"
+      value="false"
+      checked={formik.values.iapMember === false}
+      onChange={() => {
+        formik.setFieldValue("iapMember", false);
+        formik.setFieldValue("iapNumber", ""); // Reset IAP number
+        formik.setFieldValue("iapImage", []); // Reset uploaded images
+      }}
+    />
+  </div>
+</div>
+            {formik.touched.iapMember && formik.errors.iapMember ? (
+              <div className="text-red-500 mt-2">{formik.errors.iapMember}</div>
             ) : null}
 
-            {formik.values.IAP === true && (
+            {formik.values.iapMember === true && (
               <>
                 {/* IAP Number Input */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="IAP_number" className="text-sm">
+                  <label htmlFor="iapNumber" className="text-sm">
                     If yes, enter your IAP Number
                   </label>
                   <Input
                     size="md"
-                    name="IAP_number"
-                    value={formik.values.IAP_number}
+                    name="iapNumber"
+                    value={formik.values.iapNumber}
                     onChange={formik.handleChange}
                     labelProps={{ className: "hidden" }}
                     placeholder="Enter IAP Number"
                     className="border-none placeholder:text-gray-300 placeholder:opacity-100 bg-white ring-1 ring-[#A9ABB2] focus:ring-2 focus:ring-black"
                   />
                 </div>
-                {formik.touched.IAP_number && formik.errors.IAP_number ? (
+                {formik.touched.iapNumber && formik.errors.iapNumber ? (
                   <div className="text-red-500 mt-2">
-                    {formik.errors.IAP_number}
+                    {formik.errors.iapNumber}
                   </div>
                 ) : null}
 
                 {/* IAP Image Upload */}
-                <div>
+                {/* <div>
 	<label htmlFor="iapImages" className="block text-sm font-medium text-gray-700">
 		Upload IAP Certificates
 	</label>
@@ -731,7 +705,7 @@ const PhysioConnectProfessionalForm = () => {
 	)}
 
 	{/* Preview the uploaded images */}
-	{formik.values.iapImages && formik.values.iapImages.length > 0 && (
+	{/* {formik.values.iapImages && formik.values.iapImages.length > 0 && (
 		<div className="mt-2 flex flex-wrap gap-2">
 			{formik.values.iapImages.map((file, index) => (
 				<div key={index} className="relative">
@@ -754,7 +728,7 @@ const PhysioConnectProfessionalForm = () => {
 			))}
 		</div>
 	)}
-</div>
+</div> */} 
 
               </>
             )}
@@ -785,15 +759,23 @@ const PhysioConnectProfessionalForm = () => {
                 <p className="text-red-500">{formik.errors.serviceType}</p>
               )}
             </div>
-            {/* Login & Submit Button */}
-            <div className="w-full flex flex-row justify-end">
-              <Button
-                className="w-fit hover:shadow-none font-normal px-12 bg-green rounded-full"
-                type="submit"
-              >
-                Submit & Next
-              </Button>
-            </div>
+            {/* submit  btn */}
+            <div className="w-full flex flex-row justify-between items-center mt-4 gap-4">
+  <button
+    type="button"
+    onClick={() => navigate(-1)}
+    className="text-black hover:text-gray-800 font-medium flex items-center gap-1 text-sm sm:text-base"
+  >
+    <GoDash className="w-4 h-4 sm:w-5 sm:h-5" />
+    Go Back
+  </button>
+  <Button
+    className="w-fit hover:shadow-none font-normal px-6 sm:px-12 bg-green rounded-full py-3 " 
+    type="submit"
+  >
+    Submit & Next
+  </Button>
+</div>
           </form>
         </div>
       </div>

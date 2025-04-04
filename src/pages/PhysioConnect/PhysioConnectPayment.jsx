@@ -171,13 +171,13 @@ const PhysioConnectPayment = () => {
 
 	return (
 		<>
-		<div className="flex flex-col md:flex-row gap-4 bg-white px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+		<div className="flex flex-col md:flex-row gap-4 bg-white px-2 py-4 justify-center mx-4 md:mx-8 lg:mx-16">
 				  {/* Left side - Card */}
 				  <div className="flex-1 flex justify-center">
 				  <StepIndicator currentStep={4} />
 				</div>
 
-			<div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-[#FFFDF5] px-12 py-8">
+				<div className="hidden md:block w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-[#FFFDF5] px-12 py-8">
 				{/* left side */}
 				<form
 					className="flex flex-col gap-4"
@@ -380,6 +380,149 @@ const PhysioConnectPayment = () => {
 					});
 				}}
 			/>
+			<div className="w-full mx-auto bg-[#FFFDF5] px-4 py-4 md:hidden">
+  {/* Mobile Payment Header */}
+  <h6 className="font-semibold text-2xl mb-4">Payment Page</h6>
+
+  {/* Review & Pay Section */}
+  <div className="bg-white rounded-lg p-4 shadow-sm mb-4">
+    <p className="text-base font-semibold mb-3">Review & Pay</p>
+    
+    {/* Listing Charges */}
+    <div className="flex justify-between text-sm py-2 border-b border-gray-100">
+      <p>Listing Charges</p>
+      <p>₹3,499</p>
+    </div>
+
+    {/* Coupon Code - Same functionality as web */}
+    <div className="relative flex w-full my-3">
+      <input
+        name="coupon"
+        placeholder="PHYSIOFIRST"
+        className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
+        value={coupon}
+        onChange={(e) => setCoupon(e.target.value)}
+      />
+      <div className="absolute right-0.5 top-0 h-full flex items-center">
+        <Button
+          size="sm"
+          className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
+          onClick={(e) => {
+            e.preventDefault();
+            if (coupon) {
+              physioConnectCouponApi(coupon)
+                .then((res) => {
+                  if (res.status >= 200 && res.status < 300) {
+                    setCouponResponse(res.data);
+                    setCouponApplied(res.data.couponName);
+                  } else {
+                    toast.error(res.data.message);
+                  }
+                })
+                .catch((err) => {
+                  toast.error(err.message);
+                });
+            } else {
+              toast.error("Please enter a valid coupon code");
+            }
+          }}
+        >
+          Apply
+        </Button>
+      </div>
+    </div>
+
+    {/* Discount - Same conditional rendering as web */}
+    {discountedPrice && (
+      <div className="flex justify-between text-sm py-2 border-b border-gray-100">
+        <p>Discount</p>
+        <p>- ₹1,000</p>
+      </div>
+    )}
+
+    {/* Total Amount - Same as web */}
+    <div className="flex justify-between text-sm font-medium py-3">
+      <p>Total Amount to Pay</p>
+      <p>₹2,499</p>
+    </div>
+  </div>
+
+  {/* Benefits Cards - Stacked vertically for mobile */}
+  <div className="space-y-4 mt-6">
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-start gap-3">
+        <img 
+          src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/png-transparent-referral-marketing-business-service-word-of-mouth-business-leaf-service-people-thumbnail.png" 
+          className="w-12 h-12 object-contain"
+          alt="Expand"
+        />
+        <div>
+          <p className="font-medium">Expand Your Client</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Increase your visibility and connect with more clients, offering services. Your practice grows steadily
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-start gap-3">
+        <img 
+          src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/71-512-removebg-preview.png" 
+          className="w-12 h-12 object-contain"
+          alt="Income"
+        />
+        <div>
+          <p className="font-medium">Boost Your Income</p>
+          <p className="text-sm text-gray-600 mt-1">
+            Maximize your earning potential by taking on additional clients at your convenience, allowing flexible
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div className="bg-white p-4 rounded-lg shadow-sm">
+      <div className="flex items-start gap-3">
+        <img 
+          src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/Swiper+Gallery/refund-money-icon-vector-illustration-260nw-572781898-removebg-preview.png" 
+          className="w-12 h-12 object-contain"
+          alt="Digital"
+        />
+        <div>
+          <p className="font-medium">Elevate Your Digital Presence</p>
+          <p className="text-sm text-gray-600 mt-1">
+            In today's digital world, your online presence matters just as much as your in-clinic expertise
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Payment Method - Fixed at bottom */}
+  <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t">
+    <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center space-x-2">
+        <Checkbox className="w-4 h-4 hover:before:opacity-0" defaultChecked checked={true} />
+        <p className="text-sm">I agree to Terms & Conditions</p>
+      </div>
+      <p className="font-semibold">₹2,499</p>
+    </div>
+    <Button
+      className="w-full text-white text-base font-medium py-3 rounded-full bg-green hover:bg-green-700"
+      onClick={() => {
+        physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied, selectedExperienceId)
+          .then(() => {
+            dispatch(setSuccessModalOpen());
+          })
+          .catch((err) => {
+            toast.error(err);
+          });
+      }}
+    >
+      Pay Now
+    </Button>
+  </div>
+</div>
 		</div>
 		</>
 	);

@@ -1,13 +1,9 @@
 import ReactGA from "react-ga4";
-import { GoDash } from "react-icons/go";
 import { Button, Input, Select, Option } from "@material-tailwind/react";
 import { useEffect, useRef, useState } from "react";
 import {
-    getPhysioDataPhysioConnectApi,
     locationUsingPincode,
-    physioConnectDegreeApi,
-    physioConnectProfessionalsApi,
-    physioConnectSpecializationsApi,
+    physioConnectPersonalApi,
 } from "../../api/physioConnect";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,42 +28,42 @@ const PhysioConnectPersonalForm = () => {
         ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Physio Connect Personal Form" });
     }, []);
 
-    // getting degree & specialisation from backend
-    useEffect(() => {
-        const fetchData = async () => {
-            await physioConnectDegreeApi().then((res) => {
-                if (res.status >= 200 && res.status < 300) {
-                    setAllDegree(res.data.data);
-                } else if (res.status >= 400 && res.status < 500) {
-                    toast.error(res.data.message);
-                } else {
-                    toast.error("Something went wrong");
-                }
-            });
+    // // getting degree & specialisation from backend
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         await physioConnectDegreeApi().then((res) => {
+    //             if (res.status >= 200 && res.status < 300) {
+    //                 setAllDegree(res.data.data);
+    //             } else if (res.status >= 400 && res.status < 500) {
+    //                 toast.error(res.data.message);
+    //             } else {
+    //                 toast.error("Something went wrong");
+    //             }
+    //         });
 
-            await physioConnectSpecializationsApi().then((res) => {
-                if (res.status >= 200 && res.status < 300) {
-                    setAllSpecialization(res.data.data);
-                } else if (res.status >= 400 && res.status < 500) {
-                    toast.error(res.data.message);
-                } else {
-                    toast.error("Something went wrong");
-                }
-            });
+    //     //     await physioConnectSpecializationsApi().then((res) => {
+    //     //         if (res.status >= 200 && res.status < 300) {
+    //     //             setAllSpecialization(res.data.data);
+    //     //         } else if (res.status >= 400 && res.status < 500) {
+    //     //             toast.error(res.data.message);
+    //     //         } else {
+    //     //             toast.error("Something went wrong");
+    //     //         }
+    //     //     });
 
-            await getPhysioDataPhysioConnectApi(physioConnectPhysioId)
-                .then((res) => {
-                    if (res.status >= 200 && res.status < 300) {
-                        setOldPhysioData(res.data);
-                    } else {
-                        console.log("inside else", res);
-                    }
-                })
-                .catch((err) => console.log(err));
-        };
+    //     //     await getPhysioDataPhysioConnectApi(physioConnectPhysioId)
+    //     //         .then((res) => {
+    //     //             if (res.status >= 200 && res.status < 300) {
+    //     //                 setOldPhysioData(res.data);
+    //     //             } else {
+    //     //                 console.log("inside else", res);
+    //     //             }
+    //     //         })
+    //     //         .catch((err) => console.log(err));
+    //     // };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
 
     const formik = useFormik({
         initialValues: {
@@ -93,7 +89,9 @@ const PhysioConnectPersonalForm = () => {
             homeState: "",
             AnotherTreatmentName: "",
             AnotherTreatmentPrice: "",
-            description: "",
+            selectedTraits: [],
+            customDescription: "",
+            about: "",
         },
         validationSchema: Yup.object().shape({
             fullName: Yup.string("Name is required"),
@@ -104,58 +102,41 @@ const PhysioConnectPersonalForm = () => {
         .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
         .required("Contact is required"),
           
-            description: Yup.string().max(500, "Description cannot exceed 500 characters"),
+            about: Yup.string().max(500, "Description cannot exceed 500 characters"),
         }),
         onSubmit: (values) => {
-            const {
-                fullName,
-                gender,
-                dob,
-                email,
-                phone,
-                description,
-            } = values;
-            // if (degree?.length == 0) return toast.error("Degree is Required");
-            // if (specialization?.length == 0) return toast.error("Specialization is required");
-            if (serviceType?.length == 0) return toast.error("Please select treatment type");
-            else {
-                physioConnectProfessionalsApi({
-                    fullName,
-                gender,
-                dob,
-                email,
-                phone,
-                description,
-                    physioConnectPhysioId,
-                    degree,
-                    specialization,
-                    serviceType,
-                    clinicName,
-                    clinicAddress,
-                    clinicPincode,
-                    clinicCity,
-                    clinicState,
-                    consultationFees,
-                    treatmentCharges,
-                    homeChargesUpto5km,
-                    homeChargesUpto10km,
-                    homePincode,
-                    homeCity,
-                    homeState,
-                    AnotherTreatmentName,
-                    AnotherTreatmentPrice,
-                }).then((res) => {
-                    if (res.status === 200) {
-                        toast.success(res.data?.message);
-                        setTimeout(() => {
-                            navigate("/physio-connect/professional-details");
-                        }, 1000);
-                    } else {
-                        toast.error(res.data?.message);
-                    }
-                });
-            }
-        },
+          const {
+              fullName,
+              gender,
+              dob,
+              email,
+              phone,
+              about,
+              // ...other fields as needed
+          } = values;
+      
+          const genderValue = gender === "male" ? 1 : 0;
+      
+          physioConnectPersonalApi({
+              fullName,
+              gender: genderValue,
+              dob,
+              email,
+              phone,
+              about,
+              physioConnectPhysioId,
+          }).then((res) => {
+              if (res.status === 200) {
+                  toast.success(res.data?.message);
+                  setTimeout(() => {
+                      navigate("/physio-connect/professional-details");
+                  }, 1000);
+              } else {
+                  toast.error(res.data?.message);
+              }
+          });
+      }
+      
     });
 
     useEffect(() => {
@@ -186,8 +167,8 @@ const PhysioConnectPersonalForm = () => {
             });
             formik.setFieldValue("serviceType", tempServiceTypeId);
         }
-        if (oldPhysioData?.description) {
-            formik.setFieldValue("description", oldPhysioData.description);
+        if (oldPhysioData?.about) {
+            formik.setFieldValue("about", oldPhysioData.about);
         }
         // setting name from database
         if (
@@ -285,7 +266,7 @@ const PhysioConnectPersonalForm = () => {
     return (
         <>
             
-            <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-8 py-8 justify-center mx-4 md:mx-8 lg:mx-16">
+            <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-2 py-4 justify-center mx-4 md:mx-8 lg:mx-16">
   {/* Left side - Card */}
   <div className="flex-1 flex justify-center">
   <StepIndicator currentStep={1} />
@@ -417,37 +398,109 @@ const PhysioConnectPersonalForm = () => {
 </div>
 
     {/* Description Field */}
-    <div className="space-y-2">
-      <label htmlFor="description" className="text-sm">About Physio</label>
+      {/* Description Field */}
+      <div className="space-y-2">
+      <label htmlFor="about" className="text-sm">About Physio</label>
+      
+      {/* Selected traits chips - visible */}
+      <div className="flex flex-wrap gap-2 mb-2">
+        {formik.values.selectedTraits?.map((trait, index) => (
+          <div key={`${trait}-${index}`} className="flex items-center gap-1 px-3 py-1 bg-blue-gray-100 text-black rounded-full text-sm">
+            {trait}
+            <button
+              type="button"
+              onClick={() => {
+                const newTraits = formik.values.selectedTraits.filter(t => t !== trait);
+                formik.setFieldValue('selectedTraits', newTraits);
+                // Update the combined description
+                formik.setFieldValue(
+                  'about',
+                  `${newTraits.join(' ')} ${formik.values.customDescription || ''}`.trim()
+                );
+              }}
+              className="text-green-600 hover:text-green-800"
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </div>
+      
+      {/* Small blocks for quick selection */}
+      <div className="flex flex-wrap gap-2 mb-3">
+        {['Passionate', 'Hard working', 'Dedicated', 'Experienced', 'Patient-focused'].map((trait) => (
+          <button
+            key={trait}
+            type="button"
+            onClick={() => {
+              if (!formik.values.selectedTraits?.includes(trait)) {
+                const newTraits = [...(formik.values.selectedTraits || []), trait];
+                formik.setFieldValue('selectedTraits', newTraits);
+                // Update the combined description
+                formik.setFieldValue(
+                  'about',
+                  `${newTraits.join(' ')} ${formik.values.customDescription || ''}`.trim()
+                );
+              }
+            }}
+            className={`px-3 py-1 text-sm rounded-full border ${
+              formik.values.selectedTraits?.includes(trait)
+                ? 'bg-green-100 border-green-500 text-green-800' 
+                : 'border-gray-300 hover:bg-gray-100'
+            }`}
+          >
+            {trait}
+          </button>
+        ))}
+      </div>
+      
+      {/* Hidden textarea that maintains full description state */}
       <textarea
-        name="description"
-        id="description"
-        rows="4"
-        placeholder="Enter description..."
-        value={formik.values.description}
+        name="about"
+        id="about"
+        className="hidden"
+        value={formik.values.about}
         onChange={formik.handleChange}
+      />
+      
+      {/* Visible textarea for custom input only */}
+      <textarea
+        rows="4"
+        placeholder="Enter additional description..."
         className="w-full p-2 border border-gray-300 bg-white focus:border-black focus:outline-none rounded-md"
-      ></textarea>
-      {formik.touched.description && formik.errors.description && (
-        <p className="text-red-500">{formik.errors.description}</p>
+        value={formik.values.customDescription || ''}
+        onChange={(e) => {
+          formik.setFieldValue('customDescription', e.target.value);
+          // Combine with selected traits
+          formik.setFieldValue(
+            'about',
+            `${(formik.values.selectedTraits || []).join(' ')} ${e.target.value}`.trim()
+          );
+        }}
+      />
+      
+      {formik.touched.about && formik.errors.about && (
+        <p className="text-red-500">{formik.errors.about}</p>
       )}
     </div>
-
-    {/* Login & Submit Button */}
-    <div className="w-full flex flex-row justify-between">
-      <p className="text-center mt-4">
-        Already have an Account?{' '}
-        <span
-          onClick={() => navigate('/login')}
-          className="text-green hover:text-green hover:underline font-medium cursor-pointer"
-        >
-          Login
-        </span>
-      </p>
-      <Button className="w-fit hover:shadow-none font-normal px-12 bg-green rounded-full" type="submit">
-        Submit & Next
-      </Button>
-    </div>
+   {/* Login & Submit Button - Responsive Version */}
+<div className="w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4 mt-4">
+  <p className="text-center sm:text-left text-sm sm:text-base">
+    Already have an Account?{' '}
+    <span
+      onClick={() => navigate('/login')}
+      className="text-green hover:text-green hover:underline font-medium cursor-pointer"
+    >
+      Login
+    </span>
+  </p>
+  <Button 
+    className="w-full sm:w-fit hover:shadow-none font-normal px-6 sm:px-12 bg-green rounded-full py-3 sm:py-2"
+    type="submit"
+  >
+    Submit & Next
+  </Button>
+</div>
   </form>
 </div>
 
