@@ -184,20 +184,41 @@ export const physioConnectProfessionalApi = async ({
 	}
 };
 
-export const physioConnectWorkExperiencePageApi = async (
-	IAPInDigit,
-	IAP_number,
-	treatInsuredPatientInDigit,
-	experience,
+export const physioConnectBusinessApi = async (
+	
+            clinicName,
+            clinicAddress,
+            clinicPincode,
+            clinicCity,
+            clinicState,
+            clinicCharges,
+            clinicDuration,
+            homePincode,
+            homeCity,
+            homeState,
+           
+			homeDuration,
+        
+            homeCharges,
+            homeCharges10Km,
 	physioConnectPhysioId
 ) => {
 	try {
-		const response = await axios.post(`${BaseUrl}web/physio/workExperiences`, {
+		const response = await axios.post(`${BaseUrl}web/physio/createPhysioBusinessDetails`, {
 			physioId: physioConnectPhysioId,
-			workExperience: experience,
-			iapMember: IAPInDigit,
-			iapNumber: IAP_number,
-			treatInsuranceclaims: treatInsuredPatientInDigit,
+			clinicName:clinicName,
+            clinicAddress:clinicAddress,
+            clinicPincode:clinicPincode,
+            clinicCity:clinicCity,
+            clinicState:clinicState,
+            clinicCharges:clinicCharges,
+            clinicDuration:clinicDuration,
+            homePincode:homePincode,
+            homeCity:homeCity,
+            homeState:homeState,
+			homeDuration:homeDuration,
+            homeCharges:homeCharges,
+            homeCharges10Km:homeCharges10Km,
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response;
@@ -210,6 +231,32 @@ export const physioConnectWorkExperiencePageApi = async (
 		return error.response;
 	}
 };
+// export const physioConnectWorkExperiencePageApi = async (
+// 	IAPInDigit,
+// 	IAP_number,
+// 	treatInsuredPatientInDigit,
+// 	experience,
+// 	physioConnectPhysioId
+// ) => {
+// 	try {
+// 		const response = await axios.post(`${BaseUrl}web/physio/workExperiences`, {
+// 			physioId: physioConnectPhysioId,
+// 			workExperience: experience,
+// 			iapMember: IAPInDigit,
+// 			iapNumber: IAP_number,
+// 			treatInsuranceclaims: treatInsuredPatientInDigit,
+// 		});
+// 		if (response.status >= 200 && response.status < 300) {
+// 			return response;
+// 		} else if (response.status >= 400 && response.status < 500) {
+// 			return response;
+// 		} else {
+// 			return new Error("Something went wrong");
+// 		}
+// 	} catch (error) {
+// 		return error.response;
+// 	}
+// };
 
 export const physioConnectPriceAndExperienceApi = async () => {
 	try {

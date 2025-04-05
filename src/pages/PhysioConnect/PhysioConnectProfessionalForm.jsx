@@ -764,7 +764,7 @@ const PhysioConnectProfessionalForm = () => {
   <button
     type="button"
     onClick={() => navigate(-1)}
-    className="text-black hover:text-gray-800 font-medium flex items-center gap-1 text-sm sm:text-base"
+    className="text-black hover:text-green font-medium flex items-center gap-1 text-sm sm:text-base"
   >
     <GoDash className="w-4 h-4 sm:w-5 sm:h-5" />
     Go Back
