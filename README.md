@@ -6,25 +6,27 @@ bash
 Copy
 Edit
 .
-├── public/                 # Static assets served as-is (images, pdfs, svgs)
-├── src/                   # Source code
-│   ├── api/               # All API call functions (Axios config, auth, blog, etc.)
-│   ├── components/        # Reusable UI components (cards, modals, banners, etc.)
-│   ├── Mock/              # Local mock data used for prototyping
-│   ├── pages/             # All route-based pages
-│   │   ├── Auth/          # Login and Signup pages for Patient and Physio
-│   │   ├── Blog/          # Blog and BlogDetail pages
-│   │   ├── Booking/       # Booking flow and history pages
-│   │   └── PhysioConnect/ # Pages related to Physio registration and management
-│   ├── slices/            # Redux slices for state management
-│   ├── App.jsx            # App wrapper with routes
-│   ├── main.jsx           # Entry point
-│   ├── store.js           # Redux store setup
-│   └── validation.js      # Form validation logic
-├── .env                   # Environment variables
-├── tailwind.config.js     # TailwindCSS configuration
-├── vite.config.js         # Vite project configuration
-└── README.md              # This file
+.
+ public/                   # Static assets (images, PDFs, icons)
+src/                      # Application source code
+ api/                  # API calls and Axios configurations
+components/           # Reusable UI components (modals, cards, etc.)
+ Mock/                 # Mock data for development/testing
+pages/                # Route-based pages
+ Auth/             # Login and Signup (Patient & Physio)
+ Blog/             # Blog listing and detail views
+ Booking/          # Booking workflow and order history
+ PhysioConnect/    # Multi-step Physio registration and profile setup
+ slices/               # Redux slices for state management
+App.jsx               # Root app component with routes
+main.jsx              # Application entry point
+store.js              # Redux store setup
+validation.js         # Custom form validation logic
+.env                      # Environment variable config
+ tailwind.config.js        # TailwindCSS customization
+ vite.config.js            # Vite bundler config
+└── README.md                 # Project documentation (this file)
+
 🧰 Tech Stack
 React.js (Vite)
 
