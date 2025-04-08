@@ -10,7 +10,7 @@ import { setLogOut } from "../slices/authSlice";
 
 const Profile = () => {
 	const [editMode, setEditMode] = useState(false);
-	const [physioData, setPhysioData] = useState([]);
+	const [patientData, setPatientData] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
@@ -32,7 +32,7 @@ const Profile = () => {
 			.then((res) => {
 				setLoading(true);
 				if (res.status >= 200 && res.status < 300) {
-					setPhysioData(res.data.data);
+					setPatientData(res.data.data);
 				} else {
 					toast.error(res);
 				}
@@ -98,8 +98,8 @@ const Profile = () => {
 									</button>
 								</div>
 								<div>
-									<h2 className="text-xl font-semibold">{physioData?.fullName}</h2>
-									<p className="text-gray-500">{physioData?.phone}</p>
+									<h2 className="text-xl font-semibold">{patientData?.fullName}</h2>
+									<p className="text-gray-500">{patientData?.phone}</p>
 								</div>
 							</div>
 							{/* <button
@@ -114,37 +114,37 @@ const Profile = () => {
 						<div className="space-y-6">
 							<div className="flex justify-between items-center">
 								<label className="text-gray-600">Name</label>
-								<p className={`${editMode && "hidden"}`}>{physioData?.fullName}</p>
+								<p className={`${editMode && "hidden"}`}>{patientData?.fullName}</p>
 								<input
 									type="text"
-									value={physioData?.fullName}
+									value={patientData?.fullName}
 									className={"w-2/3 p-2 border rounded-lg bg-gray-50" + (!editMode && " hidden")}
 								/>
 							</div>
 
 							<div className="flex justify-between items-center">
 								<label className="text-gray-600">Mobile Number</label>
-								<p className={`${editMode && "hidden"}`}>{physioData?.phone}</p>
+								<p className={`${editMode && "hidden"}`}>{patientData?.phone}</p>
 								<input
 									type="tel"
-									value={physioData?.phone}
+									value={patientData?.phone}
 									className={"w-2/3 p-2 border rounded-lg bg-gray-50" + (!editMode && " hidden")}
 								/>
 							</div>
 
 							<div className="flex justify-between items-center">
 								<label className="text-gray-600">Year of Birth</label>
-								<p className={`${editMode && "hidden"}`}>{physioData?.dob}</p>
+								<p className={`${editMode && "hidden"}`}>{patientData?.dob}</p>
 								<input
 									type="text"
-									value={physioData?.dob}
+									value={patientData?.dob}
 									className={"w-2/3 p-2 border rounded-lg bg-gray-50" + (!editMode && " hidden")}
 								/>
 							</div>
 
 							<div className="flex justify-between items-center">
 								<label className="text-gray-600">Gender</label>
-								<p className={`${editMode && "hidden"}`}>{physioData?.gender == 1 ? "Male" : "Female"}</p>
+								<p className={`${editMode && "hidden"}`}>{patientData?.gender == 1 ? "Male" : "Female"}</p>
 								<input
 									type="text"
 									value="Male"

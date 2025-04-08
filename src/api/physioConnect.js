@@ -367,7 +367,7 @@ export const physioConnectRazorPayOrderApi = async (
 export const paymentVerify = async ({ data, mobileNumber }) => {
 	return new Promise((resolve, reject) => {
 		const options = {
-			key: import.meta.env.RAZORPAY_KEY,
+			key: import.meta.env.VITE_RAZORPAY_KEY,
 			amount: data.amount,
 			currency: data.currency,
 			name: "Physioplus Healthcare",
@@ -448,6 +448,20 @@ export const physioConnectFreePayment = async (physioConnectPhysioId, selectedEx
 export const getPhysioDataPhysioConnectApi = async (physioConnectPhysioId) => {
 	try {
 		const response = await axios.get(`${BaseUrl}web/physio/physioConnectById?Id=${physioConnectPhysioId}`);
+		if (response.status >= 200 && response.status < 300) {
+			return response.data;
+		} else if (response.status >= 400 && response.status < 500) {
+			return response;
+		} else {
+			return new Error("Something went wrong");
+		}
+	} catch (error) {
+		return error.response;
+	}
+};
+export const  getPhysioDataById   = async (physioConnectPhysioId) => {
+	try {
+		const response = await axios.get(`${BaseUrl}web/physio/getPhysioPersonalDetailsById?Id=${physioConnectPhysioId}`);
 		if (response.status >= 200 && response.status < 300) {
 			return response.data;
 		} else if (response.status >= 400 && response.status < 500) {

@@ -15,6 +15,7 @@ import NoInternet from "./components/NoInternet";
 
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
+const Loginphysio = lazy(() => import("./pages/Auth/Loginphysio"));
 const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 
 // pages
@@ -22,6 +23,7 @@ const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Profile = lazy(() => import("./pages/Profile"));
+const Profilephysio = lazy(() => import("./pages/Profilephysio"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Refund = lazy(() => import("./pages/Refund"));
@@ -33,6 +35,9 @@ const PhysioDetail = lazy(() => import("./pages/Booking/PhysioDetail"));
 const ListAllPhysios = lazy(() => import("./pages/Booking/ListAllPhysios"));
 const OrderDetail = lazy(() => import("./pages/Booking/OrderDetail"));
 const OrderHistory = lazy(() => import("./pages/Booking/OrderHistory"));
+const OrderHistoryPhysio = lazy(() => import("./pages/OrderHistoryPhysio"));
+const Professionalprofile = lazy(() => import("./pages/Professionalprofile"));
+const Editpersonalprofile = lazy(() => import("./pages/PhysioConnect/Editpersonalprofile"));
 
 // blogs
 const Blog = lazy(() => import("./pages/Blog/Blog"));
@@ -88,6 +93,14 @@ const router = createBrowserRouter([
 				element: (
 					<Suspense fallback={<Loading />}>
 						<Login />
+					</Suspense>
+				),
+			},
+			{
+				path: "/login-physio",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Loginphysio />
 					</Suspense>
 				),
 			},
@@ -148,6 +161,30 @@ const router = createBrowserRouter([
 				),
 			},
 			{
+				path: "/order-history-physio",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<OrderHistoryPhysio />
+					</Suspense>
+				),
+			},
+			{
+				path: "/professional",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Professionalprofile />
+					</Suspense>
+				),
+			},
+			{
+				path: "/edit-personal",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Editpersonalprofile />
+					</Suspense>
+				),
+			},
+			{
 				path: "/order-history/:orderId",
 				element: (
 					<Suspense fallback={<Loading />}>
@@ -160,6 +197,14 @@ const router = createBrowserRouter([
 				element: (
 					<Suspense fallback={<Loading />}>
 						<Profile />
+					</Suspense>
+				),
+			},
+			{
+				path: "/profile-physio",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Profilephysio />
 					</Suspense>
 				),
 			},
