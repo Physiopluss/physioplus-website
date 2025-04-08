@@ -1,67 +1,97 @@
-## Website Overview
+🧠 PhysioPlus Healthcare - React Web App
+This is a responsive React-based web application for PhysioPlus Healthcare, built with Vite, TailwindCSS, and Redux. The project supports both patients and physiotherapists with role-based login, booking, professional profile setup, and more.
 
-It's a PhysioPlus Website which mainly does 2 things
+🗂️ Project Structure Overview
+bash
+Copy
+Edit
+.
+.
+ public/                   # Static assets (images, PDFs, icons)
+src/                      # Application source code
+ api/                  # API calls and Axios configurations
+components/           # Reusable UI components (modals, cards, etc.)
+ Mock/                 # Mock data for development/testing
+pages/                # Route-based pages
+ Auth/             # Login and Signup (Patient & Physio)
+ Blog/             # Blog listing and detail views
+ Booking/          # Booking workflow and order history
+ PhysioConnect/    # Multi-step Physio registration and profile setup
+ slices/               # Redux slices for state management
+App.jsx               # Root app component with routes
+main.jsx              # Application entry point
+store.js              # Redux store setup
+validation.js         # Custom form validation logic
+.env                      # Environment variable config
+ tailwind.config.js        # TailwindCSS customization
+ vite.config.js            # Vite bundler config
+└── README.md                 # Project documentation (this file)
 
-1. Onboard physio
-2. Patient can book physio.
+🧰 Tech Stack
+React.js (Vite)
 
-### On Board Physio Process
+TailwindCSS (Material Tailwind UI)
 
-1. Physio goes to Physio Conect Page, sees benefit to join with us.
-2. Login using Name and Mobile Number wit Otp validation using msg91.
-3. After Validating, Personal Detail Page open where he/she can fill their data, clinc and home data.
-4. After submitting this, Business Detail Page open where he/she can upload images of their clinic, degree & achievemnet etc.
-5. After submitting this, Work experience Page open where they can fill their expeirence, iap details
-6. After submitting this, Payment page opens if they have coupon the can fill and get discount if not they can pay using razorpay.
-
-### Booking Process
-
-1. Patient can sign up with their details like name, mobile number, dob and validate with OTP using msg91. If they already registered they can login using Mobile number and OTP.
-2. In Book Physio Page, Patient can see physios listing, their they can search according to name, city & filter physio according to service type, specialisation, subspecialisation, gender, rating, etc.
-3. View Physio Name, Image, Charges, ratings upfront.
-4. On click on View Details/Book to view its physio description, if they doesn't logged in they can navigate to login page and if logged in they can navigate to physio description page.
-5. In Physio Description Page, Patient can see physio data, images of clinic, achievement etc.
-6. If Patient satisfies with physio, can book to this page, on right side home and
-7. Then view particular physio profile, see their rating, clinic images(if any), their description and their certificates.
-8. If they satisfy with this particular physio they can book home or clinic visit of given date and avialable slot of that day after that they can navigate to payment and patient detail page.
-9. In payment page, patient prefill data comes if patient want to change they can change particular details and verify booking date and slot and then choose payment method pay at clinic or online(razorpay)
-
-## Technical Details
-
-### Run Code
-
-Start App In Development - npm run dev
-And in Production - npm run build
-
-## Github Repo - https://github.com/Physiopluss/Physioplus_Frontend
-
-## Tech Stack -
-
-React + JS + Vite
-Material Tailwind + Tailwind CSS
-React Router DOM
 Redux Toolkit
-React Query + Axios
-Formik (for form handling)
-Yup (for form validation)
 
-## Folder Structure -
+React Router DOM
 
-### Src -> API
+Axios (API calls)
+ReactQuery
 
-In this, Apis are initialized using Axios, all api are divided into where they are implemeted
+Form validation logic (custom)
 
-### Src -> Pages Folder
+🚀 Getting Started
+1. Clone the repo
+bash
+Copy
+Edit
+git clone 
+cd your-repo-name
+2. Install dependencies
+bash
+Copy
+Edit
+npm install
+3. Setup .env
+Duplicate .env.example and rename to .env, then configure your environment variables (API URLs, etc.)
 
-1. Pages folder in src are direct function that are render on routes via react router dom
-2. These are also divided in to Flows according to Auth, Blog, Booking, PhysioConnect, etc
-3. For Example, in auth it contains Login, Sign Up and Reset Password pages
+4. Start development server
+bash
+Copy
+Edit
+npm run dev
+✨ Features
+🔐 Role-based login (Patient vs Physio)
 
-### Src -> Components
+📅 Physio booking with slot selection
 
-1. In this folder, All the components which are used in any of the pages are stored and they also classified in folder
+🧾 Professional profile builder for Physios
 
-### Src -> slices
+📃 Blog and contact pages
 
-0. Store on state mangement are places in src folder.
-1. Slices contain state management logics according to the flow.
+🎨 Reusable and clean UI components
+
+🔄 Redux-managed modals and state
+
+📦 Organized folder structure for scaling
+
+📁 Pages Overview
+Folder	Purpose
+Auth	Login, Signup for different roles
+Blog	Blog listings and details
+Booking	Find physios, book appointments, view history
+PhysioConnect	Multi-step signup and profile editing for physios
+components	All UI elements (cards, forms, navbars, etc.)
+api	API integrations split by feature
+slices	Redux slices for modular state
+🧪 Testing & Debugging
+Add breakpoints using browser dev tools
+
+Redux DevTools is supported
+
+All API endpoints use a centralized Axios config (axiosConfig.js)
+
+🧑‍💻 Contributing
+Pull requests are welcome! Please ensure code is formatted and tested.
+
