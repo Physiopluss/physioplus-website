@@ -17,7 +17,7 @@ import Modal from "../../components/Modal";
 import axios from "axios";
 const Booking = () => {
 	const [paymentType, setPaymentType] = useState("online");
-	const [couponName, setCouponName] = useState("");
+	const [couponName, setCouponName] = useState("FIRST50");
 	const [couponResponse, setCouponResponse] = useState();
 	const [amountToPay, setAmountToPay] = useState();
 	const [loading, setLoading] = useState(false);
@@ -147,15 +147,18 @@ const Booking = () => {
 								painNotes: values.painNotes,
 								couponId:
 									couponResponse?.status >= 200 && couponResponse?.status < 300 ? couponResponse.data._id : undefined,
-						  })
-								.then(() => {
+                              })
+								.then((data) => {
+								console.log(data);
+								
 									toast.success("Appointment has been created");
 									dispatch(emptyBooking());
 									setTimeout(() => {
 										navigate("/order-success");
 									}, 1000);
 								})
-								.catch(() => {
+								.catch((error) => {
+									console.log(error);
 									toast.error("Something went wrong");
 								})
 						: cashAppointment({
@@ -173,8 +176,7 @@ const Booking = () => {
 								timeInString,
 								painNotes: values.painNotes,
 								couponId:
-									couponResponse?.status >= 200 && couponResponse?.status < 300 ? couponResponse.data._id : null,
-						  })
+									couponResponse?.status >= 200 && couponResponse?.status < 300 ? couponResponse.data._id : null,})
 								.then(() => {
 									toast.success("Appointment has been created");
 									dispatch(emptyBooking());
@@ -189,9 +191,8 @@ const Booking = () => {
 					return new Error(err);
 				}
 		},
-	});
-	   // Function to fetch state and city from pincode
-	   useEffect(() => {
+	});  // Function to fetch state and city from pincode
+useEffect(() => {
         const fetchLocation = async () => {
             if (formik.values.pincode.length === 6) {
                 setLoading(true);
@@ -415,7 +416,7 @@ const Booking = () => {
 					<p className="text-lg font-bold">Payment Options</p>
 					<div className="flex flex-col gap-2 p-2 shadow-sm rounded-md">
 						<span className="flex flex-col gap-0 text-sm sm:text-base">
-							{serviceTypeString == "home" ? null : (
+							{/* {serviceTypeString == "home" ? null : (
 								<Radio
 									name="paymentType"
 									label={"Pay at Clinic"}
@@ -425,7 +426,7 @@ const Booking = () => {
 										setPaymentType(e.target.value.toLowerCase());
 									}}
 								/>
-							)}
+							)} */}
 							<Radio
 								name="paymentType"
 								label={"Online"}
@@ -501,8 +502,9 @@ const Booking = () => {
 								size="lg"
 								className="!absolute right-0 py-2.5 rounded-none rounded-r bg-[#E6F4EC] text-black shadow-none hover:shadow-none"
 								onClick={() => {
-									if (couponName) {
-										couponApi(couponName, patientId, userToken)
+								const finalCoupon = couponName.trim() === "" ? setCouponName : couponName;
+									if (finalCoupon) {
+										couponApi(finalCoupon, patientId, userToken)
 											.then((res) => {
 												if (res.status >= 200 && res.status < 300) {
 													setCouponResponse(res.data);
@@ -511,6 +513,7 @@ const Booking = () => {
 												}
 											})
 											.catch((err) => {
+												setCouponName("")
 												toast.error(err.message);
 											});
 									} else {
