@@ -324,7 +324,7 @@ const PhysioConnectPayment = () => {
 					});
 			}}
 		>
-			Pay Now
+			Pay Now 
 		</Button>
 	</div>
 </div>
@@ -519,7 +519,7 @@ const PhysioConnectPayment = () => {
           });
       }}
     >
-      Pay Now
+      Pay Now this
     </Button>
   </div>
 </div>
