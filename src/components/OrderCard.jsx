@@ -34,14 +34,13 @@ const OrderCard = ({ orderData }) => {
 					<div>
 						<div className="font-semibold mb-1">Appointment id </div>
 						<div className="font-medium"># {orderData?._id?.slice(-8)}</div>
-						{/* <Link
-							href="#"
-							className="text-emerald-600 font-medium hover:text-emerald-700"
-						>
-							View Invoice
-						</Link> */}
 					</div>
 				</div>
+				{orderData?.otp && (
+					<div className="mt-2">
+						<div className="font-semibold mb-1 text-[#4a4e69]">OTP: <span className="font-bold text-green">{orderData.otp}</span></div>
+					</div>
+				)}
 			</div>
 
 			<div className="flex flex-col md:flex-row items-center justify-between bg-white p-4">
@@ -103,7 +102,7 @@ const OrderCard = ({ orderData }) => {
 								personalized updates, and so much more. Your next discovery is just a tap away
 							</p>
 							<p className="text-sm md:text-base font-medium">
-								Quick and easy—just scan the QR code to download our app and dive into exclusive details. Don’t miss out
+								Quick and easy—just scan the QR code to download our app and dive into exclusive details. Don't miss out
 								on personalized insights and a seamless experience
 							</p>
 						</div>
