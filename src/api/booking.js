@@ -197,7 +197,7 @@ export const appointmentDataToRazorpay = async ({
 				gender,
 				phone,
 				amount,
-				serviceType: serviceTypeString == "home" ? "0" : "1",
+				serviceType: serviceTypeString == "home" ? 0 : 1,
 				timeInString,
 				painNotes,
 				couponId,
