@@ -205,59 +205,6 @@ const ListAllPhysios = () => {
 									</Button>
 								</div>
 							</form>
-
-							{/* popular searches */}
-							{/* <div className=" justify-center items-center text-base gap-4 hidden md:flex">
-								<h6 className="text-nowrap">Popular Search :</h6>
-								<Swiper
-									spaceBetween={8}
-									slidesPerView="auto"
-									modules={[FreeMode, Navigation, Thumbs]}
-									className="!mx-0 px-2 sm:px-0"
-									freeMode={true}
-									loop={true}
-									breakpoints={{
-										0: {
-											slidesPerView: 1,
-											spaceBetween: 6,
-										},
-										550: {
-											slidesPerView: 2,
-											spaceBetween: 8,
-										},
-										640: {
-											slidesPerView: 2,
-											spaceBetween: 10,
-										},
-										768: {
-											slidesPerView: 3,
-											spaceBetween: 12,
-										},
-										1024: {
-											slidesPerView: 5,
-											spaceBetween: 15,
-										},
-									}}
-								>
-									{["Sciatica", "Cupping", "Tapping", "Occupational Therapy"].map((city) => (
-										<SwiperSlide
-											key={city}
-											className="!w-auto"
-										>
-											<div
-												className="font-medium text-xs sm:text-sm 
-                border border-gray-700 text-black bg-[#FFFFFF] 
-                px-3 sm:px-4 py-1.5 sm:py-2 
-                rounded-full text-center 
-                hover:bg-gray-200 cursor-pointer 
-                whitespace-nowrap"
-											>
-												{city}
-											</div>
-										</SwiperSlide>
-									))}
-								</Swiper>
-							</div> */}
 						</div>
 					</div>
 					<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-w-[85%]">
@@ -270,35 +217,6 @@ const ListAllPhysios = () => {
 							</div>
 							{/* sort */}
 							<div className="flex justify-center items-center flex-col md:justify-end md:flex-row gap-2 md:w-1/3">
-								{/* <Menu placement="bottom-start">
-									<MenuHandler className="bg-lightGreen text-sm flex gap-1 items-center justify-around min-w-20 px-4 py-2 rounded-full font-semibold">
-										<button className="group flex items-center gap-1 justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-											<FaChevronDown
-												aria-hidden="true"
-												className="h-3 w-3 flex-shrink-0 text-black group-hover:text-gray-500"
-											/>
-											<p>Sort</p>
-										</button>
-									</MenuHandler>
-									<MenuList className="z-10 w-40 rounded-md bg-white shadow-2xl !p-1"> */}
-								{/* {sortOptions.map((option) => (
-											<MenuItem
-												key={option.name}
-												className="!p-0 !py-1"
-											>
-												<a
-													href={option.href}
-													className={`block px-2 py-1 text-sm text-black ${
-														option.current ? "font-medium bg-lightGreen" : ""
-													} hover:bg-lightGreen`}
-												>
-													{option.name}
-												</a>
-											</MenuItem>
-										))} */}
-								{/* </MenuList>
-								</Menu> */}
-
 								<button
 									type="button"
 									onClick={() => setMobileFiltersOpen(true)}
