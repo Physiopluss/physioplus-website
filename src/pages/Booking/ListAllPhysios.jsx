@@ -18,6 +18,8 @@ import "swiper/css/thumbs";
 import FilterComponent from "../../components/FilterComponent";
 import { useLocation } from "react-router-dom";
 
+
+const cities = ["Jaipur", "Delhi", "Pune", "Bangalore", "Mumbai", "Chandigarh", "Surat"];
 const sortOptions = [
 	{ name: "Most Popular", href: "#", current: true },
 	{ name: "Best Rating", href: "#", current: false },
@@ -40,6 +42,8 @@ const ListAllPhysios = () => {
 	//filter states
 	const [query, setQuery] = useState(""); //physio name & physio center name
 	const [location, setLocation] = useState(""); //location
+
+	
 	const [gender, setGender] = useState(); //gender
 	const [experience, setExperience] = useState([]); //experience
 	const [rating, setRating] = useState([]); //rating
@@ -59,6 +63,7 @@ const ListAllPhysios = () => {
 			if (state.location) {
 				setLocation(state.location);
 			}
+		
 			if (state.specialization) {
 				setSpecializationFilter(state.specialization);
 			}
@@ -138,6 +143,7 @@ const ListAllPhysios = () => {
 		setQuery("");
 		setLocation("");
 		setGender("");
+		
 		setExperience([]);
 		setRating([]);
 		setLanguage([]);
@@ -347,6 +353,8 @@ const ListAllPhysios = () => {
 												language={language}
 												setLanguage={setLanguage}
 												mode={mode}
+												allCities={cities}
+												setCityFilter={setLocation}
 												allSpecialization={allSpecialization}
 												specializationFilter={specializationFilter}
 												setSpecializationFilter={setSpecializationFilter}
@@ -385,6 +393,8 @@ const ListAllPhysios = () => {
 										language={language}
 										setLanguage={setLanguage}
 										mode={mode}
+										allCities={cities}
+										setCityFilter={setLocation}
 										allSpecialization={allSpecialization}
 										setSpecializationFilter={setSpecializationFilter}
 										setSubSpecializationFilter={setSubSpecializationFilter}
