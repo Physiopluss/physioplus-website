@@ -216,11 +216,13 @@ const ListAllPhysios = () => {
 					<main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 min-w-[85%]">
 						<div className="flex items-center justify-between pt-12 ">
 							<div className="flex flex-col md:flex-row flex-1 justify-between gap-2 ">
-								<p className="text-lg font-semibold tracking-tight text-black">{error ? "No physio found" : data && data.data && "Best " + data?.physioCount + " Physios in " } {location==""?"india":location}</p>
+								<p className="text-lg font-semibold tracking-tight text-black">{error ? "No physio found in " : data && data.data && "Best " + data?.physioCount + " Physios in " } {location==""?"india":location}</p>
 								<p className="text-base font-semibold tracking-tight text-black">
 									
 								</p>
 							</div>
+
+							
 							{/* sort */}
 							<div className="flex justify-center items-center flex-col md:justify-end md:flex-row gap-2 md:w-1/3">
 								<button
