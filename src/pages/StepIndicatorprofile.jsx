@@ -2,13 +2,13 @@ import React from "react";
 import { GoDash } from "react-icons/go";
 
 const steps = [{ label: "Personal Details",
-	description:"Let's Get to Know You",
- }, { label: "Professional Details" ,	description:"Showcase Your Expertise",}, { label: "Business Details",	description:"Build Your Vision", }, { label: "Payment Page",	description:"Review & Pay", }];
+    description:"Let's Get to Know You",
+ }, { label: "Professional Details" ,	description:"Showcase Your Expertise",}, { label: "Business Details",	description:"Build Your Vision", }, { label: "Review Profile",	description:"Details are up to date", }];
 
-const StepIndicator = ({ currentStep }) => {
-	return (
+const StepIndicatorprofile = ({ currentStep }) => {
+    return (
     <div> 
-		{/* Keep your original desktop version but hide on mobile */}
+        {/* Keep your original desktop version but hide on mobile */}
 <div className="rounded-lg p-3 shadow-md w-72 h-[85%] max-h-[400px]  flex-col border-1 mb-5 bg-white hidden md:block">
   <ol className="relative space-y-9 mt-4 p-2 mb-6">
     {steps.map((step, index) => (
@@ -68,8 +68,8 @@ const StepIndicator = ({ currentStep }) => {
 
 </div>
 
-	  
-	);
+      
+    );
   };
   
 
@@ -82,4 +82,4 @@ const StepIndicator = ({ currentStep }) => {
 //   );
 // };
 
-export default StepIndicator;
+export default StepIndicatorprofile;

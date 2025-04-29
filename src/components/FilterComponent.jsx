@@ -1,5 +1,5 @@
 import { Button } from "@material-tailwind/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaChevronDown, FaStar } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 
@@ -17,9 +17,27 @@ const FilterComponent = ({
 	setSubSpecializationFilter,
 	setMode,
 	handleClearFilter,
+	allCities,
+	setCityFilter,
+	
 }) => {
 	const [openIndex, setOpenIndex] = useState(null);
+	const [selectedCities, setSelectedCities] = useState([]);
+ // Update selected cities when checkbox is clicked
+ const handleCityChange = (city, checked) => {
+    if (checked) {
+      setSelectedCities((prev) => [...prev, city]);
+    } else {
+      setSelectedCities((prev) => prev.filter((item) => item !== city));
+    }
+  }
+  
 
+    // Trigger city filter update when selectedCities changes
+	useEffect(() => {
+		setCityFilter(selectedCities);
+	  }, [selectedCities, setCityFilter]);
+	
 	return (
 		<>
 			<div className="flex pb-4 justify-stretch gap-2">
@@ -82,6 +100,41 @@ const FilterComponent = ({
 					</div>
 				</div>
 			</div>
+
+			{/*New city filter */}
+			<div className="py-3">
+        <div className="flow-root">
+          <button
+            className="group flex w-full items-center justify-between bg-white py-2 text-sm text-gray-400 hover:text-gray-500"
+            onClick={() => {
+              const newIndex = openIndex === null ? 0 : null; // Toggle open state for city filter
+              setOpenIndex(newIndex);
+            }}
+          >
+            <span className="font-medium text-base text-gray-900">City</span>
+           <FaChevronDown className={`h-3 w-3 text-gray-900 transition-transform ${openIndex === 0 ? "rotate-180" : ""}`} />
+          </button>
+        </div>
+        {openIndex === 0 && (
+          <div className="pb-3">
+            {allCities?.map((city, subIndex) => (
+              <div key={subIndex} className="flex items-center space-x-2 py-1">
+                <input
+                  type="checkbox"
+                  id={`city-${subIndex}`}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  onChange={(e) => handleCityChange(city, e.target.checked)}
+                />
+                <label htmlFor={`city-${subIndex}`} className="text-sm font-normal">
+                  {city}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+
 
 			{/*New Specialization Selection */}
 			<div className="py-3">

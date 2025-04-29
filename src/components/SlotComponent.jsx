@@ -209,44 +209,36 @@ export default function SlotComponent({ physioData }) {
 								<h2 className="text-lg font-semibold">Home Visit</h2>
 								<div className="flex items-center gap-2">
 									{/* <span className="text-xl text-green">₹99</span> */}
-									<span className="text-base text-[#039342]">₹ {physioData?.[activeTab]?.charges}</span>
+									<span className="text-base font-semibold text-green">₹ {physioData?.[activeTab]?.charges}</span>
 								</div>
 							</div>
 							<div className="flex gap-2">
-								<Swiper
-									spaceBetween={10}
-									slidesPerView="auto"
-									modules={[Navigation, FreeMode, Thumbs]}
-									freeMode={true}
-								>
-									{WorkingDaySlot.length == 0 ? (
-										<div className="text-sm font-semibold text-red-500 text-center">No Slot Available</div>
-									) : (
-										WorkingDaySlot.map((slot, index) => (
-											<SwiperSlide
-												key={index}
-												style={{ width: "auto" }}
-											>
-												<div
-																className={`text-xs font-semibold border text-nowrap border-[#EAEBEC] py-2 px-4 cursor-pointer rounded-xl bg-[#F8FAFC] text-green ${
-																	selectedDate === slot ? "bg-green text-white" : "bg-[#F8FAFC] text-black"
-																}`}
-													onClick={(e) => {
-														e.preventDefault();
-														handleDateSlotSelection(slot);
-													}}
-													value={slot}
-												>
-													<span className="text-sm flex flex-row">{moment(slot).format("ddd")}</span> {/* Day (Mon, Tue, etc.) */}
-													<span className="text-lg font-medium">{moment(slot).format("D")}</span> {/* Date (10, 11, etc.) */}
-												</div>
-											</SwiperSlide>
-										))
-									)}
-								</Swiper>
+			<Swiper spaceBetween={10} slidesPerView="auto" modules={[Navigation, FreeMode, Thumbs]} freeMode={true}>
+				{WorkingDaySlot.length === 0 ? (
+					<div className="text-sm font-semibold text-red-500 text-center">No Slot Available</div>
+				) : (
+					WorkingDaySlot.map((slot, index) => (
+						<SwiperSlide key={index} style={{ width: "auto" }}>
+							<div
+								className={`flex flex-col items-center justify-center text-xs font-semibold border border-[#EAEBEC] py-2 px-4 cursor-pointer rounded-xl bg-[#F8FAFC] ${
+									selectedDate === slot ? "bg-green text-white" : "text-black"
+								}`}
+								onClick={(e) => {
+									e.preventDefault();
+									handleDateSlotSelection(slot);
+								}}
+								value={slot}
+							>
+								<span className="text-sm">{moment(slot).format("ddd")}</span> {/* Day (Mon, Tue, etc.) */}
+								<span className="text-lg font-medium">{moment(slot).format("D")}</span> {/* Date (10, 11, etc.) */}
 							</div>
+						</SwiperSlide>
+					))
+				)}
+			</Swiper>
+		</div>
 							<div className="flex flex-col gap-2">
-								<h3 className="text-base font-medium">Choose Time </h3>
+								<h3 className="text-base font-medium">Time Slot</h3>
 								<div className="w-full">
 									<Swiper
 										spaceBetween={10}
@@ -293,42 +285,34 @@ export default function SlotComponent({ physioData }) {
 								<h2 className="text-lg font-semibold">Clinic Visit</h2>
 								<div className="flex items-center gap-2">
 									{/* <span className="text-xl text-green">₹99</span> */}
-									<span className="text-base text-black">₹ {physioData?.[activeTab]?.charges}</span>
+									<span className="text-base font-semibold text-green">₹ {physioData?.[activeTab]?.charges}</span>
 								</div>
 							</div>
 							<div className="flex gap-2">
-								<Swiper
-									spaceBetween={10}
-									slidesPerView="auto"
-									modules={[Navigation, FreeMode, Thumbs]}
-									freeMode={true}
-								>
-									{WorkingDaySlot.length == 0 ? (
-										<div className="text-sm font-semibold text-red-500 text-center">No Slot Available</div>
-									) : (
-										WorkingDaySlot.map((slot, index) => (
-											<SwiperSlide
-												key={index}
-												style={{ width: "auto" }}
-											>
-												<div
-													className={`text-xs font-semibold border text-nowrap border-[#EAEBEC] py-2 px-4 cursor-pointer rounded-xl bg-[#F8FAFC] text-green ${
-														selectedDate === slot ? "bg-green text-white" : "bg-[#F8FAFC] text-black"
-													}`}
-													onClick={(e) => {
-														e.preventDefault();
-														handleDateSlotSelection(slot);
-													}}
-													value={slot}
-												>
-													<span className="text-sm flex flex-col">{moment(slot).format("ddd")}</span> {/* Day (Mon, Tue, etc.) */}
-													<span className="text-lg font-medium">{moment(slot).format("D")}</span> {/* Date (10, 11, etc.) */}
-												</div>
-											</SwiperSlide>
-										))
-									)}
-								</Swiper>
+			<Swiper spaceBetween={10} slidesPerView="auto" modules={[Navigation, FreeMode, Thumbs]} freeMode={true}>
+				{WorkingDaySlot.length === 0 ? (
+					<div className="text-sm font-semibold text-red-500 text-center">No Slot Available</div>
+				) : (
+					WorkingDaySlot.map((slot, index) => (
+						<SwiperSlide key={index} style={{ width: "auto" }}>
+							<div
+								className={`flex flex-col items-center justify-center text-xs font-semibold border border-[#EAEBEC] py-2 px-4 cursor-pointer rounded-xl bg-[#F8FAFC] ${
+									selectedDate === slot ? "bg-green text-white" : "text-black"
+								}`}
+								onClick={(e) => {
+									e.preventDefault();
+									handleDateSlotSelection(slot);
+								}}
+								value={slot}
+							>
+								<span className="text-sm">{moment(slot).format("ddd")}</span> {/* Day (Mon, Tue, etc.) */}
+								<span className="text-lg font-medium">{moment(slot).format("D")}</span> {/* Date (10, 11, etc.) */}
 							</div>
+						</SwiperSlide>
+					))
+				)}
+			</Swiper>
+		</div>
 							<div className="flex flex-col gap-2">
 								<h3 className="text-base font-medium">Time Slot</h3>
 								<div className="w-full">

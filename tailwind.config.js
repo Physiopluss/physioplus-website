@@ -17,10 +17,13 @@ export default withMT({
 				sans: ["Urbanist", "Open Sans", "sans-serif"],
 				Oregano: ['"Oregano"', ...defaultTheme.fontFamily.sans],
 			},
+
+			
 			animation: {
-				scroll: "scroll 40s linear infinite",
-				marquee: "marquee 25s linear infinite",
-				marquee2: "marquee2 25s linear infinite",
+				scroll: "scroll 40s linear infinite",  // Default scroll speed for other elements
+				marquee: "marquee 25s linear infinite", // Default marquee speed
+				marquee2: "marquee2 25s linear infinite", // Another marquee animation if needed
+				citiesScroll: "citiesScrollFast 15s linear infinite", // Updated faster scroll speed for cities
 			},
 			keyframes: {
 				scroll: {
@@ -35,6 +38,11 @@ export default withMT({
 					"0%": { transform: "translateX(100%)" },
 					"100%": { transform: "translateX(0%)" },
 				},
+
+				citiesScrollFast: {
+					"0%": { transform: "translateX(100%)" },  // Start offscreen to the right
+					"100%": { transform: "translateX(-200%)" }, // Move quickly to the left
+				  },
 			},
 		},
 	},
