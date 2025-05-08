@@ -324,7 +324,7 @@ const Home = () => {
 					/>
 					<div className="flex flex-col md:flex-row-reverse justify-between items-center gap-8 xl:gap-14">
 						<div className="mt-10 md:mt-0 mx-auto flex items-center justify-center md:w-1/2 h-full">
-							<div className="grid grid-cols-2 sm:grid-cols-3 gap-4 place-items-center">
+							<div className="grid grid-cols-3  gap-4 place-items-center">
 								{["TataAIG.png", "HDFCEFRO.png", "Bajaj_Allianz.png", , "ditto.png", "IciciLambard.png"].map((img, idx) => (
 									<img
 										key={idx}
