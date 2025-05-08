@@ -12,13 +12,13 @@ const ErrorComp = () => {
 			<div className="flex-1 bg-white flex items-center justify-center p-4">
 				<div className="max-w-7xl w-full flex flex-col md:flex-row items-center justify-evenly gap-8">
 					<div className="flex-1 max-w-md">
-						<p className="mb-4">{error?.status} error</p>
+						<p className="text-6xl font-bold text-red-400 mb-2">Error {error?.status} </p>
 						<h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
 							{error?.status === 404 ? "Page Not Found" : "Internal Server Error"}
 						</h1>
 						<p className="text-gray-600 text-lg mb-8">
 							{error?.status === 404
-								? "Sorry, the page you are looking for doesn&apos;t exist. Here are some helpful links:"
+								? <p>Sorry, the page you’re looking for doesn’t exist.<br/>Here are some helpful links to get you back on track:</p>
 								: "Sorry, Server is under maintenance. Please try again later OR check your internet connection"}
 						</p>
 						<div className="flex gap-4 justify-center md:justify-start">
