@@ -47,6 +47,7 @@ export default withMT({
 		},
 	},
 	plugins: [
+		require('tailwind-scrollbar-hide'),
 		lineClamp,
 		function ({ addComponents }) {
 			addComponents({
