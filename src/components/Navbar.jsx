@@ -103,9 +103,9 @@ export default function Navbar() {
                 <div className="cursor-pointer text-sm">Hi, {patientName ?? "User"}</div>
               </MenuHandler>
               <MenuList className="p-1">
-                <Link 
-                  to={userType === "physio" ? "/profile-physio" : "/profile"} 
-                  variant="small" 
+                <Link
+                  to={userType === "physio" ? "/profile-physio" : "/profile"}
+                  variant="small"
                   className="font-normal"
                 >
                   <MenuItem>Hi, {patientName ?? "User"}</MenuItem>
@@ -171,9 +171,9 @@ export default function Navbar() {
           </IconButton>
           <Button
             onClick={() => navigate("/physios")}
-            className="hidden md:block text-nowrap text-sm lg:text-base font-semibold bg-green text-white w-fit rounded-full px-8 py-2.5"
+            className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
           >
-            Book an Appoinment
+            Book an appointment
           </Button>
         </div>
 
@@ -215,9 +215,8 @@ export default function Navbar() {
                         </Link>
                         <BiChevronDown
                           strokeWidth={2.5}
-                          className={`block h-3 w-3 transition-transform lg:hidden ${
-                            isMobileMenuOpen ? "rotate-180" : ""
-                          }`}
+                          className={`block h-3 w-3 transition-transform lg:hidden ${isMobileMenuOpen ? "rotate-180" : ""
+                            }`}
                         />
                       </ListItem>
                     </Typography>
@@ -265,8 +264,8 @@ export default function Navbar() {
                   <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">Support</MenuItem>
                 </Typography>
               </Link>
-              <Button className="text-nowrap text-sm lg:text-base font-semibold bg-green text-white w-full rounded-full px-8 py-2.5">
-                Book an Appoinment
+              <Button className="text-nowrap text-sm lg:text-base font-semibold w-full    text-black  bg-white border-2  border-green  rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200">
+                Book an appointment
               </Button>
               <div className="cursor-pointer mt-2 flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
                 <MdOutlinePhoneInTalk className="w-4 h-4 text-black" />
