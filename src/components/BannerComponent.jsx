@@ -73,7 +73,7 @@ const BannerComponent = () => {
               {cities.concat(cities).map((city, index) => (
                 <div
                   key={index}
-                  className="font-medium text-xs sm:text-sm border border-gray-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-center hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                  className="font-medium text-xs sm:text-sm border border-gray-200 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-center hover:bg-green hover:text-white cursor-pointer whitespace-nowrap"
                 >
                   {city}
                 </div>
