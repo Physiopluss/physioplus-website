@@ -1,7 +1,7 @@
 export const mobileData = [
 	{
 		title: `Comprehensive Care, <span style="color: #E6F4EC">Tailored to You</span>`,
-description:
+		description:
 			"Explore a wide range of physiotherapy services designed to support your journey to wellness. Whether you need rehabilitation, pain relief, or preventive care, our expert team offers personalized treatment plans to meet your specific needs",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/Home+Card+1.png",
 		card: [

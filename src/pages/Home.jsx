@@ -6,14 +6,13 @@ import SpecializationCard from "../components/SpecializationCard";
 import TextContainer from "../components/TextContainer";
 import { Reviews } from "../Mock/ReviewData";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { listAllBlog } from "../api/blog";
 import HomeTitleComponent from "../components/HomeTitleComponent";
-import HorizontalCard from "../components/HorizontalCard";
 import { Button } from "@material-tailwind/react";
-import { MdLocationPin, MdMail, MdPhoneInTalk } from "react-icons/md";
+
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Mousewheel } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -27,11 +26,21 @@ import { Helmet } from "react-helmet-async";
 import { FaApple, FaGooglePlay } from "react-icons/fa";
 import { mobileData, painCardData } from "../Mock/homeData";
 import SpecialityCard from "../components/SpecialityCard";
+import InfoSection from "../components/InfoSection";
+
+
+
+
+
+
+
 
 const Home = () => {
+
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-
+	const scrollRef = useRef(null);
+	const [hideOverlay, setHideOverlay] = useState(false);
 	const [blogData, setBlogData] = useState();
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState();
@@ -39,6 +48,20 @@ const Home = () => {
 
 	const bannerItems = ["Explore our blog", "Experience home care", "Experience clinic care"];
 
+	useEffect(() => {
+		const handleScroll = () => {
+			if (scrollRef.current.scrollTop > 10) {
+				setHideOverlay(true);
+			} else {
+				setHideOverlay(false);
+			}
+		};
+
+		const scrollEl = scrollRef.current;
+		scrollEl.addEventListener('scroll', handleScroll);
+
+		return () => scrollEl.removeEventListener('scroll', handleScroll);
+	}, []);
 	// google analytics
 	useEffect(() => {
 		ReactGA.send({
@@ -121,7 +144,7 @@ const Home = () => {
 				</div>
 
 				{/* service Type */}
-				<section className="bg-[#FFFCF0] pt-12 md:pt-[108px] pb-9 md:pb-24 px-4 sm:px-12 lg:px-[120px] ">
+				<section className="bg-[#FFFDF8] pt-12 md:pt-[108px] pb-9 md:pb-24 px-4 sm:px-12 lg:px-[120px] ">
 					<HomeTitleComponent
 						sectionText={"Our Offering"}
 						title={"Your Therapy, Your Way "}
@@ -132,7 +155,7 @@ const Home = () => {
 							"Choose clinic or home care—both options offer expert, personalized physiotherapy for your convenience and comfort"
 						}
 					/>
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 						<SpecializationCard
 							title={"Visit Clinic"}
 							img={"home/physio-center.png"}
@@ -180,6 +203,8 @@ const Home = () => {
 						</div>
 					</div>
 
+
+
 					{/* Mobile View Box (Visible only on small screens) */}
 					<div className="md:hidden max-w-sm mx-auto mt-8">
 						<div className="bg-emerald-600 rounded-2xl p-6 text-center text-white shadow-md border border-emerald-600">
@@ -205,77 +230,91 @@ const Home = () => {
 						</div>
 					</div>
 
-					{/* Swiper Section (Visible only on medium and larger screens) */}
-					<section className="hidden md:block py-12">
-						<Swiper
-							modules={[Navigation, Pagination]}
-							spaceBetween={10}
-							slidesPerView={1}
-							loop={true}
-							pagination={{ clickable: true }}
-							breakpoints={{
-								540: { slidesPerView: 1, spaceBetween: 10 },
-								720: { slidesPerView: 1, spaceBetween: 10 },
-								960: { slidesPerView: 1, spaceBetween: 10 },
-							}}
-							className="p-0 m-0 overflow-hidden h-full md:h-[520px] max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw]"
-						>
-							{mobileData.map((data, index) => (
-								<SwiperSlide key={index}>
-									<div className="h-full md:h-[480px] flex flex-col md:flex-row items-center md:items-stretch justify-between px-6 md:px-8 py-6 md:py-8 rounded-lg border border-[#EAEBEC] bg-white bg-opacity-10 backdrop-filter backdrop-blur-md">
-										{/* Text Content */}
-										<div className="w-full md:w-2/3 flex flex-col justify-around text-center md:text-left">
-											<h6
-												className="text-2xl md:text-3xl lg:text-5xl font-bold text-white leading-tight"
-												dangerouslySetInnerHTML={{ __html: data.title }}
-											/>
-											<p className="text-xs sm:text-sm md:text-base text-white font-medium my-2 leading-relaxed">
-												{data.description}
-											</p>
 
-											{/* Feature Grid */}
-											<div className="grid grid-cols-1 sm:grid-cols-3 gap-2 my-2 me-2">
-												{data.card.map((data, index) => (
-													<div
-														key={index}
-														className="border border-[#EAEBEC] px-3 py-2 text-xs sm:text-sm text-white rounded-lg flex flex-col items-center justify-around bg-white bg-opacity-20 min-h-20"
-													>
-														<img
-															src={data.cardImg}
-															alt={data.cardText}
-															className="w-5 h-5"
-														/>
-														<div className="text-xs text-center">{data.cardText}</div>
-													</div>
-												))}
+
+					{/* Swiper Section (Visible only on medium and larger screens) */}
+					<section className="hidden md:block py-12 relative ">
+						<div className="h-full   md:h-[520px] p-0 m-0 rounded-lg overflow-hidden bg-white bg-opacity-10 backdrop-filter backdrop-blur-md  max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw] mx-auto ">
+
+							<Swiper
+								direction="vertical"
+								modules={[Navigation, Pagination, Mousewheel]}
+								spaceBetween={10}
+								slidesPerView={1}
+								loop={false}
+								mousewheel={{
+									forceToAxis: true,
+									sensitivity: 0.3,      // Lower = slower scroll (default is 1)
+									thresholdDelta: 50,    // Minimum scroll delta to trigger a slide (higher = more control)
+									releaseOnEdges: true   // Allows normal scroll when at first/last slide
+								}}
+								pagination={{ clickable: true }}
+								breakpoints={{
+									540: { slidesPerView: 1, spaceBetween: 10 },
+									720: { slidesPerView: 1, spaceBetween: 10 },
+									960: { slidesPerView: 1, spaceBetween: 10 },
+								}}
+								className="p-0 m-0 overflow-hidden h-full md:h-[520px] max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw]   scrollbar-hide "
+							>
+								{mobileData.map((data, index) => (
+									<SwiperSlide key={index}>
+										<div className="h-full md:h-[520px] flex flex-col md:flex-row items-center md:items-stretch justify-center pr-6 md:pr-6 py-6 md:py-8  gap-4 ">
+											{/* Image */}
+											<div className="w-full md:w-1/4 flex justify-start mt-4 -ml-6  md:mt-0">
+												<img
+													src={data.imageLink}
+													alt="Mobile App"
+													className="max-w-[120px] sm:max-w-[160px] md:max-w-[220px] lg:max-w-[280px] object-contain aspect-[9/16]"
+												/>
+											</div>
+											{/* Text Content */}
+											<div className="w-full md:w-2/3 flex flex-col justify-around text-center md:text-left border border-gray-400 rounded-2xl p-8 ">
+												<h6
+													className="text-2xl md:text-3xl lg:text-5xl font-bold text-white leading-3"
+													dangerouslySetInnerHTML={{ __html: data.title }}
+												/>
+												<p className="text-xs sm:text-sm md:text-base text-white font-medium my-2 leading-relaxed">
+													{data.description}
+												</p>
+
+												{/* Feature Grid */}
+												<div className="grid grid-cols-1 sm:grid-cols-3 gap-2 place-items-center my-2 me-2">
+													{data.card.map((data, index) => (
+														<div
+															key={index}
+															className="border border-[#EAEBEC] px-3 py-2 text-xs sm:text-sm text-white 
+															rounded-xl flex flex-col items-center justify-around bg-white bg-opacity-10 min-h-20 w-40 border-opacity-50"
+														>
+															<img
+																src={data.cardImg}
+																alt={data.cardText}
+																className="w-5 h-5"
+															/>
+															<div className="text-xs text-center">{data.cardText}</div>
+														</div>
+													))}
+												</div>
+
+												{/* Button */}
+												<Button
+													className="mt-3 w-fit inline-flex items-center justify-center gap-2 bg-white text-green font-normal text-md md:text-base px-10 py-4 rounded-full normal-case"
+													onClick={() =>
+														window.open(
+															"https://play.google.com/store/apps/details?id=com.physioplus.physioplus&pcampaignid=web_share",
+															"_blank"
+														)
+													}
+												>
+													Download our App <FaApple className="w-5 h-5" /> <FaGooglePlay className="w-4 h-4" />
+												</Button>
 											</div>
 
-											{/* Button */}
-											<Button
-												className="mt-3 w-fit inline-flex items-center justify-center gap-2 bg-white text-green font-normal text-sm md:text-base px-4 py-2.5 rounded-full normal-case"
-												onClick={() =>
-													window.open(
-														"https://play.google.com/store/apps/details?id=com.physioplus.physioplus&pcampaignid=web_share",
-														"_blank"
-													)
-												}
-											>
-												Download our App <FaApple className="w-5 h-5" /> <FaGooglePlay className="w-4 h-4" />
-											</Button>
-										</div>
 
-										{/* Image */}
-										<div className="w-full md:w-1/3 flex justify-center mt-4 md:mt-0">
-											<img
-												src={data.imageLink}
-												alt="Mobile App"
-												className="max-w-[120px] sm:max-w-[160px] md:max-w-[220px] lg:max-w-[280px] object-contain aspect-[9/16]"
-											/>
 										</div>
-									</div>
-								</SwiperSlide>
-							))}
-						</Swiper>
+									</SwiperSlide>
+								))}
+							</Swiper>
+						</div>
 					</section>
 				</section>
 
@@ -417,7 +456,7 @@ const Home = () => {
 				</div>
 
 				{/* Relief Cards */}
-				<section className="pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]">
+				<section className=" pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]">
 					<HomeTitleComponent
 						sectionText={"Expert Physiotherapy Care"}
 						title={"Choose Your"}
@@ -428,14 +467,24 @@ const Home = () => {
 						}
 					/>
 					<Swiper
-						modules={[Navigation]}
-						spaceBetween={20}
+
+						spaceBetween={4}
 						slidesPerView={1.2}
-						loop={true}
+						loop={false}
+						modules={[Navigation, Mousewheel]}
+
+
+						mousewheel={{
+							forceToAxis: true,
+							sensitivity: 0.5,      // Lower = slower scroll (default is 1)
+							thresholdDelta: 1,    // Minimum scroll delta to trigger a slide (higher = more control)
+							releaseOnEdges: true   // Allows normal scroll when at first/last slide
+						}}
+
 						breakpoints={{
-							640: { slidesPerView: 2.2, spaceBetween: 10 },
-							768: { slidesPerView: 3.2, spaceBetween: 20 },
-							1024: { slidesPerView: 3.2, spaceBetween: 20 },
+							640: { slidesPerView: 2.2, spaceBetween: 12 },
+							768: { slidesPerView: 3.2, spaceBetween: 12 },
+							1024: { slidesPerView: 4.2, spaceBetween: 12 },
 						}}
 						className="max-w-[88vw] sm:max-w-[80vw] md:max-w-[80vw] lg:max-w-[72vw]"
 					// navigation
@@ -465,67 +514,105 @@ const Home = () => {
 					</div>
 				</section>
 
-				{/* Why Choose Us */}
-				<section className="bg-[#F5FAF7] pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]">
+
+
+				<section className="bg-[#F5FAF7] pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]"
+					style={{
+						backgroundImage: 'url(/home/bg_why_choose_us.png)',
+						backgroundSize: 'cover',
+						backgroundPosition: 'top center',
+						backgroundRepeat: 'no-repeat',
+						height: 'auto',
+					}}>
 					<HomeTitleComponent
 						sectionText={"Why Choose Us"}
 						title={"100% Recover Faster with"}
 						subTitle={"Physioplus"}
 						description50={true}
 						inlineSubtext={true}
-						description={
-							"Expert physiotherapy, in-person or home visits, and easy online booking with 300+ professionals all over India !"
-						}
+						description={"Expert physiotherapy, in-person or home visits, and easy online booking with 300+ professionals all over India!"}
 					/>
-					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/treatment.png"}
-							title={"Non Surgical Treatment"}
-							description={
-								"Our advanced surgical treatments provide effective solutions, combining expert care and cutting-edge technology to achieve the best patient outcomes."
-							}
-						/>
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/location.png"}
-							title={"Available in 1500+ Pincodes"}
-							description={
-								"Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
-							}
-						/>
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/rupee.png"}
-							title={"Cost Effective"}
-							description={
-								"Our treatments are designed to be cost-effective, providing high-quality care and exceptional results without compromising your budget or expectations."
-							}
-						/>
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/calender.png"}
-							title={"Easy Appointments"}
-							description={
-								"Schedule your appointments effortlessly through our user-friendly app or web app, making healthcare access simple and convenient for everyone."
-							}
-						/>
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/care.png"}
-							title={"Expert Care at Our Centers"}
-							description={
-								"Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
-							}
-						/>
-						<HorizontalCard
-							section={"whyChooseUs"}
-							img={"home/house.png"}
-							title={"In-Home Services"}
-							description={
-								"Our physiotherapists come to you, providing personalized treatment in the comfort of your home, making recovery convenient and effective."
-							}
-						/>
+
+					<div className="flex flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
+						{/* Left Section */}
+						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
+							<InfoSection
+								title="Available in 1500+ Pincodes"
+								description="Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
+								iconSrc="home/mingcute_location-line.png"
+								iconAlt="location icon"
+							/>
+
+							<InfoSection
+								title="Easy Appointments"
+								description="Schedule your appointments effortlessly through our user-friendly app or web app, making healthcare access simple and convenient for everyone."
+								iconSrc="home/uil_calender.png"
+								iconAlt="calender icon"
+							/>
+
+							<InfoSection
+								title="Cost Effective"
+								description="Our treatments are designed to be cost-effective, providing high-quality care and exceptional results without compromising your budget or expectations."
+								iconSrc="home/CurrencyInr.png"
+								iconAlt="currencyInr icon"
+							/>
+						</div>
+
+						{/* Middle Section */}
+						<div className="relative flex-shrink-0 w-[200px] lg:w-[240px]">
+							{/* Phone frame */}
+							<img
+								src="home/phone-preview.png"
+								alt="App preview"
+								className="w-full h-auto relative z-5"
+							/>
+
+							{/* Scrollable content inside the phone */}
+							<div
+								ref={scrollRef}
+								className="absolute top-[3%] left-[6%] right-[6%] h-[94%] overflow-y-scroll scrollbar-hide rounded-[20px] z-10 bg-white"
+							>
+								<img
+									src="home/screenshot-long.png"
+									alt="App screen content"
+									className="w-full"
+								/>
+							</div>
+
+
+							{/* Overlay image ABOVE scroll area (and not constrained by it) */}
+							{!hideOverlay && (
+								<div className="absolute top-[27%] left-1/2 transform -translate-x-1/2 w-[108%] z-20 pointer-events-none"
+								>
+									<img
+										src="home/PhonePopUp.png"
+										alt="Overlay"
+										className="absolute top-[27%] left-1/2 transform -translate-x-1/2 w-[110%] z-20 pointer-events-none"
+									/>
+								</div>
+							)}
+						</div>
+
+
+
+
+						{/* Right Section */}
+						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
+							<InfoSection
+								title="Expert Care at Our Centers"
+								description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
+								iconSrc="home/HandHeart.png"
+								iconAlt="handHeart icon"
+							/>
+
+							<InfoSection
+								title="In-Home Services"
+								description="Our physiotherapists come to you, providing personalized treatment in the comfort of your home, making recovery convenient and effective."
+								iconSrc="home/House.png"
+								iconAlt="house icon"
+							/>
+
+						</div>
 					</div>
 				</section>
 
@@ -602,26 +689,36 @@ const Home = () => {
 							<SwiperGallery />
 						</div>
 						{/* reviews for tablet & web */}
-						<div className="hidden md:flex w-1/3 h-full flex-col">
+						<div className="hidden md:flex w-1/3 h-full flex-col overflow-hidden  pb-4  ">
 							<Swiper
+								modules={[Mousewheel]}
 								direction={"vertical"}
-								spaceBetween={0}
-								slidesPerView={4}
+								spaceBetween={12}
+								slidesPerView={2}
+								mousewheel={{
+									forceToAxis: true,
+									sensitivity: 1,
+									thresholdDelta: 1,
+									releaseOnEdges: false
+								}}
 								breakpoints={{
 									640: {
-										slidesPerView: 3,
+										slidesPerView: 2,
+										spaceBetween: 12,
 									},
 									768: {
 										slidesPerView: 3,
+										spaceBetween: 12,
 									},
 									1024: {
-										slidesPerView: 4,
+										slidesPerView: 3.2,
+										spaceBetween: 12,
 									},
 								}}
-								className="hidden md:block max-h-[600px] lg:max-h-[800px] w-full"
+								className="hidden md:block max-h-[400px] lg:max-h-[860px] w-full"
 							>
-								{Reviews.slice(0, 5).map((review) => (
-									<SwiperSlide key={review.id}>
+								{Reviews.slice(0, 10).map((review) => (
+									<SwiperSlide key={review.id} className="!m-0 !p-0">
 										<ReviewCard
 											key={review.id}
 											id={review.id}
@@ -686,34 +783,20 @@ const Home = () => {
 				)}
 
 				{/* faq */}
-				<div className="flex flex-col md:flex-row gap-4 pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px] md:divide-x divide-gray-200">
-					<div className="md:w-[45vw] w-full flex flex-col gap-6">
-						<h6 className="text-3xl md:text-5xl font-semibold ">Frequently Asked Questions</h6>
-						<p className="mt-4 sm:mt-6 text-base">
-							Discover our locations closest to you and experience our services firsthand. Whether you're around the
-							corner or a few miles away, we're just a step away from making your day better.
+				<div className="flex flex-col md:flex-col gap-4 pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]   items-center ">
+					<div className="w-full flex flex-col items-center text-center gap-6">
+						<h6 className="text-3xl md:text-5xl font-semibold">
+							Frequently Asked Questions
+						</h6>
+						<p className="mt-4 sm:mt-6 w-full text-center " style={{ wordSpacing: '0.2rem' }}>
+							Discover our locations closest to you and experience our services firsthand.
+							Whether you're around the corner or a few miles away, we're just a step away from making your day better.
 						</p>
-						<div className="flex flex-col gap-2">
-							<p className="flex items-center gap-2 text-base">
-								<MdLocationPin className="min-w-4 h-4" />
-								109,1st Floor, Sankalp Tower, Khatipura Road, Jaipur
-							</p>
-							<p className="flex items-center gap-2">
-								<MdPhoneInTalk className="min-w-4 h-4" />
-								+91 8107333576
-							</p>
-							<p className="flex text-wrap items-center gap-2">
-								<MdMail className="min-w-4 h-4" />
-								info@physioplushealthcare.com
-							</p>
-						</div>
-						<Button
-							onClick={() => navigate("/physios")}
-							className="bg-green w-fit px-6 py-3 rounded-full font-normal hover:shadow-none"
-						>
-							Book An Appointment
-						</Button>
+
+						{/* Dark full-width horizontal line */}
+						{/* <hr className="w-full border-t-2 border-green mt-8" /> */}
 					</div>
+
 					<FAQ />
 				</div>
 			</div>
