@@ -40,6 +40,10 @@ const Home = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const scrollRef = useRef(null);
+	const swiperRef = useRef(null);
+	const sectionRef = useRef(null);
+	
+
 	const [hideOverlay, setHideOverlay] = useState(false);
 	const [blogData, setBlogData] = useState();
 	const [loading, setLoading] = useState(true);
@@ -47,6 +51,60 @@ const Home = () => {
 	const [insuranceModal, setInsuranceModal] = useState(false);
 
 	const bannerItems = ["Explore our blog", "Experience home care", "Experience clinic care"];
+
+	useEffect(() => {
+		const section = sectionRef.current;
+		let isThrottled = false;
+		const throttleDuration = 400;
+
+		const handleWheel = (e) => {
+			if (!swiperRef.current || !section) return;
+			const swiper = swiperRef.current.swiper;
+			const delta = e.deltaY;
+
+			const sectionBounds = section.getBoundingClientRect();
+			const centerY = window.innerHeight / 2;
+			const isSectionCentered =
+				sectionBounds.top < centerY && sectionBounds.bottom > centerY;
+
+			const swiperBounds = swiperRef.current.getBoundingClientRect();
+			const isInsideSwiper =
+				e.clientY >= swiperBounds.top && e.clientY <= swiperBounds.bottom;
+
+			if (isSectionCentered && isInsideSwiper && swiper) {
+				// Only prevent scroll if a slide is possible
+				const canScrollDown = !swiper.isEnd && delta > 0;
+				const canScrollUp = !swiper.isBeginning && delta < 0;
+
+				if (canScrollDown || canScrollUp) {
+					e.preventDefault();
+
+					if (isThrottled) return;
+
+					isThrottled = true;
+					setTimeout(() => {
+						isThrottled = false;
+					}, throttleDuration);
+
+					if (delta > 0) {
+						swiper.slideNext();
+					} else {
+						swiper.slidePrev();
+					}
+				}
+			}
+		};
+
+		document.addEventListener("wheel", handleWheel, { passive: false });
+
+		return () => {
+			document.removeEventListener("wheel", handleWheel);
+		};
+	}, []);
+
+
+
+
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -206,7 +264,7 @@ const Home = () => {
 
 
 					{/* Mobile View Box (Visible only on small screens) */}
-					<div className="md:hidden max-w-sm mx-auto mt-8">
+					<div className=" md:hidden max-w-sm mx-auto mt-8">
 						<div className="bg-emerald-600 rounded-2xl p-6 text-center text-white shadow-md border border-emerald-600">
 							<h2 className="text-2xl font-bold mb-2">Download Our App Today!</h2>
 							<p className="text-sm mb-6">
@@ -233,10 +291,13 @@ const Home = () => {
 
 
 					{/* Swiper Section (Visible only on medium and larger screens) */}
-					<section className="hidden md:block py-12 relative ">
+					<section ref={sectionRef} className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-12">
+
+
 						<div className="h-full   md:h-[520px] p-0 m-0 rounded-lg overflow-hidden bg-white bg-opacity-10 backdrop-filter backdrop-blur-md  max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw] mx-auto ">
 
 							<Swiper
+								ref={swiperRef}
 								direction="vertical"
 								modules={[Navigation, Pagination, Mousewheel]}
 								spaceBetween={10}
@@ -245,8 +306,8 @@ const Home = () => {
 								mousewheel={{
 									forceToAxis: true,
 									sensitivity: 0.3,      // Lower = slower scroll (default is 1)
-									thresholdDelta: 50,    // Minimum scroll delta to trigger a slide (higher = more control)
-									releaseOnEdges: true   // Allows normal scroll when at first/last slide
+									thresholdDelta: 1,    // Minimum scroll delta to trigger a slide (higher = more control)
+									releaseOnEdges: false   // Allows normal scroll when at first/last slide
 								}}
 								pagination={{ clickable: true }}
 								breakpoints={{
