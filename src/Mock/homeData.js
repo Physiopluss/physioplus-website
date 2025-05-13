@@ -1,7 +1,7 @@
 export const mobileData = [
 	{
-		title: `Comprehensive Care, <span style="text-decoration: underline;">Tailored to You</span>`,
-		description:
+		title: `Comprehensive Care, <span style="color: #E6F4EC">Tailored to You</span>`,
+description:
 			"Explore a wide range of physiotherapy services designed to support your journey to wellness. Whether you need rehabilitation, pain relief, or preventive care, our expert team offers personalized treatment plans to meet your specific needs",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/Home+Card+1.png",
 		card: [
@@ -20,7 +20,7 @@ export const mobileData = [
 		],
 	},
 	{
-		title: `Find the Best Physio Care, <span style="text-decoration: underline;">Near You</span>`,
+		title: `Find the Best Physio Care, <span style="color: #E6F4EC">Near You</span>`,
 		description:
 			"Easily connect with top-rated physiotherapists in your area. Our app helps you find trusted professionals nearby, so you can get the care you need, when you need it. From initial consultations to ongoing treatments, the best physio care is just around the corner.",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/HomeCard_2.png",
@@ -40,7 +40,7 @@ export const mobileData = [
 		],
 	},
 	{
-		title: `<span style="text-decoration: underline;">Personalized Care</span> that Fit You`,
+		title: `<span style="color: #E6F4EC">Personalized Care</span> that Fit You`,
 		description:
 			"Discover our most sought-after specialties designed to meet your unique recovery needs. From sports injuries to chronic pain management, our expert physiotherapists provide personalized care to help you regain strength, mobility, and confidence.",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/HomeCard_3.png",
@@ -60,7 +60,7 @@ export const mobileData = [
 		],
 	},
 	{
-		title: `<span style="text-decoration: underline;">Your Health</span>, Tracked and Transforming`,
+		title: `<span style="color: #E6F4EC;">Your Health</span>, Tracked and Transforming`,
 		description:
 			"Stay on top of your recovery with our intuitive health tracking feature. Monitor your progress, track exercises, and see real-time improvements in your strength and mobility. With personalized insights and reminders, you’ll stay motivated and on track every step of the way",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/HomeCard_4.png",
@@ -80,7 +80,7 @@ export const mobileData = [
 		],
 	},
 	{
-		title: `Chat with Your <span style="text-decoration: underline;">Physio Anytime </span>`,
+		title: `Chat with Your <span style="color: #E6F4EC">Physio Anytime </span>`,
 		description:
 			"Get real-time guidance and support directly from your physiotherapist. Whether you have a question, need advice, or want to share progress, our in-app chat feature connects you instantly with your physio for personalized assistance, whenever you need it",
 		imageLink: "https://123456789video.s3.ap-south-1.amazonaws.com/WebsiteImages/HomeCard_5.png",
