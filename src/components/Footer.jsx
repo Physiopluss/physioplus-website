@@ -1,6 +1,6 @@
 import { Button } from "@material-tailwind/react";
 import { FaLinkedin, FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import { MdMail, MdPhoneInTalk } from "react-icons/md";
+import { MdLocationOn, MdMail, MdPhoneInTalk } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
@@ -8,17 +8,17 @@ const Footer = () => {
 	return (
 		<div className="w-full flex flex-col justify-center items-center relative -40">
 			{/*Contact Us */}
-			<section className="absolute max-w-full flex flex-col md:flex-row -top-4 md:top-16 sm:flex-row justify-center items-center bg-[#F1F9F4] rounded-lg p-12">
+			<section className="absolute max-w-full flex flex-col md:flex-row -top-4 md:top-16 sm:flex-row justify-center items-center bg-[#F1F9F4] rounded-lg p-14 ">
 				<div className="flex flex-col text-center sm:text-left w-full md:w-1/2 gap-8">
 					<h6 className="sm:text-4xl text-3xl self-start font-bold">Contact Us</h6>
-					<p>
+					<p className="w-[110%] text-base">
 						Whether you have questions about our services, want to book an appointment, or just need some advice, we're
 						here to help. Reach out to our friendly team today.
 					</p>
 
 					<Button
 						onClick={() => navigate("/contact")}
-						className="font-normal text-sm sm:text-base rounded-full w-fit bg-green text-white hover:shadow-none px-8 py-2 capitalize"
+						className="font-normal text-sm sm:text-base rounded-full w-fit bg-green text-white hover:shadow-none px-9 py-3 capitalize"
 					>
 						Call us Now
 					</Button>
@@ -50,7 +50,7 @@ const Footer = () => {
 									href="https://www.facebook.com/Physioplus.pvt.ltd?mibextid=ZbWKwL/"
 									target="_blank"
 								>
-									<FaFacebookF className="w-8 h-8 bg-gray-300 p-1.5 rounded-md cursor-pointer" />
+									<FaFacebookF className="w-8 h-8 bg-gray-300  text-green p-1.5 rounded-md cursor-pointer" />
 								</a>
 							</button>
 							<button>
@@ -58,7 +58,7 @@ const Footer = () => {
 									href="https://www.instagram.com/physioplushealthcare/?igsh=ZWV6YWVtZDhzN3Ew"
 									target="_blank"
 								>
-									<FaInstagram className="w-8 h-8 bg-gray-300 p-1.5 rounded-md cursor-pointer" />
+									<FaInstagram className="w-8 h-8 bg-gray-300  text-green p-1.5 rounded-md cursor-pointer" />
 								</a>
 							</button>
 							<button>
@@ -66,15 +66,16 @@ const Footer = () => {
 									href="https://www.linkedin.com/company/physioplus-healthcare-private-limited/"
 									target="_blank"
 								>
-									<FaLinkedin className="w-8 h-8 bg-gray-300 p-1.5 rounded-md cursor-pointer" />
+									<FaLinkedin className="w-8 h-8 bg-gray-300  text-green p-1.5 rounded-md cursor-pointer" />
 								</a>
 							</button>
 							<button>
 								<a
 									href="https://www.youtube.com/@physioplushealthcare"
 									target="_blank"
+
 								>
-									<FaYoutube className="w-8 h-8 bg-gray-300 p-1.5 rounded-md cursor-pointer" />
+									<FaYoutube className="w-8 h-8 bg-gray-300  text-green p-1.5 rounded-md cursor-pointer" />
 								</a>
 							</button>
 						</div>
@@ -143,14 +144,24 @@ const Footer = () => {
 						<div className="text-xl font-semibold">Contact Us</div>
 						<ul className="text-base font-normal flex flex-col gap-2">
 							<li className="flex items-center gap-2">
-								<MdPhoneInTalk className="min-w-4 h-4" />
+
+								<img src="/phone-call.png" alt="Phone Icon" className="min-w-4 h-4 text-green" />
 								+91 8107333576
 							</li>
 							<li className="flex text-wrap items-center gap-2">
-								<MdMail className="min-w-4 h-4" />
+
+								<img src="/mail.png" alt="Mail Icon" className="min-w-4 h-4" />
 								info@physio
 								<br className="hidden md:block lg:hidden" />
 								plushealthcare.com
+							</li>
+							<li className="flex items-start gap-2 text-sm">
+								<img src="/Location.png" alt="Location Icon" className="min-w-4 h-4 mt-1 " />
+
+								<span>
+									109, 1st Floor, Sankalp Tower,<br />
+									Khatipura Road, Jaipur, 302012
+								</span>
 							</li>
 						</ul>
 					</div>
