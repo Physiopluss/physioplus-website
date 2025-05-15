@@ -677,7 +677,7 @@ const Home = () => {
 
 
 					{/* for phone screen  */}
-					<div className="block lg:hidden w-full max-w-md space-y-4 flex flex-col items-center justify-center mx-auto">
+					<div className=" lg:hidden w-full max-w-md space-y-4 flex flex-col items-center justify-center mx-auto">
 						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
 
 							<InfoSection

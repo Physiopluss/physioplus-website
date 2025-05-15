@@ -8,8 +8,8 @@ const InfoSection = ({ title, description, iconSrc, iconAlt }) => {
                 <h3 className="text-xl font-semibold text-[#015C3E]">{title}</h3>
                 <img src={iconSrc} alt={iconAlt} className="w-6 h-6" />
             </div>
-            <div className="relative  flex items-center w-full h-[2px] my-3">
-                <div className="absolute left-0 top-0 h-[1px] scale-y-[0.5] bg-[#013C2E]" style={{ width: 'fit-content' }}>
+            <div className="relative  flex items-center w-full h-[2px]  scale-y-[0.5] my-3">
+                <div className="absolute left-0 top-0 h-[2px] scale-y-[1] bg-[#013C2E]" style={{ width: 'fit-content' }}>
                     <div className="text-xl font-semibold text-transparent select-none whitespace-nowrap">
                         {title}
                     </div>

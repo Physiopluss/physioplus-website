@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 const Footer = () => {
 	const navigate = useNavigate();
 	return (
-		<div className="w-full flex flex-col justify-center items-center relative -40">
+		<div className="w-full flex flex-col justify-center items-center relative ">
 			{/*Contact Us */}
 			<section className="absolute max-w-full flex flex-col md:flex-row -top-4 md:top-16 sm:flex-row justify-center items-center bg-[#F1F9F4] rounded-lg p-14 ">
 				<div className="flex flex-col text-center sm:text-left w-full md:w-1/2 gap-8">
