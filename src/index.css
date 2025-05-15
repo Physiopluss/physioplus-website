@@ -2,8 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
 * {
 	box-sizing: border-box;
+}
+
+html,
+body {
+	overflow-x: hidden !important;
 }
 
 /* scroll bar  */
@@ -122,4 +128,73 @@ summary::-webkit-details-marker {
 	z-index: 1;
 	color: white;
 	background-color: green;
+}
+
+
+
+
+.swiper-slide {
+	transition: transform 0.5s ease-in-out;
+}
+
+/* Pagination dot base style */
+.custom-pagination {
+	display: flex !important;
+	justify-content: center !important;
+	align-items: center !important;
+	gap: 4px !important;
+	transform: translateX(-50%) !important;
+}
+
+/* Increased specificity selector */
+.custom-pagination.swiper-pagination-horizontal {
+	bottom: 8px !important;
+}
+
+.custom-pagination .swiper-pagination-bullet {
+	background: #039342 !important;
+	opacity: 0.3 !important;
+	width: 5px !important;
+	height: 5px !important;
+	margin: 2px !important;
+	transition: all 0.3s ease !important;
+}
+
+.custom-pagination .swiper-pagination-bullet-active {
+	background: #039342 !important;
+	opacity: 1 !important;
+	width: 12px !important;
+	border-radius: 3px !important;
+}
+
+/* Override on md+ screens */
+@media (min-width: 768px) {
+	.custom-pagination {
+		display: flex !important;
+		justify-content: center !important;
+		align-items: center !important;
+		gap: 8px !important;
+		transform: translateX(-50%) !important;
+	}
+
+	/* Increased specificity selector */
+	.custom-pagination.swiper-pagination-horizontal {
+		bottom: 16px !important;
+	}
+
+	.custom-pagination .swiper-pagination-bullet {
+		background: #039342 !important;
+		opacity: 0.3 !important;
+		width: 10px !important;
+		height: 10px !important;
+		margin: 0 4px !important;
+		transition: all 0.3s ease !important;
+	}
+
+	.custom-pagination .swiper-pagination-bullet-active {
+		background: #039342 !important;
+		opacity: 1 !important;
+		width: 24px !important;
+		border-radius: 6px !important;
+	}
 }

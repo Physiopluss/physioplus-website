@@ -10,9 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { listAllBlog } from "../api/blog";
 import HomeTitleComponent from "../components/HomeTitleComponent";
 import { Button } from "@material-tailwind/react";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Mousewheel } from "swiper/modules";
+import { Navigation, Pagination, Mousewheel, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -27,9 +26,7 @@ import { FaApple, FaGooglePlay } from "react-icons/fa";
 import { mobileData, painCardData } from "../Mock/homeData";
 import SpecialityCard from "../components/SpecialityCard";
 import InfoSection from "../components/InfoSection";
-
-
-
+import PhonePreview from "../components/PhonePreview";
 
 
 
@@ -42,15 +39,14 @@ const Home = () => {
 	const scrollRef = useRef(null);
 	const swiperRef = useRef(null);
 	const sectionRef = useRef(null);
-	
 
-	const [hideOverlay, setHideOverlay] = useState(false);
+
 	const [blogData, setBlogData] = useState();
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState();
 	const [insuranceModal, setInsuranceModal] = useState(false);
 
-	const bannerItems = ["Explore our blog", "Experience home care", "Experience clinic care"];
+
 
 	useEffect(() => {
 		const section = sectionRef.current;
@@ -103,23 +99,6 @@ const Home = () => {
 	}, []);
 
 
-
-
-
-	useEffect(() => {
-		const handleScroll = () => {
-			if (scrollRef.current.scrollTop > 10) {
-				setHideOverlay(true);
-			} else {
-				setHideOverlay(false);
-			}
-		};
-
-		const scrollEl = scrollRef.current;
-		scrollEl.addEventListener('scroll', handleScroll);
-
-		return () => scrollEl.removeEventListener('scroll', handleScroll);
-	}, []);
 	// google analytics
 	useEffect(() => {
 		ReactGA.send({
@@ -159,6 +138,27 @@ const Home = () => {
 		};
 	}, []);
 
+	//banner images
+	const bannerImages = [
+		"/images/discount3.png",
+		"/images/discount1.png",
+		"/images/discount2.png",
+	];
+
+	const paginationEl = useRef(null);
+	const hr_swiperRef = useRef(null);
+
+
+	useEffect(() => {
+		if (hr_swiperRef.current && hr_swiperRef.current.swiper) {
+			hr_swiperRef.current.swiper.pagination.init();
+			hr_swiperRef.current.swiper.pagination.render();
+			hr_swiperRef.current.swiper.pagination.update();
+		}
+	}, []);
+
+
+
 	return (
 		<>
 			<Helmet>
@@ -177,29 +177,50 @@ const Home = () => {
 				/>
 			</Helmet>
 			<div className="max-w-[100vw]">
-				<div className="bg-[url('home/bannerDesign.png')] bg-no-repeat bg-left max-w-[99vw] mx-auto relative mb-24 sm:mb-12 md:mb-0 min-h-[500px] sm:min-h-[600px] bg-cover">
+				<div className="bg-[url('home/bannerDesign.png')] bg-no-repeat bg-left max-w-[99vw] mx-auto relative mb-5 sm:mb-12 md:mb-0 min-h-[500px] sm:min-h-[600px] bg-cover ">
 					<BannerComponent />
+
 				</div>
 
-				{/* scroll bar */}
-				<div className="max-w-[100vw] flex justify-center bg-[#025A28]">
-					<div className="max-w-[98vw] bg-[#025A28] text-white overflow-hidden py-4 px-0 mx-0">
-						<div className="flex animate-scroll">
-							{bannerItems.map((item, index) => (
-								<div key={index}>
-									<span className="mx-4 whitespace-nowrap text-lg">{item}</span>
-									<span className="mx-4">✦</span>
-								</div>
-							))}
-							{bannerItems.map((item, index) => (
-								<div key={`repeat-${index}`}>
-									<span className="mx-4 whitespace-nowrap text-lg">{item}</span>
-									<span className="mx-4">✦</span>
-								</div>
-							))}
-						</div>
-					</div>
-				</div>
+				{/* Swiper banner */}
+
+				<section className="bg-[#FFFDF8] w-full  relative m-0 md:h-[400px] overflow-x-hidden">
+
+
+					{/* Pagination Container */}
+					<div
+						ref={paginationEl}
+						className="custom-pagination absolute !bottom-4 !left-1/2 !z-20 !w-full !-translate-x-1/2 !overflow-hidden m-0"
+					/>
+
+					<Swiper
+						modules={[Autoplay, Pagination]}
+						spaceBetween={0}
+						slidesPerView={1}
+						loop={true}
+						autoplay={{ delay: 3000 }}
+						pagination={{
+							el: paginationEl.current,
+							clickable: true,
+							dynamicBullets: false,
+						}}
+						className="w-full h-full !overflow-hidden p-0 m-0"
+					>
+						{bannerImages.map((imgSrc, index) => (
+							<SwiperSlide key={index}>
+								<img onClick={() => navigate("/physios")}
+									src={imgSrc}
+									alt={""}
+									className="!overflow-hidden w-full h-full object-cover p-0 m-0 md:object-cover "
+								/>
+							</SwiperSlide>
+						))}
+					</Swiper>
+
+
+				</section>
+
+
 
 				{/* service Type */}
 				<section className="bg-[#FFFDF8] pt-12 md:pt-[108px] pb-9 md:pb-24 px-4 sm:px-12 lg:px-[120px] ">
@@ -291,10 +312,14 @@ const Home = () => {
 
 
 					{/* Swiper Section (Visible only on medium and larger screens) */}
-					<section ref={sectionRef} className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] py-12">
+					<section
+						ref={sectionRef}
+						className="hidden sm:block max-w-screen overflow-hidden mx-auto py-12 px-4 relative"
+					>
 
 
-						<div className="h-full   md:h-[520px] p-0 m-0 rounded-lg overflow-hidden bg-white bg-opacity-10 backdrop-filter backdrop-blur-md  max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw] mx-auto ">
+
+						<div className="h-full md:h-[520px] p-0 m-0 rounded-lg overflow-hidden bg-white bg-opacity-10 backdrop-filter backdrop-blur-md  max-w-[76vw] sm:max-w-[78vw] md:max-w-[60vw] lg:max-w-[70vw] mx-auto ">
 
 							<Swiper
 								ref={swiperRef}
@@ -309,7 +334,7 @@ const Home = () => {
 									thresholdDelta: 1,    // Minimum scroll delta to trigger a slide (higher = more control)
 									releaseOnEdges: false   // Allows normal scroll when at first/last slide
 								}}
-								pagination={{ clickable: true }}
+								pagination={{ clickable: true, }}
 								breakpoints={{
 									540: { slidesPerView: 1, spaceBetween: 10 },
 									720: { slidesPerView: 1, spaceBetween: 10 },
@@ -319,15 +344,16 @@ const Home = () => {
 							>
 								{mobileData.map((data, index) => (
 									<SwiperSlide key={index}>
-										<div className="h-full md:h-[520px] flex flex-col md:flex-row items-center md:items-stretch justify-center pr-6 md:pr-6 py-6 md:py-8  gap-4 ">
+										<div className="h-full md:h-[520px] flex flex-col md:flex-row items-center md:items-stretch justify-center pr-6 md:pr-6 py-6 md:py-8  gap-2 ">
 											{/* Image */}
-											<div className="w-full md:w-1/4 flex justify-start mt-4 -ml-6  md:mt-0">
-												<img
-													src={data.imageLink}
-													alt="Mobile App"
-													className="max-w-[120px] sm:max-w-[160px] md:max-w-[220px] lg:max-w-[280px] object-contain aspect-[9/16]"
+											<div className=" md:w-1/4   -ml-3 -mt-3">
+												<PhonePreview
+													screenshotSrc={data.imageLink}
+
+													layoutClassName="w-[200px] lg:w-[240px]  "
 												/>
 											</div>
+
 											{/* Text Content */}
 											<div className="w-full md:w-2/3 flex flex-col justify-around text-center md:text-left border border-gray-400 rounded-2xl p-8 ">
 												<h6
@@ -369,8 +395,6 @@ const Home = () => {
 													Download our App <FaApple className="w-5 h-5" /> <FaGooglePlay className="w-4 h-4" />
 												</Button>
 											</div>
-
-
 										</div>
 									</SwiperSlide>
 								))}
@@ -529,15 +553,19 @@ const Home = () => {
 					/>
 					<Swiper
 
-						spaceBetween={4}
+						spaceBetween={12}
 						slidesPerView={1.2}
-						loop={false}
-						modules={[Navigation, Mousewheel]}
-
+						loop={true}
+						modules={[Navigation, Mousewheel, Autoplay]}
+						speed={4000}
+						autoplay={{
+							delay: 0, // No delay between transitions
+							disableOnInteraction: false,
+						}}
 
 						mousewheel={{
 							forceToAxis: true,
-							sensitivity: 0.5,      // Lower = slower scroll (default is 1)
+							sensitivity: 0.3,      // Lower = slower scroll (default is 1)
 							thresholdDelta: 1,    // Minimum scroll delta to trigger a slide (higher = more control)
 							releaseOnEdges: true   // Allows normal scroll when at first/last slide
 						}}
@@ -594,7 +622,8 @@ const Home = () => {
 						description={"Expert physiotherapy, in-person or home visits, and easy online booking with 300+ professionals all over India!"}
 					/>
 
-					<div className="flex flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
+					{/* for big screen */}
+					<div className="hidden md:flex  flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
 						{/* Left Section */}
 						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
 							<InfoSection
@@ -620,45 +649,14 @@ const Home = () => {
 						</div>
 
 						{/* Middle Section */}
-						<div className="relative flex-shrink-0 w-[200px] lg:w-[240px]">
-							{/* Phone frame */}
-							<img
-								src="home/phone-preview.png"
-								alt="App preview"
-								className="w-full h-auto relative z-5"
-							/>
-
-							{/* Scrollable content inside the phone */}
-							<div
-								ref={scrollRef}
-								className="absolute top-[3%] left-[6%] right-[6%] h-[94%] overflow-y-scroll scrollbar-hide rounded-[20px] z-10 bg-white"
-							>
-								<img
-									src="home/screenshot-long.png"
-									alt="App screen content"
-									className="w-full"
-								/>
-							</div>
-
-
-							{/* Overlay image ABOVE scroll area (and not constrained by it) */}
-							{!hideOverlay && (
-								<div className="absolute top-[27%] left-1/2 transform -translate-x-1/2 w-[108%] z-20 pointer-events-none"
-								>
-									<img
-										src="home/PhonePopUp.png"
-										alt="Overlay"
-										className="absolute top-[27%] left-1/2 transform -translate-x-1/2 w-[110%] z-20 pointer-events-none"
-									/>
-								</div>
-							)}
-						</div>
-
+						<PhonePreview screenshotSrc="home/screenshot-long.png " overlaySrc="home/PhonePopUp.png"
+							layoutClassName="w-[200px] lg:w-[240px] "
+						/>
 
 
 
 						{/* Right Section */}
-						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
+						<div className="max-w-md w-full  bg-white p-6 rounded-md shadow-sm border border-gray-100">
 							<InfoSection
 								title="Expert Care at Our Centers"
 								description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
@@ -675,7 +673,61 @@ const Home = () => {
 
 						</div>
 					</div>
-				</section>
+
+
+
+					{/* for phone screen  */}
+					<div className="block md:hidden w-full max-w-md space-y-4">
+						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+
+							<InfoSection
+								title="Available in 1500+ Pincodes"
+								description="Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
+								iconSrc="home/mingcute_location-line.png"
+								iconAlt="location icon"
+							/>
+						</div>
+						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+
+							<InfoSection
+								title="Easy Appointments"
+								description="Schedule your appointments effortlessly through our user-friendly app or web app, making healthcare access simple and convenient for everyone."
+								iconSrc="home/uil_calender.png"
+								iconAlt="calender icon"
+							/>
+						</div>
+						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+
+							<InfoSection
+								title="Cost Effective"
+								description="Our treatments are designed to be cost-effective, providing high-quality care and exceptional results without compromising your budget or expectations."
+								iconSrc="home/CurrencyInr.png"
+								iconAlt="currencyInr icon"
+							/>
+						</div>
+
+
+						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+
+							<InfoSection
+								title="Expert Care at Our Centers"
+								description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
+								iconSrc="home/HandHeart.png"
+								iconAlt="handHeart icon"
+							/>
+						</div>
+						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+
+							<InfoSection
+								title="In-Home Services"
+								description="Our physiotherapists come to you, providing personalized treatment in the comfort of your home, making recovery convenient and effective."
+								iconSrc="home/House.png"
+								iconAlt="house icon"
+							/>
+						</div>
+					</div>
+
+				</section >
 
 				{/* Events */}
 				{/* <section className="pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]">
@@ -797,51 +849,53 @@ const Home = () => {
 				</section>
 
 				{/* blogs loading */}
-				{loading ? (
-					<p>Loading blogs...</p>
-				) : error ? (
-					<p className="text-red-500">{error}</p>
-				) : (
-					blogData &&
-					blogData.length > 0 && (
-						<section className="pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px] bg-[#FFFCF0]">
-							<HomeTitleComponent
-								sectionText={"Our Blogs"}
-								title={"Unlock the Secrets to"}
-								subTitle={"Faster Recovery"}
-								inlineSubtext={true}
-								description={
-									"Stay informed with the latest physiotherapy insights and tips for maintaining a healthy, active lifestyle."
-								}
-							/>
-							<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-4">
-								{blogData.slice(0, 4).map((blog) => (
-									<BlogCard
-										key={blog._id}
-										id={blog._id}
-										title={blog.title}
-										description={blog.description}
-										youTubeLink={blog.youTubeLink}
-										image={blog.image}
-										status={blog.status}
-										views={blog.views}
-										tags={blog.tags}
-										blogType={blog.blogType}
-										date={blog.date}
-									/>
-								))}
-							</div>
-							<div className="mt-12 flex justify-center">
-								<Button
-									onClick={() => navigate("/blog")}
-									className="w-fit text-nowrap text-base font-semibold bg-green text-white rounded-2xl px-8 py-2.5"
-								>
-									View All
-								</Button>
-							</div>
-						</section>
+				{
+					loading ? (
+						<p>Loading blogs...</p>
+					) : error ? (
+						<p className="text-red-500">{error}</p>
+					) : (
+						blogData &&
+						blogData.length > 0 && (
+							<section className="pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px] bg-[#FFFCF0]">
+								<HomeTitleComponent
+									sectionText={"Our Blogs"}
+									title={"Unlock the Secrets to"}
+									subTitle={"Faster Recovery"}
+									inlineSubtext={true}
+									description={
+										"Stay informed with the latest physiotherapy insights and tips for maintaining a healthy, active lifestyle."
+									}
+								/>
+								<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 xl:gap-4">
+									{blogData.slice(0, 4).map((blog) => (
+										<BlogCard
+											key={blog._id}
+											id={blog._id}
+											title={blog.title}
+											description={blog.description}
+											youTubeLink={blog.youTubeLink}
+											image={blog.image}
+											status={blog.status}
+											views={blog.views}
+											tags={blog.tags}
+											blogType={blog.blogType}
+											date={blog.date}
+										/>
+									))}
+								</div>
+								<div className="mt-12 flex justify-center">
+									<Button
+										onClick={() => navigate("/blog")}
+										className="w-fit text-nowrap text-base font-semibold bg-green text-white rounded-2xl px-8 py-2.5"
+									>
+										View All
+									</Button>
+								</div>
+							</section>
+						)
 					)
-				)}
+				}
 
 				{/* faq */}
 				<div className="flex flex-col md:flex-col gap-4 pt-12 md:pt-[108px] pb-11 md:pb-24 px-4 sm:px-12 lg:px-[120px]   items-center ">
@@ -860,7 +914,7 @@ const Home = () => {
 
 					<FAQ />
 				</div>
-			</div>
+			</div >
 		</>
 	);
 };
