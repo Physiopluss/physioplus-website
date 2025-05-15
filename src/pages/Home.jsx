@@ -184,13 +184,13 @@ const Home = () => {
 
 				{/* Swiper banner */}
 
-				<section className="bg-[#FFFDF8] w-full  relative m-0 md:h-[400px] overflow-x-hidden">
+				<section className="bg-[#FFFDF8] w-full  relative m-0 lg:h-[400px] overflow-x-hidden">
 
 
 					{/* Pagination Container */}
 					<div
 						ref={paginationEl}
-						className="custom-pagination absolute !bottom-4 !left-1/2 !z-20 !w-full !-translate-x-1/2 !overflow-hidden m-0"
+						className="custom-pagination absolute  !bottom-4 !left-1/2 !z-20 !w-full !-translate-x-1/2 !overflow-hidden m-0"
 					/>
 
 					<Swiper
@@ -211,7 +211,7 @@ const Home = () => {
 								<img onClick={() => navigate("/physios")}
 									src={imgSrc}
 									alt={""}
-									className="!overflow-hidden w-full h-full object-cover p-0 m-0 md:object-cover "
+									className="!overflow-hidden w-full h-full object-contain p-0 m-0 lg:object-cover "
 								/>
 							</SwiperSlide>
 						))}
@@ -285,7 +285,7 @@ const Home = () => {
 
 
 					{/* Mobile View Box (Visible only on small screens) */}
-					<div className=" md:hidden max-w-sm mx-auto mt-8">
+					<div className=" lg:hidden max-w-sm mx-auto mt-8">
 						<div className="bg-emerald-600 rounded-2xl p-6 text-center text-white shadow-md border border-emerald-600">
 							<h2 className="text-2xl font-bold mb-2">Download Our App Today!</h2>
 							<p className="text-sm mb-6">
@@ -314,7 +314,7 @@ const Home = () => {
 					{/* Swiper Section (Visible only on medium and larger screens) */}
 					<section
 						ref={sectionRef}
-						className="hidden sm:block max-w-screen overflow-hidden mx-auto py-12 px-4 relative"
+						className="hidden lg:block max-w-screen overflow-hidden mx-auto py-12 px-4 relative"
 					>
 
 
@@ -623,7 +623,7 @@ const Home = () => {
 					/>
 
 					{/* for big screen */}
-					<div className="hidden md:flex  flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
+					<div className="hidden lg:flex  flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
 						{/* Left Section */}
 						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
 							<InfoSection
@@ -677,7 +677,7 @@ const Home = () => {
 
 
 					{/* for phone screen  */}
-					<div className="block md:hidden w-full max-w-md space-y-4">
+					<div className="block lg:hidden w-full max-w-md space-y-4 flex flex-col items-center justify-center mx-auto">
 						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
 
 							<InfoSection
@@ -802,7 +802,7 @@ const Home = () => {
 							<SwiperGallery />
 						</div>
 						{/* reviews for tablet & web */}
-						<div className="hidden md:flex w-1/3 h-full flex-col overflow-hidden  pb-4  ">
+						<div className="hidden lg:flex w-1/3 h-full flex-col overflow-hidden  pb-4  ">
 							<Swiper
 								modules={[Mousewheel]}
 								direction={"vertical"}
