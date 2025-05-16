@@ -33,9 +33,7 @@ const ReviewCard = ({ id, name, img, rating, review, patientType }) => {
 						</Typography>
 					</div>
 				</div>
-				<div>
-
-				</div>
+				
 				<Avatar
 					size="md"
 					variant="circular"
