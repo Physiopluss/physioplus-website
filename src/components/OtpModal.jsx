@@ -7,7 +7,7 @@ import OTPInput from "react-otp-input";
 import { IoIosCloseCircle } from "react-icons/io";
 import { login, OtpVerify, signUp } from "../api/auth";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export function OtpModal() {
 	const modalOpen = useSelector((state) => state.modal.otpModalOpen);
@@ -18,8 +18,11 @@ export function OtpModal() {
 	const [otp, setOtp] = useState("");
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
+	const location = useLocation();
 	let intervalId;
 
+
+	const redirectPath = location.state?.from || "/physios";
 	// Timer starts after dialog opens
 	useEffect(() => {
 		if (open) {
@@ -47,41 +50,43 @@ export function OtpModal() {
 	const submitHandler = async (type) => {
 		type === "login"
 			? OtpVerify(phone, otp).then((res) => {
-					if (res.status >= 200 && res.status < 300) {
-						const user = {
-							userToken: res?.data.token,
-							userId: res?.data.data._id,
-							phone: res?.data.data.phone,
-						};
-						localStorage.setItem("user", JSON.stringify(user));
-						dispatch(setUser(user));
-						dispatch(setOtpModalOpen());
-						toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
-						setTimeout(() => navigate("/physios"), 1500);
-					} else if (res.status >= 400 && res.status < 500) {
-						toast.error(res.data.message, { id: "OtpErrorLogin1", className: "capitalize z-10" });
-					} else {
-						toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
-					}
-			  })
+				if (res.status >= 200 && res.status < 300) {
+					const user = {
+						userToken: res?.data.token,
+						userId: res?.data.data._id,
+						phone: res?.data.data.phone,
+					};
+					localStorage.setItem("user", JSON.stringify(user));
+					dispatch(setUser(user));
+					dispatch(setOtpModalOpen());
+					toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
+					setTimeout(() => navigate(redirectPath), 1500);
+
+				} else if (res.status >= 400 && res.status < 500) {
+					toast.error(res.data.message, { id: "OtpErrorLogin1", className: "capitalize z-10" });
+				} else {
+					toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
+				}
+			})
 			: OtpVerify(phone, otp, type, fullName, gender, date, dob).then((res) => {
-					if (res.status >= 200 && res.status < 300) {
-						const user = {
-							userToken: res?.data.token,
-							userId: res?.data.data._id,
-							phone: res?.data.data.phone,
-						};
-						localStorage.setItem("user", JSON.stringify(user));
-						dispatch(setUser(user));
-						dispatch(setOtpModalOpen());
-						toast.success("login successful", { id: "SignupSuccess", className: "capitalize" });
-						setTimeout(() => navigate("/physios"), 1500);
-					} else if (res.status >= 400 && res.status < 500) {
-						toast.error(res.data.message, { id: "OtpErrorLogin2", className: "capitalize" });
-					} else {
-						toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize" });
-					}
-			  });
+				if (res.status >= 200 && res.status < 300) {
+					const user = {
+						userToken: res?.data.token,
+						userId: res?.data.data._id,
+						phone: res?.data.data.phone,
+					};
+					localStorage.setItem("user", JSON.stringify(user));
+					dispatch(setUser(user));
+					dispatch(setOtpModalOpen());
+					toast.success("login successful", { id: "SignupSuccess", className: "capitalize" });
+					setTimeout(() => navigate(redirectPath), 1500);
+
+				} else if (res.status >= 400 && res.status < 500) {
+					toast.error(res.data.message, { id: "OtpErrorLogin2", className: "capitalize" });
+				} else {
+					toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize" });
+				}
+			});
 	};
 
 	const handleResendOtp = () => {
