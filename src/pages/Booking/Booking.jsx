@@ -86,8 +86,8 @@ const Booking = () => {
         decoded.patient.phone.length === 13
           ? decoded.patient.phone.slice(3, 13)
           : decoded.patient.phone.length === 10
-          ? decoded.patient.phone
-          : "",
+            ? decoded.patient.phone
+            : "",
       painNotes: "",
     });
   }, []);
@@ -109,8 +109,8 @@ const Booking = () => {
             ? setAmountToPay(0)
             : setAmountToPay(amount - couponResponse?.data?.discount)
           : setAmountToPay(
-              amount - (couponResponse?.data?.discount * amount) / 100
-            )
+            amount - (couponResponse?.data?.discount * amount) / 100
+          )
         : setAmountToPay(amount);
     } else {
       setAmountToPay(amount);
@@ -153,63 +153,63 @@ const Booking = () => {
         try {
           paymentType == "online"
             ? appointmentDataToRazorpay({
-                userToken,
-                patientId,
-                physioId,
-                date: selectedDate,
-                time,
-                patientName: values.patientName,
-                age: values.age,
-                gender: values.gender,
-                phone: values.phone,
-                amount: amountToPay,
-                serviceTypeString,
-                timeInString,
-                painNotes: values.painNotes,
-                couponId:
-                  couponResponse?.status >= 200 && couponResponse?.status < 300
-                    ? couponResponse.data._id
-                    : undefined,
+              userToken,
+              patientId,
+              physioId,
+              date: selectedDate,
+              time,
+              patientName: values.patientName,
+              age: values.age,
+              gender: values.gender,
+              phone: values.phone,
+              amount: amountToPay,
+              serviceTypeString,
+              timeInString,
+              painNotes: values.painNotes,
+              couponId:
+                couponResponse?.status >= 200 && couponResponse?.status < 300
+                  ? couponResponse.data._id
+                  : undefined,
+            })
+              .then(() => {
+                toast.success("Appointment has been created");
+                dispatch(emptyBooking());
+                setTimeout(() => {
+                  navigate("/order-success");
+                }, 1000);
               })
-                .then(() => {
-                  toast.success("Appointment has been created");
-                  dispatch(emptyBooking());
-                  setTimeout(() => {
-                    navigate("/order-success");
-                  }, 1000);
-                })
-                .catch(() => {
-                  toast.error("Something went wrong");
-                })
+              .catch(() => {
+                toast.error("Something went wrong");
+              })
             : cashAppointment({
-                userToken,
-                patientId,
-                physioId,
-                date: selectedDate,
-                time,
-                patientName: values.patientName,
-                age: values.age,
-                gender: values.gender,
-                phone: values.phone,
-                amount: amountToPay,
-                serviceTypeString,
-                timeInString,
-                painNotes: values.painNotes,
-                couponId:
-                  couponResponse?.status >= 200 && couponResponse?.status < 300
-                    ? couponResponse.data._id
-                    : null,
+              userToken,
+              patientId,
+              physioId,
+              date: selectedDate,
+              time,
+              patientName: values.patientName,
+              age: values.age,
+              gender: values.gender,
+              phone: values.phone,
+              amount: amountToPay,
+              serviceTypeString,
+              timeInString,
+              painNotes: values.painNotes,
+              couponId:
+                couponResponse?.status >= 200 && couponResponse?.status < 300
+                  ? couponResponse.data._id
+                  : null,
+            })
+              .then(() => {
+                toast.success("Appointment has been created");
+                dispatch(emptyBooking());
+                setTimeout(() => {
+                  navigate("/order-success");
+                }, 1000);
               })
-                .then(() => {
-                  toast.success("Appointment has been created");
-                  dispatch(emptyBooking());
-                  setTimeout(() => {
-                    navigate("/order-success");
-                  }, 1000);
-                })
-                .catch(() => {
-                  toast.error("Something went wrong");
-                });
+              .catch(() => {
+                toast.error("Something went wrong");
+              });
         } catch (err) {
           return new Error(err);
         }
@@ -262,172 +262,276 @@ const Booking = () => {
           <Link className="font-semibold">Patient Information</Link>
         </Breadcrumbs>
       </div>
-      <div className="gap-4 justify-around flex flex-col md:flex-row -mt-12 mx-4 md:mx-8 lg:mx-16">
+      <div className="gap-4 justify-around flex flex-col md:flex-row mx-4 md:mx-8 lg:mx-16 ">
         {/* form with date & time */}
         <form
           onSubmit={formik.handleSubmit}
           method="POST"
-          className="flex flex-col gap-2 flex-1 bg-white p-8 border rounded-lg"
+          className="flex flex-col gap-2 flex-1 bg-white  border rounded-lg mb-8 md:mb-0"
         >
-          <p className="text-lg font-bold">Enter Patient Information</p>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-            <div className="">
-              <label htmlFor="" className="text-sm">
-                Name
-              </label>
-              <Input
-                size="md"
-                name="patientName"
-                onChange={formik.handleChange}
-                value={formik.values.patientName}
-                placeholder="Enter Your Name"
-                labelProps={{ className: "hidden" }}
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
-              />
-              {formik.errors.patientName && formik.touched.patientName && (
-                <span className="text-red-500 text-sm">
-                  {formik.errors.patientName}
-                </span>
-              )}
-            </div>
-            <div className="">
-              <label htmlFor="age" className="text-sm">
-                DOB
-              </label>
-              <Select
-                id="age"
-                name="age"
-                placeholder={"Select Year of Birth"}
-                value={formik.values.age}
-                labelProps={{ className: "hidden" }}
-                onChange={(value) => formik.setFieldValue("age", value)}
-                className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border focus:border-2 border-t-transparent focus:border-t-transparent focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] focus:border-gray-900 border border-[#A9ABB2] border-t-[#A9ABB2] focus:!border-t-black placeholder:!text-blue-gray-900 placeholder:opacity-100"
-              >
-                {years.map((year) => (
-                  <Option key={year} value={year}>
-                    {year}
-                  </Option>
-                ))}
-              </Select>
-              {formik.errors.age && formik.touched.age && (
-                <span className="text-red-500 text-sm">
-                  {formik.errors.age}
-                </span>
-              )}
-            </div>
-            <div>
-              <label htmlFor="pincode" className="text-sm">
-                Pincode
-              </label>
-              <Input
-                required
-                size="md"
-                name="pincode"
-                onChange={formik.handleChange}
-                value={formik.values.pincode}
-                placeholder="Enter Your Pincode"
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
-              />
-              {formik.errors.pincode && formik.touched.pincode && (
-                <span className="text-red-500 text-sm">
-                  {formik.errors.pincode}
-                </span>
-              )}
+          <div className="gap-4 justify-around flex flex-col md:flex-row m-0 p-0  -mt-12 ">
+            <div className="flex flex-col gap-2 flex-1 bg-white p-8 border rounded-lg shadow-md" >
+              <p className="text-lg font-bold">Enter Patient Information</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+                <div className="">
+                  <label htmlFor="" className="text-sm">
+                    Name
+                  </label>
+                  <Input
+                    size="md"
+                    name="patientName"
+                    onChange={formik.handleChange}
+                    value={formik.values.patientName}
+                    placeholder="Enter Your Name"
+                    labelProps={{ className: "hidden" }}
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
+                  />
+                  {formik.errors.patientName && formik.touched.patientName && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.patientName}
+                    </span>
+                  )}
+                </div>
+                <div className="">
+                  <label htmlFor="age" className="text-sm">
+                    DOB
+                  </label>
+                  <Select
+                    id="age"
+                    name="age"
+                    placeholder={"Select Year of Birth"}
+                    value={formik.values.age}
+                    labelProps={{ className: "hidden" }}
+                    onChange={(value) => formik.setFieldValue("age", value)}
+                    className="peer w-full h-full bg-transparent text-blue-gray-700 font-sans font-normal outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 disabled:cursor-not-allowed transition-all placeholder-shown:border focus:border-2 border-t-transparent focus:border-t-transparent focus:placeholder:opacity-100 text-sm px-3 py-2.5 rounded-[7px] focus:border-gray-900 border border-[#A9ABB2] border-t-[#A9ABB2] focus:!border-t-black placeholder:!text-blue-gray-900 placeholder:opacity-100"
+                  >
+                    {years.map((year) => (
+                      <Option key={year} value={year}>
+                        {year}
+                      </Option>
+                    ))}
+                  </Select>
+                  {formik.errors.age && formik.touched.age && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.age}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="pincode" className="text-sm">
+                    Pincode
+                  </label>
+                  <Input
+                    required
+                    size="md"
+                    name="pincode"
+                    onChange={formik.handleChange}
+                    value={formik.values.pincode}
+                    placeholder="Enter Your Pincode"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
+                  />
+                  {formik.errors.pincode && formik.touched.pincode && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.pincode}
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="state" className="text-sm">
+                    State
+                  </label>
+                  <Input
+                    size="md"
+                    name="state"
+                    value={formik.values.state}
+                    placeholder="Enter Your State"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="city" className="text-sm">
+                    City
+                  </label>
+                  <Input
+                    size="md"
+                    name="city"
+                    value={formik.values.city}
+                    placeholder="Enter Your City"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
+                  />
+                </div>
+                <div>
+                  <label htmlFor="phone" className="text-sm">
+                    Mobile Number
+                  </label>
+                  <Input
+                    size="md"
+                    name="phone"
+                    maxLength="10"
+                    onChange={formik.handleChange}
+                    value={formik.values.phone}
+                    labelProps={{ className: "hidden" }}
+                    placeholder="Enter Your Mobile"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
+                  />
+                  {formik.errors.phone && formik.touched.phone && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.phone}
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <label htmlFor="gender" className="text-sm">
+                    Gender
+                  </label>
+                  <Select
+                    size="md"
+                    name="gender"
+                    labelProps={{ className: "hidden" }}
+                    placeholder="Select Your Gender"
+                    className="border border-[#A9ABB2] focus:border-2 focus:border-black focus:!border-t-black placeholder:text-blue-gray-300 placeholder:opacity-100"
+                    onChange={(value) => formik.setFieldValue("gender", value)}
+                    value={formik.values.gender}
+                  >
+                    <Option key={0} value={0} defaultChecked>
+                      Female
+                    </Option>
+                    <Option key={1} value={1}>
+                      Male
+                    </Option>
+                    <Option key={2} value={2}>
+                      Other
+                    </Option>
+                  </Select>
+                  {formik.errors.gender && formik.touched.gender && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.gender}
+                    </span>
+                  )}
+                </div>
+                <div className="col-span-1 lg:col-span-2">
+                  <label htmlFor="painNotes" className="text-sm">
+                    Describe your pain
+                  </label>
+                  <Textarea
+                    required
+                    size="md"
+                    name="painNotes"
+                    onChange={formik.handleChange}
+                    value={formik.values.painNotes}
+                    labelProps={{ className: "hidden" }}
+                    placeholder="Enter Your Pain here"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label htmlFor="state" className="text-sm">
-                State
-              </label>
-              <Input
-                size="md"
-                name="state"
-                value={formik.values.state}
-                placeholder="Enter Your State"
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
-              />
-            </div>
+            {/* booking detail card  */}
+            <div className="text-base sm:min-w-28 rounded-md gap-4 px-6 py-4 h-fit bg-white border border-gray-200 shadow-md lg:min-w-[350px] mb-8">
+              <h6 className="text-lg font-semibold mb-4">Booking Summary</h6>
+              <div className="flex flex-col gap-2 sm:text-sm text-base">
+                <p className="flex justify-between text-right gap-8">
+                  <span className="text-start">Your Schedule</span>
+                  {selectedDate &&
+                    timeInString &&
+                    moment(selectedDate).format("ll")}{" "}
+                  {!selectedDate && "Please select a date"}
+                </p>
+                <p className="flex justify-between capitalize">
+                  <span className="text-start">Booked Slot</span>{" "}
+                  {selectedDate && timeInString && timeInString}
+                  {!timeInString && "Please select a date"}
+                </p>
+                <hr className="my-2" />
+                <p className="flex justify-between">
+                  <span className="text-nowrap">Consultation Fee</span> ₹ {amount}
+                </p>
+                <div className="relative flex w-full my-2">
+                  <Input
+                    name="coupon"
+                    placeholder="Enter Coupon Code"
+                    labelProps={{ className: "hidden" }}
+                    className="placeholder:text-blue-gray-300 placeholder:opacity-100 border-none ring-1 ring-[#EAEBEC] focus:!border-t-black"
+                    value={couponName}
+                    onChange={(e) => setCouponName(e.target.value)}
+                  />
+                  <Button
+                    size="lg"
+                    className="!absolute right-0 py-2.5 rounded-none rounded-r bg-[#E6F4EC] text-black shadow-none hover:shadow-none"
+                    onClick={() => {
+                      if (couponName) {
+                        couponApi(couponName, patientId, userToken)
+                          .then((res) => {
+                            if (res.status >= 200 && res.status < 300) {
+                              setCouponResponse(res.data);
+                            } else {
+                              setCouponResponse(res.data);
+                            }
+                          })
+                          .catch((err) => {
+                            toast.error(err.message);
+                          });
+                      } else {
+                        toast.error("Please enter a valid coupon code");
+                      }
+                    }}
+                  >
+                    Apply
+                  </Button>
+                </div>
+                <div className={`${couponResponse ? "block" : "hidden"} `}>
+                  {couponResponse &&
+                    couponResponse.status >= 200 &&
+                    couponResponse.status < 300 ? (
+                    <div className="flex justify-between mb-2 capitalize">
+                      <span>Discount</span>{" "}
+                      <span className="text-green">- ₹ {amount - amountToPay}</span>
+                    </div>
+                  ) : (
+                    <div className="text-red-600 mb-2 capitalize">
+                      {couponResponse?.message}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-            <div>
-              <label htmlFor="city" className="text-sm">
-                City
-              </label>
-              <Input
-                size="md"
-                name="city"
-                value={formik.values.city}
-                placeholder="Enter Your City"
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
-              />
-            </div>
-            <div>
-              <label htmlFor="phone" className="text-sm">
-                Mobile Number
-              </label>
-              <Input
-                size="md"
-                name="phone"
-                maxLength="10"
-                onChange={formik.handleChange}
-                value={formik.values.phone}
-                labelProps={{ className: "hidden" }}
-                placeholder="Enter Your Mobile"
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
-              />
-              {formik.errors.phone && formik.touched.phone && (
-                <span className="text-red-500 text-sm">
-                  {formik.errors.phone}
-                </span>
-              )}
-            </div>
-            <div>
-              <label htmlFor="gender" className="text-sm">
-                Gender
-              </label>
-              <Select
-                size="md"
-                name="gender"
-                labelProps={{ className: "hidden" }}
-                placeholder="Select Your Gender"
-                className="border border-[#A9ABB2] focus:border-2 focus:border-black focus:!border-t-black placeholder:text-blue-gray-300 placeholder:opacity-100"
-                onChange={(value) => formik.setFieldValue("gender", value)}
-                value={formik.values.gender}
-              >
-                <Option key={0} value={0} defaultChecked>
-                  Female
-                </Option>
-                <Option key={1} value={1}>
-                  Male
-                </Option>
-                <Option key={2} value={2}>
-                  Other
-                </Option>
-              </Select>
-              {formik.errors.gender && formik.touched.gender && (
-                <span className="text-red-500 text-sm">
-                  {formik.errors.gender}
-                </span>
-              )}
-            </div>
-            <div className="col-span-1 lg:col-span-2">
-              <label htmlFor="painNotes" className="text-sm">
-                Describe your pain
-              </label>
-              <Textarea
-                required
-                size="md"
-                name="painNotes"
-                onChange={formik.handleChange}
-                value={formik.values.painNotes}
-                labelProps={{ className: "hidden" }}
-                placeholder="Enter Your Pain here"
-                className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black placeholder:text-blue-gray-700 placeholder:opacity-100"
-              />
+              <hr className="border-black my-2" />
+              <div className="flex justify-between items-start">
+                <div className="flex flex-col">
+                  <p className="text-medium font-semibold">Total Amount to pay</p>
+                  <p className="text-sm">included taxes</p>
+                </div>
+                <p className="font-semibold">₹ {amountToPay}</p>
+              </div>
+
+              <hr className="my-2" />
+              <div className="text-wrap text-sm mt-2">
+                <div className="flex flex-col gap-2 justify-center items-center">
+                  <p className="text-lg font-bold">Recover Faster Step By Step</p>
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-sm text-center max-w-md mx-auto">
+                <p className="mt-2 text-blue-700">
+                  Use <span className="font-semibold text-blue-900">FIRST50</span>{" "}
+                  to get
+                  <span className="font-bold text-green-600"> 50% off</span>
+                </p>
+                <p className="text-gray-600 text-xs mt-1 italic">
+                  *For first-time users only
+                </p>
+              </div>
             </div>
           </div>
+
           <hr className="my-4" />
-          <p className="text-lg font-bold">Payment Options</p>
+
+
           <div className="flex flex-col gap-2 p-2 shadow-sm rounded-md">
+            <p className="text-lg font-bold ">Payment Options</p>
             <span className="flex flex-col gap-0 text-sm sm:text-base">
               <Radio
                 name="paymentType"
@@ -468,102 +572,7 @@ const Booking = () => {
           </div>
         </form>
 
-        {/* booking detail card  */}
-        <div className="text-base sm:min-w-28 rounded-md gap-4 px-6 py-4 h-fit bg-white border border-gray-200 shadow-md lg:min-w-[350px] mb-8">
-          <h6 className="text-lg font-semibold mb-4">Booking Summary</h6>
-          <div className="flex flex-col gap-2 sm:text-sm text-base">
-            <p className="flex justify-between text-right gap-8">
-              <span className="text-start">Your Schedule</span>
-              {selectedDate &&
-                timeInString &&
-                moment(selectedDate).format("ll")}{" "}
-              {!selectedDate && "Please select a date"}
-            </p>
-            <p className="flex justify-between capitalize">
-              <span className="text-start">Booked Slot</span>{" "}
-              {selectedDate && timeInString && timeInString}
-              {!timeInString && "Please select a date"}
-            </p>
-            <hr className="my-2" />
-            <p className="flex justify-between">
-              <span className="text-nowrap">Consultation Fee</span> ₹ {amount}
-            </p>
-            <div className="relative flex w-full my-2">
-              <Input
-                name="coupon"
-                placeholder="Enter Coupon Code"
-                labelProps={{ className: "hidden" }}
-                className="placeholder:text-blue-gray-300 placeholder:opacity-100 border-none ring-1 ring-[#EAEBEC] focus:!border-t-black"
-                value={couponName}
-                onChange={(e) => setCouponName(e.target.value)}
-              />
-              <Button
-                size="lg"
-                className="!absolute right-0 py-2.5 rounded-none rounded-r bg-[#E6F4EC] text-black shadow-none hover:shadow-none"
-                onClick={() => {
-                  if (couponName) {
-                    couponApi(couponName, patientId, userToken)
-                      .then((res) => {
-                        if (res.status >= 200 && res.status < 300) {
-                          setCouponResponse(res.data);
-                        } else {
-                          setCouponResponse(res.data);
-                        }
-                      })
-                      .catch((err) => {
-                        toast.error(err.message);
-                      });
-                  } else {
-                    toast.error("Please enter a valid coupon code");
-                  }
-                }}
-              >
-                Apply
-              </Button>
-            </div>
-            <div className={`${couponResponse ? "block" : "hidden"} `}>
-              {couponResponse &&
-              couponResponse.status >= 200 &&
-              couponResponse.status < 300 ? (
-                <div className="flex justify-between mb-2 capitalize">
-                  <span>Discount</span>{" "}
-                  <span className="text-green">- ₹ {amount - amountToPay}</span>
-                </div>
-              ) : (
-                <div className="text-red-600 mb-2 capitalize">
-                  {couponResponse?.message}
-                </div>
-              )}
-            </div>
-          </div>
 
-          <hr className="border-black my-2" />
-          <div className="flex justify-between items-start">
-            <div className="flex flex-col">
-              <p className="text-medium font-semibold">Total Amount to pay</p>
-              <p className="text-sm">included taxes</p>
-            </div>
-            <p className="font-semibold">₹ {amountToPay}</p>
-          </div>
-
-          <hr className="my-2" />
-          <div className="text-wrap text-sm mt-2">
-            <div className="flex flex-col gap-2 justify-center items-center">
-              <p className="text-lg font-bold">Recover Faster Step By Step</p>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-sm text-center max-w-md mx-auto">
-            <p className="mt-2 text-blue-700">
-              Use <span className="font-semibold text-blue-900">FIRST50</span>{" "}
-              to get
-              <span className="font-bold text-green-600"> 50% off</span>
-            </p>
-            <p className="text-gray-600 text-xs mt-1 italic">
-              *For first-time users only
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Render the Modal */}
