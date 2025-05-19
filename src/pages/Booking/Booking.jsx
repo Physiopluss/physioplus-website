@@ -54,7 +54,9 @@ const Booking = () => {
   // get single physio all data
   const { data, error, isLoading } = useFetchSinglePhysioDataQuery(slug);
   const allData = data?.data;
+  const physioName = data?.data.fullName
   const physioId = data?.data?._id;
+
   // store physio all data in redux
   dispatch(() => dispatch(setPhysioDetail({ physioId, allData })));
 
@@ -62,6 +64,7 @@ const Booking = () => {
   const serviceTypeString = useSelector((e) => e.booking?.physioBookingType);
   // const serviceType = serviceTypeString == "home" ? 0 : 1;
   const selectedDate = useSelector((date) => date.booking.selectedDate);
+  const fullDateString = moment(selectedDate).format("dddd, DD MMM YYYY");
   const physioData = useSelector((state) => state.physioDetail.physioData);
   const userToken = useSelector((state) => state?.auth?.user?.userToken);
   const patientId = useSelector((state) => state?.auth?.user?.userId);
@@ -175,7 +178,14 @@ const Booking = () => {
                 toast.success("Appointment has been created");
                 dispatch(emptyBooking());
                 setTimeout(() => {
-                  navigate("/order-success");
+                  navigate("/order-success", {
+                    state: {
+                      physioName,
+                      Date: fullDateString,
+
+                      timeInString
+                    },
+                  });
                 }, 1000);
               })
               .catch(() => {
@@ -204,7 +214,15 @@ const Booking = () => {
                 toast.success("Appointment has been created");
                 dispatch(emptyBooking());
                 setTimeout(() => {
-                  navigate("/order-success");
+                  navigate("/order-success", {
+                    state: {
+                      physioName,
+                      Date: fullDateString,
+
+                      timeInString
+                    },
+                  });
+
                 }, 1000);
               })
               .catch(() => {
