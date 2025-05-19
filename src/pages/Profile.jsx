@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import Loading from "../components/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import { setLogOut } from "../slices/authSlice";
+import { Breadcrumbs } from "@material-tailwind/react";
 
 const Profile = () => {
 	const [editMode, setEditMode] = useState(false);
@@ -44,36 +45,67 @@ const Profile = () => {
 	}, []);
 
 	return (
-		<div className="font-Urbanist flex min-h-screen bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]">
-			{/* Sidebar */}
-			<div className="hidden md:block lg:w-64 text-base font-semibold bg-white border-r rounded-l-2xl overflow-hidden">
-				<nav className="flex flex-col">
-					<Link
-						to={"/profile"}
-						className={`p-4 cursor-pointer bg-[#E6F4EC] text-emerald-700`}
-					>
-						My Profile
-					</Link>
-					<Link
-						to="/order-history"
-						className={`p-4 cursor-pointer `}
-					>
-						My Appointment
-					</Link>
-					<div
-						onClick={() => {
-							localStorage.removeItem("user");
-							dispatch(setLogOut());
-							navigate("../");
-						}}
-						className="p-4 cursor-pointer mt-auto"
-					>
-						Logout
-					</div>
-				</nav>
-			</div>
 
-			{/* Main Content */}
+		
+		<div className="font-Urbanist   bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]">
+
+	<div className="h-40 w-full  flex items-center">
+  <Breadcrumbs
+    separator=">"
+    className="my-2 mx-4 md:mx-6 lg:mx-12 text-black bg-transparent"
+  >
+  
+    <Link to="/profile">My Account</Link>
+  </Breadcrumbs>
+</div>
+
+<div className="mx-4 md:mx-8 lg:mx-16 -mt-12 bg-white pb-8 rounded-xl">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+  {/* Card 1 - My Profile */}
+  <Link to="/profile" className="bg-white border rounded-xl p-4 flex gap-4 hover:shadow-md transition">
+    <div className="flex-shrink-0">
+    <img src="/images/person.png" alt="" className="w-5 h-5 object-contain"/>
+    </div>
+    <div>
+      <h3 className="text-sm font-bold text-black">My Profile</h3>
+      <p className="text-sm text-gray-500">Manage your profile</p>
+    </div>
+  </Link>
+
+  {/* Card 2 - My Bookings */}
+<Link to="/order-history" className="bg-white border rounded-xl p-4 flex gap-4 hover:shadow-md transition">
+  <div className="flex-shrink-0">
+    <img src="/images/bag.png" alt="" className="w-5 h-5 object-contain" />
+  </div>
+  <div>
+    <h3 className="text-sm font-bold text-black">My Booking</h3>
+    <p className="text-sm text-gray-500">Manage your booked consultation</p>
+  </div>
+</Link>
+
+
+  {/* Card 3 - Logout */}
+  <div
+    onClick={() => {
+      localStorage.removeItem("user");
+      dispatch(setLogOut());
+      navigate("/");
+    }}
+    className="bg-white border rounded-xl p-4 flex gap-4 hover:shadow-md transition cursor-pointer"
+  >
+    <div className="flex-shrink-0">
+      <img src="/images/exit.png" alt=""  className="w-5 h-5 object-contain" />
+    </div>
+    <div>
+      <h3 className="text-sm font-bold text-black">Logout</h3>
+      <p className="text-sm text-gray-500">Logout your profile as a Patient</p>
+    </div>
+  </div>
+  
+</div>
+<hr className="my-4" />
+
+	{/* Main Content */}
 			{loading ? (
 				<Loading />
 			) : (
@@ -161,6 +193,18 @@ const Profile = () => {
 					</div>
 				</div>
 			)}
+</div>
+
+
+
+
+       
+
+
+			
+
+
+		
 		</div>
 	);
 };
