@@ -37,7 +37,7 @@ export const physioDataApi = createApi({
 						subspecializationId: subSpecializationFilter,
 						serviceType: mode,
 						latitude,
-				longitude,
+						longitude,
 					},
 				};
 			},
@@ -47,10 +47,17 @@ export const physioDataApi = createApi({
 		}),
 		// In your api/physios.js or similar file
 		getPhysioReviews: builder.query({
-	query: (physioId) => `web/physio/getPhysioReviews?physioId=${physioId}`,
-	// providesTags: ['PhysioReviews'],
-  }),
+			query: (physioId) => `web/physio/getPhysioReviews?physioId=${physioId}`,
+			// providesTags: ['PhysioReviews'],
+		}),
+		submitPhysioReview: builder.mutation({
+			query: (reviewData) => ({
+				url: `web/physio/AddPhysioReviews`,
+				method: "POST",
+				body: reviewData,
+			}),
+		}),
 	}),
 });
 
-export const { useFetchPhysioDataQuery,useGetPhysioReviewsQuery, useFetchSinglePhysioDataQuery } = physioDataApi;
+export const { useFetchPhysioDataQuery, useGetPhysioReviewsQuery, useFetchSinglePhysioDataQuery, useSubmitPhysioReviewMutation } = physioDataApi;
