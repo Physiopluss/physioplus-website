@@ -12,6 +12,7 @@ import Loading from "./components/Loading";
 import ErrorComp from "./components/ErrorComp";
 import Cta from "./components/Cta";
 import NoInternet from "./components/NoInternet";
+import OrderDetails from "./pages/Booking/OrderDetails";
 
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
@@ -157,6 +158,14 @@ const router = createBrowserRouter([
 				element: (
 					<Suspense fallback={<Loading />}>
 						<OrderHistory />
+					</Suspense>
+				),
+			},
+			{
+				path: "/order-details",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<OrderDetails />
 					</Suspense>
 				),
 			},
