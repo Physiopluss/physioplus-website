@@ -28,12 +28,12 @@ const SuccessModal = ({ title, description, btnOne, btnOneFunction, btnTwo, btnT
 						alt=""
 						className="w-[60px] h-[60px] mx-auto"
 					/>
-					<div className="text-3xl font-semibold text-black text-center">{title}</div>
+					<div className="w-full text-2xl font-semibold text-black text-center">{title}</div>
 					<div className="text-base font-semibold text-[#858991] text-center">{description}</div>
 					<div className="flex gap-4">
 						{btnOne && (
 							<Button
-								className="py-2.5 px-4 w-full text-base font-medium rounded-full text-white hover:shadow-none bg-green"
+								className="py-2.5 px-4 w-full text-sm font-medium rounded-full text-white hover:shadow-none bg-green normal-case"
 								onClick={(e) => {
 									e.preventDefault();
 									btnOneFunction();
@@ -41,6 +41,7 @@ const SuccessModal = ({ title, description, btnOne, btnOneFunction, btnTwo, btnT
 							>
 								{btnOne}
 							</Button>
+
 						)}
 						{btnTwo && (
 							<Button

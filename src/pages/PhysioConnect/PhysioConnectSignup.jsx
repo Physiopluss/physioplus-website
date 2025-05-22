@@ -51,25 +51,28 @@ const PhysioConnectSignup = () => {
 		},
 	});
 
-	const handleOtpSubmit = () => {
-		physioConnectOtpVerify(formik.values.fullName, formik.values.mobile, otp).then((res) => {
-			if (res.status >= 200 && res.status < 300) {
-				if (res?.data?.physio?.listingCharges?.some((item) => item.paymentStatus === 1)) {
-					dispatch(setSuccessModalOpen());
-				} else {
-					toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
-					setOtp("");
-					sessionStorage.setItem("physioConnectId", res.data.physio._id);
-					dispatch(setPhysioConnectPhysioId(res.data.physio._id));
-					setTimeout(() => navigate("/physio-connect/personal-details"), 1500);
-				}
-			} else if (res.status >= 400 && res.status < 500) {
-				toast.error("Invalid OTP Code", { id: "OtpErrorLogin1", className: "capitalize z-10" });
-			} else {
-				toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
-			}
-		});
-	};
+	const handleOtpSubmit = async () => {
+	try {
+		const res = await physioConnectOtpVerify(formik.values.fullName, formik.values.mobile, otp);
+
+		if (res?.data?.physio?.listingCharges?.some(item => item.paymentStatus === 1)) {
+			dispatch(setSuccessModalOpen());
+		} else {
+			toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
+			setOtp("");
+			sessionStorage.setItem("physioConnectId", res.data.physio._id);
+			dispatch(setPhysioConnectPhysioId(res.data.physio._id));
+			setTimeout(() => navigate("/physio-connect/personal-details"), 1500);
+		}
+	} catch (error) {
+		if (error.response?.status >= 400 && error.response?.status < 500) {
+			toast.error("Invalid OTP Code", { id: "OtpErrorLogin1", className: "capitalize z-10" });
+		} else {
+			toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
+		}
+	}
+};
+
 
 	return (
 		<>

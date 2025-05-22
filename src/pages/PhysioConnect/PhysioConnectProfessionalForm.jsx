@@ -1,12 +1,11 @@
 import ReactGA from "react-ga4";
-import { GoDash } from "react-icons/go";
+import { GoArrowLeft } from "react-icons/go";
+
 import {
   Button,
-  Checkbox,
+
   Input,
-  Option,
-  Select,
-  Radio,
+
 } from "@material-tailwind/react";
 
 import { useEffect, useRef, useState } from "react";
@@ -37,6 +36,22 @@ const PhysioConnectProfessionalForm = () => {
     (state) => state?.physioConnectAuth?.physioId
   );
   const [degreeOpen, setDegreeOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+        setDegreeOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // google analytics
   useEffect(() => {
     ReactGA.send({
@@ -108,7 +123,7 @@ const PhysioConnectProfessionalForm = () => {
       homeState: "",
       AnotherTreatmentName: "",
       AnotherTreatmentPrice: "",
-      insurance: "",
+      MPT: "",
       experience: "",
       iapMember: "",
       iapNumber: "",
@@ -119,7 +134,7 @@ const PhysioConnectProfessionalForm = () => {
       iapNumber: Yup.string(),
       iapImage: Yup.mixed()
         .nullable()
-       , // Validation for image
+      , // Validation for image
       degree: Yup.array().required("Degree is required"),
       specialization: Yup.array().required("Specialization is required"),
       serviceType: Yup.array().required("Service Type is required"),
@@ -137,8 +152,8 @@ const PhysioConnectProfessionalForm = () => {
       homeState: Yup.string("Home State is required"),
       AnotherTreatmentName: Yup.string("Another Treatment Name is required"),
       AnotherTreatmentPrice: Yup.number("Another Treatment Price is required"),
-      insurance: Yup.boolean().required(
-        "insurance is required"
+      MPT: Yup.boolean().required(
+        "check yes or no is required"
       ),
       experience: Yup.string().required("experience is required"),
     }),
@@ -147,7 +162,7 @@ const PhysioConnectProfessionalForm = () => {
         degree,
         specialization,
         experience,
-        insurance,
+        MPT,
         serviceType,
         iapMember,
         iapNumber,
@@ -160,13 +175,13 @@ const PhysioConnectProfessionalForm = () => {
       else {
         physioConnectProfessionalApi({
           degree,
-        specialization,
-        experience,
-        insurance,
-        serviceType,
-        iapMember,
-        iapNumber,
-        physioConnectPhysioId,
+          specialization,
+          experience,
+          MPT,
+          serviceType,
+          iapMember,
+          iapNumber,
+          physioConnectPhysioId,
         }).then((res) => {
           if (res.status === 200) {
             toast.success(res.data?.message);
@@ -287,15 +302,15 @@ const PhysioConnectProfessionalForm = () => {
     ) {
       formik.setFieldValue("iapNumber", oldPhysioData.iapNumber);
     }
-    //  setting insurance from database
+    //  setting MPT from database
     if (
       oldPhysioData &&
-      oldPhysioData.insurance != null &&
-      oldPhysioData.insurance != undefined
+      oldPhysioData.MPT != null &&
+      oldPhysioData.MPT != undefined
     ) {
       formik.setFieldValue(
-        "insurance",
-        oldPhysioData.insurance
+        "MPT",
+        oldPhysioData.MPT
       );
     }
 
@@ -375,11 +390,12 @@ const PhysioConnectProfessionalForm = () => {
             className="flex flex-col gap-4 flex-1 max-w-screen-lg"
           >
             <h6 className="font-semibold text-3xl">Professional Details</h6>
+            <p className="text-sm font-semibold text-gray-700">Fill in your professional details below</p>
 
             {/* Degree Section */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="degree" className="text-sm">
-                Degree
+              <label htmlFor="degree" className="text-sm font-semibold">
+                Select Degree
               </label>
               <div className="relative">
                 {/* Selected Items Display (Chips with Cross) */}
@@ -431,7 +447,7 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Options */}
                 {degreeOpen && (
-                  <div className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                  <div ref={dropdownRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
                     <div className="flex flex-col gap-2">
                       {allDegree.map((i) => (
                         <label
@@ -458,7 +474,7 @@ const PhysioConnectProfessionalForm = () => {
                             className="w-4 h-4"
                             value={i._id}
                             checked={formik.values.degree.includes(i._id)}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           {i.name}
                         </label>
@@ -471,9 +487,47 @@ const PhysioConnectProfessionalForm = () => {
                 <p className="text-red-500">{formik.errors.degree}</p>
               )}
             </div>
+            {/* MPT Section */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="specialization" className="text-sm">
-                Specialization
+              <label className="text-sm font-semibold">
+                Have you completed MPT?
+              </label>
+
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="MPT"
+                    value="true"
+                    checked={formik.values.MPT === true}
+                    onChange={() => formik.setFieldValue("MPT", true)}
+                    className="accent-black"
+                  />
+                  <span className="text-sm">Yes</span>
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="MPT"
+                    value="false"
+                    checked={formik.values.MPT === false}
+                    onChange={() => formik.setFieldValue("MPT", false)}
+                    className="accent-black"
+                  />
+                  <span className="text-sm">No</span>
+                </label>
+              </div>
+
+              {formik.touched.MPT && formik.errors.MPT && (
+                <div className="text-red-500 text-sm mt-1">{formik.errors.MPT}</div>
+              )}
+            </div>
+
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="specialization" className="text-sm font-semibold">
+                Select Speciality
               </label>
               <div className="relative">
                 {/* Selected Items Display (Chips with Cross) */}
@@ -517,7 +571,8 @@ const PhysioConnectProfessionalForm = () => {
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setOpen(!open)}
                 >
-                  <span>Select Specializations</span>
+                  <span>Select
+                    Speciality</span>
                   <img
                     src="/aboutImg/dropdown.png"
                     className="w-4 h-4"
@@ -527,7 +582,7 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Options */}
                 {open && (
-                  <div className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                  <div ref={dropdownRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
                     <div className="flex flex-col gap-2">
                       {allSpecialization.map((i) => (
                         <label
@@ -562,7 +617,7 @@ const PhysioConnectProfessionalForm = () => {
                             checked={formik.values.specialization.includes(
                               i._id
                             )}
-                            onChange={() => {}}
+                            onChange={() => { }}
                           />
                           {i.name}
                         </label>
@@ -577,12 +632,12 @@ const PhysioConnectProfessionalForm = () => {
                 )}
             </div>
 
-            {/* Treat Insured Patient Dropdown */}
+            {/* work exp.  */}
 
             <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-2">
-                <label htmlFor="experience" className="text-sm">
-                  Work Experience (in years)
+                <label htmlFor="experience" className="text-sm font-semibold ">
+                  Experience (in years)
                 </label>
                 <Input
                   size="md"
@@ -600,72 +655,50 @@ const PhysioConnectProfessionalForm = () => {
                   {formik.errors.experience}
                 </div>
               ) : null}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="insurance" className="text-sm">
-                  Want to treat patient
-                </label>
-             <select
-  name="insurance"
-  value={formik.values.insurance === "" ? "" : formik.values.insurance.toString()}
-  onChange={(e) =>
-    formik.setFieldValue(
-      "insurance",
-      e.target.value === "true"
-    )
-  }
-  className="border border-gray-300 rounded-md px-3 py-2 w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black appearance-none pr-8 bg-white"
->
-  <option value="" disabled hidden>
-    Select an option
-  </option>
-  <option value="true">Yes</option>
-  <option value="false">No</option>
-</select>
-</div>
-{formik.touched.insurance && formik.errors.insurance ? (
-                <div className="text-red-500 mt-2">
-                  {formik.errors.insurance}
-                </div>
-              ) : null}
+
             </div>
 
             <div className="flex flex-col gap-2">
-  <label htmlFor="iapMember" className="text-sm">
-    Are you registered with IAP?
-  </label>
-  <div className="flex gap-2">
-    <Radio
-      className="w-4 h-4 hover:before:opacity-0"
-      label="Yes"
-      name="iapMember"
-      value="true"
-      checked={formik.values.iapMember === true}
-      onChange={() => formik.setFieldValue("iapMember", true)}
-    />
-    <Radio
-      className="w-4 h-4 hover:before:opacity-0"
-      label="No"
-      name="iapMember"
-      value="false"
-      checked={formik.values.iapMember === false}
-      onChange={() => {
-        formik.setFieldValue("iapMember", false);
-        formik.setFieldValue("iapNumber", ""); // Reset IAP number
-        formik.setFieldValue("iapImage", []); // Reset uploaded images
-      }}
-    />
-  </div>
-</div>
-            {formik.touched.iapMember && formik.errors.iapMember ? (
-              <div className="text-red-500 mt-2">{formik.errors.iapMember}</div>
-            ) : null}
+              <label htmlFor="iapMember" className="text-sm font-semibold">
+                Are you registered with IAP?
+              </label>
+
+              <select
+                id="iapMember"
+                name="iapMember"
+                value={formik.values.iapMember === "" ? "" : formik.values.iapMember.toString()}
+                onChange={(e) => {
+                  const value = e.target.value === "true";
+                  formik.setFieldValue("iapMember", value);
+
+                  // Reset related fields if "No" is selected
+                  if (!value) {
+                    formik.setFieldValue("iapMember", false);
+                    formik.setFieldValue("iapNumber", ""); // Reset IAP number
+                    formik.setFieldValue("iapImage", []); // Reset uploaded images
+                  }
+                }}
+                className="border border-gray-300 rounded-md px-3 py-2 w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white"
+              >
+                <option value="" disabled hidden>
+                  Select an option
+                </option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+              </select>
+
+              {formik.touched.iapMember && formik.errors.iapMember && (
+                <div className="text-red-500 text-sm mt-1">{formik.errors.iapMember}</div>
+              )}
+            </div>
+
 
             {formik.values.iapMember === true && (
               <>
                 {/* IAP Number Input */}
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="iapNumber" className="text-sm">
-                    If yes, enter your IAP Number
+                  <label htmlFor="iapNumber" className="text-sm font-semibold">
+                    Enter your IAP Number
                   </label>
                   <Input
                     size="md"
@@ -705,7 +738,7 @@ const PhysioConnectProfessionalForm = () => {
 	)}
 
 	{/* Preview the uploaded images */}
-	{/* {formik.values.iapImages && formik.values.iapImages.length > 0 && (
+                {/* {formik.values.iapImages && formik.values.iapImages.length > 0 && (
 		<div className="mt-2 flex flex-wrap gap-2">
 			{formik.values.iapImages.map((file, index) => (
 				<div key={index} className="relative">
@@ -728,32 +761,40 @@ const PhysioConnectProfessionalForm = () => {
 			))}
 		</div>
 	)}
-</div> */} 
+</div> */}
 
               </>
             )}
 
             <div className="flex flex-col gap-2">
-              <label htmlFor="serviceType" className="text-sm">
-                Which type of service you provide
+              <label htmlFor="serviceType" className="text-sm font-semibold">
+                Select Service Type
               </label>
-              <div className="flex gap-2">
-                <Checkbox
-                  name="serviceType"
-                  className="w-4 h-4 hover:before:opacity-0"
-                  label="Clinic"
-                  value="clinic"
-                  checked={formik.values.serviceType.includes("clinic")}
-                  onChange={formik.handleChange}
-                />
-                <Checkbox
-                  name="serviceType"
-                  className="w-4 h-4 hover:before:opacity-0"
-                  label="Home Care"
-                  value="home"
-                  checked={formik.values.serviceType.includes("home")}
-                  onChange={formik.handleChange}
-                />
+              <div className="flex gap-2 mt-2">
+                <label className="flex items-center gap-2 text-sm text-gray-900 font-medium">
+                  <input
+                    type="checkbox"
+                    name="serviceType"
+                    value="clinic"
+                    checked={formik.values.serviceType.includes("clinic")}
+                    onChange={formik.handleChange}
+                    className="w-4 h-4"
+                  />
+                  Clinic
+                </label>
+
+                <label className="flex items-center gap-2 text-sm text-gray-900 font-medium">
+                  <input
+                    type="checkbox"
+                    name="serviceType"
+                    value="home"
+                    checked={formik.values.serviceType.includes("home")}
+                    onChange={formik.handleChange}
+                    className="w-4 h-4"
+                  />
+                  Home Care
+                </label>
+
               </div>
               {formik.touched.serviceType && formik.errors.serviceType && (
                 <p className="text-red-500">{formik.errors.serviceType}</p>
@@ -761,21 +802,21 @@ const PhysioConnectProfessionalForm = () => {
             </div>
             {/* submit  btn */}
             <div className="w-full flex flex-row justify-between items-center mt-4 gap-4">
-  <button
-    type="button"
-    onClick={() => navigate(-1)}
-    className="text-black hover:text-green font-medium flex items-center gap-1 text-sm sm:text-base"
-  >
-    <GoDash className="w-4 h-4 sm:w-5 sm:h-5" />
-    Go Back
-  </button>
-  <Button
-    className="w-fit hover:shadow-none font-normal px-6 sm:px-12 bg-green rounded-full py-3 " 
-    type="submit"
-  >
-    Submit & Next
-  </Button>
-</div>
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="text-black hover:text-green font-medium flex items-center gap-1 text-sm sm:text-base"
+              >
+                <GoArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                Go Back
+              </button>
+              <Button
+                className="w-fit  font-semibold hover:shadow-none  px-6 sm:px-12 bg-green rounded-full py-3 "
+                type="submit"
+              >
+                Submit & Next
+              </Button>
+            </div>
           </form>
         </div>
       </div>
