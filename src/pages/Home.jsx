@@ -625,7 +625,7 @@ const Home = () => {
 					{/* for big screen */}
 					<div className="hidden lg:flex  flex-col lg:flex-row justify-center items-center gap-10 px-6 py-12 bg-transparent">
 						{/* Left Section */}
-						<div className="max-w-md w-full bg-white p-6 rounded-md shadow-sm border border-gray-100">
+						<div className="max-w-md w-full bg-transparent p-6 ">
 							<InfoSection
 								title="Available in 1500+ Pincodes"
 								description="Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
@@ -650,13 +650,13 @@ const Home = () => {
 
 						{/* Middle Section */}
 						<PhonePreview screenshotSrc="home/screenshot-long.png " overlaySrc="home/PhonePopUp.png"
-							layoutClassName="w-[200px] lg:w-[240px] "
+							layoutClassName="w-[200px] lg:w-[280px] "
 						/>
 
 
 
 						{/* Right Section */}
-						<div className="max-w-md w-full  bg-white p-6 rounded-md shadow-sm border border-gray-100">
+						<div className="max-w-md w-full  bg-transparent p-6 ">
 							<InfoSection
 								title="Expert Care at Our Centers"
 								description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
@@ -678,53 +678,42 @@ const Home = () => {
 
 					{/* for phone screen  */}
 					<div className=" lg:hidden w-full max-w-md space-y-4 flex flex-col items-center justify-center mx-auto">
-						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
-
-							<InfoSection
-								title="Available in 1500+ Pincodes"
-								description="Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
-								iconSrc="home/mingcute_location-line.png"
-								iconAlt="location icon"
-							/>
-						</div>
-						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
-
-							<InfoSection
-								title="Easy Appointments"
-								description="Schedule your appointments effortlessly through our user-friendly app or web app, making healthcare access simple and convenient for everyone."
-								iconSrc="home/uil_calender.png"
-								iconAlt="calender icon"
-							/>
-						</div>
-						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
-
-							<InfoSection
-								title="Cost Effective"
-								description="Our treatments are designed to be cost-effective, providing high-quality care and exceptional results without compromising your budget or expectations."
-								iconSrc="home/CurrencyInr.png"
-								iconAlt="currencyInr icon"
-							/>
-						</div>
+						<InfoSection
+							title="Available in 1500+ Pincodes"
+							description="Our services are available in over 1500+ pincodes, ensuring convenience and accessibility for clients in diverse regions across the country."
+							iconSrc="home/mingcute_location-line.png"
+							iconAlt="location icon"
+						/>
 
 
-						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+						<InfoSection
+							title="Easy Appointments"
+							description="Schedule your appointments effortlessly through our user-friendly app or web app, making healthcare access simple and convenient for everyone."
+							iconSrc="home/uil_calender.png"
+							iconAlt="calender icon"
+						/>
 
-							<InfoSection
-								title="Expert Care at Our Centers"
-								description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
-								iconSrc="home/HandHeart.png"
-								iconAlt="handHeart icon"
-							/>
-						</div>
-						<div className="bg-white p-4 rounded-md shadow-sm border border-gray-100">
+						<InfoSection
+							title="Cost Effective"
+							description="Our treatments are designed to be cost-effective, providing high-quality care and exceptional results without compromising your budget or expectations."
+							iconSrc="home/CurrencyInr.png"
+							iconAlt="currencyInr icon"
+						/>
 
-							<InfoSection
-								title="In-Home Services"
-								description="Our physiotherapists come to you, providing personalized treatment in the comfort of your home, making recovery convenient and effective."
-								iconSrc="home/House.png"
-								iconAlt="house icon"
-							/>
-						</div>
+						<InfoSection
+							title="Expert Care at Our Centers"
+							description="Our centers offer expert care with highly trained professionals, ensuring personalized treatment plans tailored to meet your specific health needs."
+							iconSrc="home/HandHeart.png"
+							iconAlt="handHeart icon"
+						/>
+
+						<InfoSection
+							title="In-Home Services"
+							description="Our physiotherapists come to you, providing personalized treatment in the comfort of your home, making recovery convenient and effective."
+							iconSrc="home/House.png"
+							iconAlt="house icon"
+						/>
+
 					</div>
 
 				</section >

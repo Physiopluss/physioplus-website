@@ -3,7 +3,8 @@
 
 const InfoSection = ({ title, description, iconSrc, iconAlt }) => {
     return (
-        <div className="my-6">
+        <div className="my-6 p-6 rounded-lg shadow-lg transition-all duration-300 bg-white hover:bg-[linear-gradient(-45deg,#1CAD74,#8DF0C9,#ffff)]">
+
             <div className="flex items-center justify-between  my-3">
                 <h3 className="text-xl font-semibold text-[#015C3E]">{title}</h3>
                 <img src={iconSrc} alt={iconAlt} className="w-6 h-6" />
