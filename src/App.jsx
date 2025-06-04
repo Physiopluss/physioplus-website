@@ -14,6 +14,7 @@ import Cta from "./components/Cta";
 import NoInternet from "./components/NoInternet";
 import OrderDetails from "./pages/Booking/OrderDetails";
 
+
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
 const Loginphysio = lazy(() => import("./pages/Auth/Loginphysio"));
@@ -25,6 +26,7 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Profilephysio = lazy(() => import("./pages/Profilephysio"));
+const MyAccountPhysio = lazy(() => import("./pages/MyAccountPhysio"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Refund = lazy(() => import("./pages/Refund"));
@@ -39,6 +41,8 @@ const OrderHistory = lazy(() => import("./pages/Booking/OrderHistory"));
 const OrderHistoryPhysio = lazy(() => import("./pages/OrderHistoryPhysio"));
 const Professionalprofile = lazy(() => import("./pages/Professionalprofile"));
 const Editpersonalprofile = lazy(() => import("./pages/PhysioConnect/Editpersonalprofile"));
+const Businessprofile = lazy(() => import("./pages/Businessprofile"));
+const Reviewprofile = lazy(() => import("./pages/Reviewprofile"));
 
 // blogs
 const Blog = lazy(() => import("./pages/Blog/Blog"));
@@ -186,6 +190,22 @@ const router = createBrowserRouter([
 				),
 			},
 			{
+				path: "/business",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Businessprofile />
+					</Suspense>
+				),
+			},
+			{
+				path: "//review-profile",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Reviewprofile />
+					</Suspense>
+				),
+			},
+			{
 				path: "/edit-personal",
 				element: (
 					<Suspense fallback={<Loading />}>
@@ -217,6 +237,15 @@ const router = createBrowserRouter([
 					</Suspense>
 				),
 			},
+			{
+				path: "/my-account-physio",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<MyAccountPhysio />
+					</Suspense>
+				),
+			},
+
 			{
 				path: "/privacy",
 				element: (
