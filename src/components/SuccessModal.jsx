@@ -10,17 +10,9 @@ const SuccessModal = ({ title, description, btnOne, btnOneFunction, btnTwo, btnT
 			className="py-6 px-8 bg-[#FFFDF5] rounded-3xl m-0 z-10"
 		>
 			<DialogHeader className="relative m-0 block">
-				{/* <IconButton
-					size="sm"
-					variant="text"
-					className="!absolute right-3.5 top-3.5 hover:bg-transparent"
-					onClick={() => {
-						dispatch(setSuccessModalOpen());
-					}}
-				>
-					<IoMdClose className="h-6 w-6 stroke-2" />
-				</IconButton> */}
+				<> </>
 			</DialogHeader>
+
 			<form method="POST">
 				<DialogBody className="space-y-4 pb-6">
 					<img
