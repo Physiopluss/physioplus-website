@@ -8,6 +8,7 @@ import { IoIosCloseCircle } from "react-icons/io";
 import { login, OtpVerify, signUp } from "../api/auth";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
+import { physioConnectLogin, physioConnectOtpVerify } from "../api/physioConnect";
 
 export function OtpModal() {
 	const modalOpen = useSelector((state) => state.modal.otpModalOpen);
@@ -22,7 +23,7 @@ export function OtpModal() {
 	let intervalId;
 
 
-	const redirectPath = location.state?.from || "/physios";
+	const redirectPath = location.state?.from || "/";
 	// Timer starts after dialog opens
 	useEffect(() => {
 		if (open) {
@@ -48,52 +49,63 @@ export function OtpModal() {
 
 	// otpVerify
 	const submitHandler = async (type) => {
-		type === "login"
-			? OtpVerify(phone, otp).then((res) => {
-				if (res.status >= 200 && res.status < 300) {
-					const user = {
-						userToken: res?.data.token,
-						userId: res?.data.data._id,
-						phone: res?.data.data.phone,
-					};
-					localStorage.setItem("user", JSON.stringify(user));
-					dispatch(setUser(user));
-					dispatch(setOtpModalOpen());
-					toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
-					setTimeout(() => navigate(redirectPath), 1500);
+		const isPhysio = type === "physio";
 
-				} else if (res.status >= 400 && res.status < 500) {
-					toast.error(res.data.message, { id: "OtpErrorLogin1", className: "capitalize z-10" });
-				} else {
-					toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
-				}
-			})
-			: OtpVerify(phone, otp, type, fullName, gender, date, dob).then((res) => {
-				if (res.status >= 200 && res.status < 300) {
-					const user = {
-						userToken: res?.data.token,
-						userId: res?.data.data._id,
-						phone: res?.data.data.phone,
-					};
-					localStorage.setItem("user", JSON.stringify(user));
-					dispatch(setUser(user));
-					dispatch(setOtpModalOpen());
-					toast.success("login successful", { id: "SignupSuccess", className: "capitalize" });
-					setTimeout(() => navigate(redirectPath), 1500);
+		try {
+			const res = isPhysio
+				? await physioConnectOtpVerify(phone, otp, fullName)
+				: await OtpVerify(phone, otp, type, fullName, gender, date, dob);
 
-				} else if (res.status >= 400 && res.status < 500) {
-					toast.error(res.data.message, { id: "OtpErrorLogin2", className: "capitalize" });
-				} else {
-					toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize" });
-				}
+			console.log("OTP response:", res);
+
+			if (res.status >= 200 && res.status < 300) {
+				const user = {
+					userToken: res?.data.token,
+					userId: res?.data.data._id,
+					phone: res?.data.data.phone,
+				};
+				localStorage.setItem("user", JSON.stringify(user));
+				dispatch(setUser(user));
+				dispatch(setOtpModalOpen());
+
+				toast.success("Login successful", {
+					id: "OtpSuccess",
+					className: "capitalize z-10",
+				});
+				setTimeout(() => {
+					navigate(redirectPath);
+					window.location.reload();
+				}, 1500);
+
+			} else {
+				toast.error(res.data.message, {
+					id: "OtpError1",
+					className: "capitalize z-10",
+				});
+			}
+		} catch (error) {
+			console.error("Physio OTP error:", error);
+			toast.error("Something went wrong", {
+				id: "OtpErrorCatch",
+				className: "capitalize z-10",
 			});
+		}
 	};
 
+
 	const handleResendOtp = () => {
-		type === "login" ? login(phone) : signUp({ fullName, phone, dob, gender });
+		if (type === "physio") {
+			physioConnectLogin(phone); // Or call physio-specific resend API if separate
+		} else if (type === "login") {
+			login(phone); // Patient login
+		} else {
+			signUp({ fullName, phone, dob, gender }); // Patient signup
+		}
+
+		// Restart timer logic
 		setTimeLeft(60);
 		setDisabled(true);
-		clearInterval(intervalId);
+
 		const newIntervalId = setInterval(() => {
 			setTimeLeft((prev) => {
 				if (prev <= 1) {
@@ -104,10 +116,10 @@ export function OtpModal() {
 				return prev - 1;
 			});
 		}, 1000);
-		return () => {
-			clearInterval(newIntervalId);
-		};
+
+		return () => clearInterval(newIntervalId);
 	};
+
 
 	return (
 		<>
