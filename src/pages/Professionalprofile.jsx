@@ -29,8 +29,6 @@ const Professionalprofile = () => {
 
   const [open, setOpen] = useState(false);
   const [mptDegreeOpen, setMptDegreeOpen] = useState(false);
-  console.log(allDegree);
-
   const [degreeOpen, setDegreeOpen] = useState(false);
   const [openSub, setOpenSub] = useState(false);
   const dropdownSubRef = useRef(null);
@@ -202,7 +200,7 @@ const Professionalprofile = () => {
         .min(0, "Experience cannot be negative"),
     }),
     onSubmit: (values) => {
-      console.log("Submitting values:", values);
+     
 
       updatePhysioData({
 
@@ -303,7 +301,7 @@ const Professionalprofile = () => {
     }
 
     const generalId = generalSpecialization._id;
-    console.log("General ID:", generalId);
+   
 
     const hasDegree = formik.values.bptDegree.degreeId
       ? formik.values.bptDegree.degreeId.length > 0

@@ -61,7 +61,13 @@ const Reviewprofile = () => {
   const handleSubmit = async () => {
     const success = await submitFinalData(); // Await the result
     if (success) {
-      navigate("/my-account-physio"); // Navigate only if submission was successful
+      navigate("/my-account-physio");
+      setTimeout(() => {
+        window.location.href = "/my-account-physio";
+      }, 100);
+
+
+      // Navigate only if submission was successful
     }
   };
 
