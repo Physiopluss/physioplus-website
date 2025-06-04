@@ -20,10 +20,16 @@ import { jwtDecode } from "jwt-decode";
 import { MdOutlineMailOutline, MdOutlinePhoneInTalk } from "react-icons/md";
 import { BiChevronDown } from "react-icons/bi";
 
+
+import { FaUser, FaUserMd } from "react-icons/fa"; // for patient and physio icons
+
+
+
 export default function Navbar() {
   const user = localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
   const decoded = user && jwtDecode(user?.userToken);
   const patientName = decoded?.patient?.fullName;
+  const physioName = decoded?.physio?.fullName;
   const isUser = useSelector((e) => e.auth.user);
   const userType = localStorage.getItem("userType");
 
@@ -65,7 +71,7 @@ export default function Navbar() {
                   Login
                 </Link>
               </MenuHandler>
-              <MenuList className="p-1">
+              <MenuList className="p-1 bg-white shadow-lg rounded-lg">
                 <Link
                   to="/login"
                   variant="small"
@@ -76,8 +82,13 @@ export default function Navbar() {
                     localStorage.setItem("userType", "patient");
                   }}
                 >
-                  <MenuItem>Login as Patient</MenuItem>
+
+                  <MenuItem className="flex items-center gap-2 hover:text-green">
+                    <FaUser className="w-4 h-4" /> Login as Patient
+                  </MenuItem>
                 </Link>
+                <hr className="my-1 border-gray-200" />
+
                 <Link
                   to="/login-physio"
                   variant="small"
@@ -88,8 +99,9 @@ export default function Navbar() {
                     localStorage.setItem("userType", "physio");
                   }}
                 >
-                  <MenuItem>Login as Physio</MenuItem>
-                </Link>
+                  <MenuItem className="flex items-center gap-2 hover:text-green">
+                    <FaUserMd className="w-4 h-4" /> Login as Physio
+                  </MenuItem></Link>
               </MenuList>
             </Menu>
           ) : (
@@ -100,15 +112,18 @@ export default function Navbar() {
               allowHover
             >
               <MenuHandler>
-                <div className="cursor-pointer text-sm">Hi, {patientName ?? "User"}</div>
+                <div className="cursor-pointer text-sm">
+                  Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
+                </div>
               </MenuHandler>
+
               <MenuList className="p-1">
                 <Link
-                  to={userType === "physio" ? "/profile-physio" : "/profile"}
+                  to={userType === "physio" ? "/my-account-physio" : "/profile"}
                   variant="small"
                   className="font-normal"
                 >
-                  <MenuItem>Hi, {patientName ?? "User"}</MenuItem>
+                  <MenuItem> Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}</MenuItem>
                 </Link>
                 <Link
                   to={userType === "physio" ? "/order-history-physio" : "/order-history"}
@@ -211,7 +226,11 @@ export default function Navbar() {
                           variant="small"
                           className="font-normal"
                         >
-                          Hi, {patientName ?? "User"}
+
+                          <div className="cursor-pointer text-sm">
+                            Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
+                          </div>
+
                         </Link>
                         <BiChevronDown
                           strokeWidth={2.5}
@@ -253,11 +272,49 @@ export default function Navbar() {
                   </div>
                 </>
               ) : (
-                <Link to={"/login"} onClick={() => setIsNavOpen(false)}>
-                  <Typography variant="small" color="gray" className="font-medium text-black mb-2">
-                    <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">Login</MenuItem>
-                  </Typography>
-                </Link>
+                <Menu placement="bottom-end">
+                  <MenuHandler>
+                    <Typography
+                      variant="small"
+                      color="gray"
+                      className="font-medium text-black mb-2 cursor-pointer"
+                    >
+                      <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
+                        Login
+                      </MenuItem>
+                    </Typography>
+                  </MenuHandler>
+
+                  <MenuList className="p-1 bg-white shadow-lg rounded-lg w-56">
+                    <Link
+                      to="/login"
+                      onClick={() => {
+                        setIsNavOpen(false);
+                        localStorage.setItem("userType", "patient");
+                      }}
+                    >
+                      <MenuItem className="flex items-center gap-2 hover:text-green">
+                        <FaUser className="w-4 h-4 " />
+                        Login as Patient
+                      </MenuItem>
+                    </Link>
+
+                    <hr className="my-1 border-gray-200" />
+
+                    <Link
+                      to="/login-physio"
+                      onClick={() => {
+                        setIsNavOpen(false);
+                        localStorage.setItem("userType", "physio");
+                      }}
+                    >
+                      <MenuItem className="flex items-center gap-2 hover:text-green">
+                        <FaUserMd className="w-4 h-4 " />
+                        Login as Physio
+                      </MenuItem>
+                    </Link>
+                  </MenuList>
+                </Menu>
               )}
               <Link to={"/contact"} onClick={() => setIsNavOpen(false)}>
                 <Typography variant="small" color="gray" className="font-medium text-black mb-2">
