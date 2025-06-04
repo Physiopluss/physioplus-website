@@ -11,10 +11,11 @@ import OrderCard from "../components/OrderCard";
 import {
   MdLogout,
   MdPersonOutline,
-  MdOutlineWallet,
+
 } from "react-icons/md";
-import { LuClipboardList } from "react-icons/lu";
-import { FaRegClipboard } from "react-icons/fa6";
+import { PiWalletBold, PiHandbagBold } from "react-icons/pi";
+import { TbClipboardText } from "react-icons/tb";
+import { Breadcrumbs } from "@material-tailwind/react";
 
 const OrderHistoryPhysio = () => {
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
@@ -49,43 +50,45 @@ const OrderHistoryPhysio = () => {
   }, []);
 
   return (
-    <div className="font-Urbanist flex min-h-screen bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]">
-      {/* Main Content - Updated to match the image cards */}
-      <div className="w-full bg-white rounded-2xl p-8">
-        <h1 className="text-2xl font-bold mb-8">My Dashboard</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         
-         {/* My Profile Card */}
-<Link to="/profile-physio" className="p-6 border rounded-xl shadow-sm hover:shadow-md transition-all">
-  <div className="flex items-start justify-between">
-    <div className="flex items-center gap-3">
-      <MdPersonOutline className="text-3xl text-gray-600" />
-      <h2 className="text-xl font-semibold">My Profile</h2>
-    </div>
-    <span className="text-xs font-semibold bg-red-600 text-white px-2 py-0.5 rounded">
-      Incomplete Profile
-    </span>
-  </div>
-  <p className="text-sm text-gray-500 mt-3 ml-11">
-    Manage your Personal details, Professional details & Business details
-  </p>
-</Link>
-          {/* View Subscription Card */}
-          <div className="p-6 border rounded-xl shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-center gap-3">
-              <FaRegClipboard className="text-3xl text-gray-600" />
-              <h2 className="text-xl font-semibold">View Subscription</h2>
-            </div>
-            <p className="text-sm text-gray-500 mt-3 ml-11">
-              Click to view subscription details
-            </p>
-          </div>
+    <>
+      <div className="font-Urbanist   bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px] ">
 
+        <div className="h-40 w-full  flex items-center">
+          <Breadcrumbs
+            separator=">"
+            className=" text-black bg-transparent"
+          >
+            <Link to="/my-account">
+              <span className="text-black hover:text-green font-bold">My Account</span></Link> {/* Active breadcrumb */}
+          </Breadcrumbs>
+        </div>
+
+      </div>
+
+
+      <div className="mx-4 sm:mx-12 lg:mx-[120px]   -mt-20 bg-white pb-8 rounded-xl ">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+
+          {/* My Profile Card */}
+          <Link to="/profile-physio" className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <MdPersonOutline className="text-3xl text-black" />
+                <h2 className="text-xl font-semibold">My Profile</h2>
+              </div>
+              <span className="text-xs font-semibold bg-red-600 text-white px-2 py-0.5 rounded">
+                Incomplete Profile
+              </span>
+            </div>
+            <p className="text-sm  mt-3 ml-11">
+              Manage your Personal details, Professional details & Business details
+            </p>
+
+          </Link>
           {/* My Consultation Card */}
-          <div className="p-6 border rounded-xl shadow-sm hover:shadow-md transition-all bg-[#E6F4EC] text-emerald-700 border-emerald-100">
+          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center gap-3">
-              <LuClipboardList className="text-3xl" />
+              <PiHandbagBold className="text-3xl text-black" />
               <h2 className="text-xl font-semibold">My Consultation</h2>
             </div>
             <p className="text-sm mt-3 ml-11">
@@ -93,9 +96,34 @@ const OrderHistoryPhysio = () => {
             </p>
           </div>
 
+          {/* My Wallet Card */}
+          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <PiWalletBold className="text-3xl text-black" />
+                <h2 className="text-xl font-semibold">My Wallet</h2>
+              </div>
+              <span className="text-xs font-semibold bg-green text-white px-2 py-0.5 rounded">
+                ₹0
+              </span>
+            </div>
+            <p className="text-sm  mt-3 ml-11">
+              Here you can check the wallet amount and you can withdraw the amount from there
+            </p>
+          </div>
+          {/* View Subscription Card */}
+          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+            <div className="flex items-center gap-3">
+              <TbClipboardText className="text-3xl text-black" />
+              <h2 className="text-xl font-semibold">View Subscription</h2>
+            </div>
+            <p className="text-sm  mt-3 ml-11">
+              Click to view subscription details
+            </p>
+          </div>
           {/* Logout Card */}
-          <div 
-            className="p-6 border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
+          <div
+            className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
             onClick={() => {
               localStorage.removeItem("user");
               dispatch(setLogOut());
@@ -103,32 +131,21 @@ const OrderHistoryPhysio = () => {
             }}
           >
             <div className="flex items-center gap-3">
-              <MdLogout className="text-3xl text-gray-600" />
+              <MdLogout className="text-3xl text-black" />
               <h2 className="text-xl font-semibold">Logout</h2>
             </div>
-            <p className="text-sm text-gray-500 mt-3 ml-11">
+            <p className="text-sm mt-3 ml-11">
               Logout your profile as a Physio
             </p>
           </div>
 
-          {/* My Wallet Card */}
-          <div className="p-6 border rounded-xl shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <MdOutlineWallet className="text-3xl text-gray-600" />
-                <h2 className="text-xl font-semibold">My Wallet</h2>
-              </div>
-              <span className="text-xs font-semibold bg-green-600 text-white px-2 py-0.5 rounded">
-                ₹0
-              </span>
-            </div>
-            <p className="text-sm text-gray-500 mt-3 ml-11">
-              Here you can check the wallet amount and you can withdraw the amount from there
-            </p>
-          </div>
+
         </div>
       </div>
-    </div>
+
+    </>
+
+
   );
 };
 

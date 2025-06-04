@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useFetchSinglePhysioDataQuery, useGetPhysioReviewsQuery } from "../../api/physios";
 import { setPhysioDetail } from "../../slices/physioSlice";
 import { useDispatch } from "react-redux";
-import { Reviews } from "../../Mock/ReviewData";
+
 import { FaShoppingBag, FaStar, FaCircle } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
@@ -27,6 +27,7 @@ const PhysioDetail = () => {
   const dispatch = useDispatch();
   const physioData = data?.data;
   const physioId = data?.data?._id;
+  console.log(physioData);
   // const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useGetPhysioReviewsQuery(physioId);
   // useEffect(() => {
   // 	dispatch(setPhysioDetail({ physioId, physioData }));
@@ -325,7 +326,38 @@ const PhysioDetail = () => {
                 IAP Registered : {physioData?.iapNumber ? "Yes" : "No"}
               </span>
             </div>
-            <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">
+
+            {/* degree */}
+
+            <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full flex flex-wrap">
+              {[
+                physioData?.bptDegree?.degreeId,
+                physioData?.mptDegree?.degreeId,
+                ...(Array.isArray(physioData?.degree?.degreeId) ? physioData.degree.degreeId : [])
+              ]
+                .filter((deg) => deg && deg._id)
+                .map((deg, index) => (
+                  <span
+                    key={index}
+                    className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 m-1"
+                  >
+                    {deg.name}
+                  </span>
+                ))
+              }
+              {
+                // Fallback if no valid degree found
+                !(
+                  physioData?.bptDegree?.degreeId?._id ||
+                  physioData?.mptDegree?.degreeId?._id ||
+                  (Array.isArray(physioData?.degree?.degreeId) && physioData.degree.degreeId.length)
+                ) && (
+                  <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
+                )
+              }
+            </div>
+
+            {/* <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">
               {physioData?.degree?.degreeId?.length !== 0 ? (
                 physioData?.degree?.degreeId?.slice(0, 3)?.map((p, i) => (
                   <span
@@ -338,7 +370,7 @@ const PhysioDetail = () => {
               ) : (
                 <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
               )}
-            </div>
+            </div> */}
           </div>
         </div>
 

@@ -17,6 +17,7 @@ export const authSlice = createSlice({
 			state.phone = value.payload;
 			state.type = "login";
 		},
+
 		setSignupData: (state, value) => {
 			state.phone = value.payload.phone;
 			state.fullName = value.payload.fullName;
@@ -24,6 +25,16 @@ export const authSlice = createSlice({
 			state.gender = value.payload.gender;
 			state.type = "signup";
 		},
+		setPhysioLoginData: (state, value) => {
+			state.phone = value.payload;
+			state.type = "physio";
+		},
+		setPhysioSignupData: (state, value) => {
+			state.phone = value.payload.phone;
+			state.fullName = value.payload.fullName;
+			state.type = "physio-signup";
+		},
+
 		setUser: (state, value) => {
 			state.user = value.payload;
 		},
@@ -34,6 +45,6 @@ export const authSlice = createSlice({
 	},
 });
 
-export const { setSignupData, setLoginData, setUser, setLogOut } = authSlice.actions;
+export const { setSignupData, setLoginData, setUser, setLogOut, setPhysioLoginData, setPhysioSignupData } = authSlice.actions;
 
 export default authSlice.reducer;
