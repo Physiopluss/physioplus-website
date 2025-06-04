@@ -27,12 +27,6 @@ const Profilephysio = () => {
   }, []);
 
 
-
-
-  console.log("Physio Data:", physioData);
-
-
-
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -100,7 +94,10 @@ const Profilephysio = () => {
     }
   }, [physioData]);
 
-
+  // scroll to top
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <>

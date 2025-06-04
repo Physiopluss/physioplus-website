@@ -51,6 +51,10 @@ const MyAccountPhysio = () => {
       title: "Order History",
     });
   }, []);
+  // scroll to top
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
   return (
     <>
       <div className="font-Urbanist   bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px] ">

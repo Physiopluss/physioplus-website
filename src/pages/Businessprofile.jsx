@@ -51,7 +51,7 @@ const Businessprofile = () => {
     ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Profile-Physio" });
   }, []);
 
-  console.log("Physio Data:", physioData);
+
 
   const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -423,7 +423,10 @@ const Businessprofile = () => {
     fetchCityState();
   }, [formik.values.homePincode, hasUserChangedHomePincode]);
 
-
+  // scroll to top
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <>

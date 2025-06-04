@@ -53,7 +53,7 @@ const PhysioConnectSignup = () => {
 
 	const handleOtpSubmit = async () => {
 		try {
-			console.log("OTP Submit Values:", formik.values);
+
 
 			const res = await physioConnectOtpVerify(
 				formik.values.mobile,
@@ -61,7 +61,7 @@ const PhysioConnectSignup = () => {
 				formik.values.fullName
 			);
 
-			console.log("OTP Submit Response:", res);
+
 
 			const isNew = res?.data?.isNew;
 			const physioId = res?.data?.physio?._id;
@@ -114,7 +114,10 @@ const PhysioConnectSignup = () => {
 	};
 
 
-
+	// scroll to top
+	useEffect(() => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+	}, []);
 
 
 	return (

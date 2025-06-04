@@ -9,7 +9,7 @@ import ReactGA from "react-ga4";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { twMerge } from "tailwind-merge";
-import Loading from "../components/Loading";
+
 import { useDispatch, useSelector } from "react-redux";
 import StepIndicatorprofile from "../pages/StepIndicatorprofile";
 
@@ -23,7 +23,7 @@ import { GoArrowLeft, } from "react-icons/go";
 import Skeleton from 'react-loading-skeleton';
 import { FaCircle, FaShoppingBag, FaStar } from 'react-icons/fa';
 import { ImLocation } from 'react-icons/im';
-import SlotComponent from '../components/SlotComponent';
+
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
 
@@ -94,7 +94,7 @@ const Reviewprofile = () => {
 
     fetchOldData();
   }, []);
-  console.log(allSpecialization);
+
 
   useEffect(() => {
     if (physioId && physioData) {
@@ -123,7 +123,7 @@ const Reviewprofile = () => {
       ? physioData.clinic.imagesClinic
       : placeholderImages
     : null;
-  console.log("Physio Data:", physioData);
+
   // scroll to top
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

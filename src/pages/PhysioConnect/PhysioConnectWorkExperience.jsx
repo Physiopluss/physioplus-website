@@ -46,7 +46,10 @@ const PhysioConnectWorkExperience = () => {
         fetchOldData();
     }, []);
 
-    console.log("oldPhysioData", oldPhysioData);
+    // scroll to top
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }, []);
 
     const formik = useFormik({
 

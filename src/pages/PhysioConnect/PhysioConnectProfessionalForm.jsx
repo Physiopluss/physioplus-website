@@ -281,6 +281,10 @@ const PhysioConnectProfessionalForm = () => {
       return <Navigate to="/physio-connect/signup" />;
     }
   }
+  // scroll to top
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   return (
     <>
