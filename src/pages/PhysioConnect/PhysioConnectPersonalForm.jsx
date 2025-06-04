@@ -1,8 +1,9 @@
 import ReactGA from "react-ga4";
 import { Button, Input, Select, Option } from "@material-tailwind/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
-  locationUsingPincode,
+
+  getPhysioDataById,
   physioConnectPersonalApi,
 } from "../../api/physioConnect";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -14,98 +15,69 @@ import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
 import StepIndicator from "../../components/StepIndicator";
 
 const PhysioConnectPersonalForm = () => {
-  const homePincodeRef = useRef();
-  const [allDegree, setAllDegree] = useState([]);
-  const [allSpecialization, setAllSpecialization] = useState([]);
+
   const [oldPhysioData, setOldPhysioData] = useState(); //if filling form after first time
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const physioConnectPhysioId = useSelector((state) => state?.physioConnectAuth?.physioId);
-  const physioName = useSelector((state) => state?.physioConnectAuth?.physioName);
-  const physioPhone = useSelector((state) => state?.physioConnectAuth?.physioPhone);
+
 
   // google analytics
   useEffect(() => {
     ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Physio Connect Personal Form" });
   }, []);
 
-  // // getting degree & specialisation from backend
-  // useEffect(() => {
-  //     const fetchData = async () => {
-  //         await physioConnectDegreeApi().then((res) => {
-  //             if (res.status >= 200 && res.status < 300) {
-  //                 setAllDegree(res.data.data);
-  //             } else if (res.status >= 400 && res.status < 500) {
-  //                 toast.error(res.data.message);
-  //             } else {
-  //                 toast.error("Something went wrong");
-  //             }
-  //         });
+  useEffect(() => {
+    const fetchOldData = async () => {
+      try {
+        const res = await getPhysioDataById(physioConnectPhysioId);
+        if (res.success) {
+          setOldPhysioData(res.physioData); // assuming `data` contains the physio details object
+        } else {
+          console.error("Error in response:", res.message);
+        }
+      } catch (error) {
+        console.error("Error fetching physio data:", error);
+      }
+    };
 
-  //     //     await physioConnectSpecializationsApi().then((res) => {
-  //     //         if (res.status >= 200 && res.status < 300) {
-  //     //             setAllSpecialization(res.data.data);
-  //     //         } else if (res.status >= 400 && res.status < 500) {
-  //     //             toast.error(res.data.message);
-  //     //         } else {
-  //     //             toast.error("Something went wrong");
-  //     //         }
-  //     //     });
+    fetchOldData();
+  }, []);
 
-  //     //     await getPhysioDataPhysioConnectApi(physioConnectPhysioId)
-  //     //         .then((res) => {
-  //     //             if (res.status >= 200 && res.status < 300) {
-  //     //                 setOldPhysioData(res.data);
-  //     //             } else {
-  //     //                 console.log("inside else", res);
-  //     //             }
-  //     //         })
-  //     //         .catch((err) => console.log(err));
-  //     // };
 
-  //     fetchData();
-  // }, []);
+
+
+
 
   const formik = useFormik({
     initialValues: {
-      fullName: "kumawat",
+      fullName: "",
       gender: "",
       dob: "",
       email: "",
-      phone: "6375312582",
-      degree: [],
-      specialization: [],
-      serviceType: [],
-      clinicName: "",
-      clinicAddress: "",
-      clinicPincode: "",
-      clinicCity: "",
-      clinicState: "",
-      consultationFees: "",
-      treatmentCharges: "",
-      homeChargesUpto5km: "",
-      homeChargesUpto10km: "",
-      homePincode: "",
-      homeCity: "",
-      homeState: "",
-      AnotherTreatmentName: "",
-      AnotherTreatmentPrice: "",
-      selectedTraits: [],
-      customDescription: "",
+      phone: "",
       about: "",
     },
     validationSchema: Yup.object().shape({
-      fullName: Yup.string("Name is required"),
-      gender: Yup.string().required("Gender is required"),
+      fullName: Yup.string().required("Name is required"),
+      gender: Yup.number().required("Gender is required"),
       dob: Yup.string().required("Date of Birth is required"),
       email: Yup.string().email("Invalid email").required("E-mail is required"),
-      phone: Yup.string()
-        .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
-        .required("Contact is required"),
+      phone: Yup.string().required("Contact is required"),
 
-      about: Yup.string().max(500, "Description cannot exceed 500 characters"),
+      about: Yup.string()
+        .required("Description is required")
+        .max(500, "Description cannot exceed 500 characters"),
+
+      // Optional: validate traits and description individually if needed
+      selectedTraits: Yup.array()
+        .of(Yup.string())
+        .max(10, "You can select up to 10 traits"), // optional constraint
+      customDescription: Yup.string()
+        .max(400, "Custom description too long"), // adjust as needed
     }),
+
     onSubmit: (values) => {
       const {
         fullName,
@@ -117,11 +89,12 @@ const PhysioConnectPersonalForm = () => {
         // ...other fields as needed
       } = values;
 
-      const genderValue = gender === "male" ? 1 : 0;
+
+
 
       physioConnectPersonalApi({
         fullName,
-        gender: genderValue,
+        gender: gender,
         dob,
         email,
         phone,
@@ -140,121 +113,48 @@ const PhysioConnectPersonalForm = () => {
     }
 
   });
-
   useEffect(() => {
-    // // setting degree from database
-    // if (oldPhysioData && oldPhysioData.degree.length != 0) {
-    //     const tempDegreeId = [];
-    //     oldPhysioData.degree.degreeId.forEach((degree) => {
-    //         tempDegreeId.push(degree._id);
-    //     });
+    if (oldPhysioData) {
+      const allTraits = ['Passionate', 'Hard working', 'Dedicated', 'Experienced', 'Patient-focused'];
+      const aboutText = oldPhysioData.about || "";
 
-    //     formik.setFieldValue("degree", tempDegreeId);
-    // }
-
-    // // setting specialisation from database
-    // if (oldPhysioData && oldPhysioData.specialization.length != 0) {
-    //     const tempSpecialisationId = [];
-    //     oldPhysioData.specialization.forEach((specialisation) => {
-    //         tempSpecialisationId.push(specialisation._id);
-    //     });
-    //     formik.setFieldValue("specialization", tempSpecialisationId);
-    // }
-
-    // setting serviceType from database
-    if (oldPhysioData && oldPhysioData.serviceType.length != 0) {
-      const tempServiceTypeId = [];
-      oldPhysioData.serviceType.forEach((type) => {
-        tempServiceTypeId.push(type);
+      // Step 1: Extract selected traits from aboutText
+      const selectedTraits = allTraits.filter(trait => {
+        const regex = new RegExp(`\\b${trait}\\b`, 'i'); // word boundary match
+        return regex.test(aboutText);
       });
-      formik.setFieldValue("serviceType", tempServiceTypeId);
-    }
-    if (oldPhysioData?.about) {
-      formik.setFieldValue("about", oldPhysioData.about);
-    }
-    // setting name from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.fullName != null &&
-      oldPhysioData.fullName != undefined &&
-      oldPhysioData.fullName.length != 0
-    ) {
-      formik.setFieldValue("name", oldPhysioData.fullName);
-    }
-    // setting email from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.email != null &&
-      oldPhysioData.email != undefined &&
-      oldPhysioData.email.length != 0
-    ) {
-      formik.setFieldValue("email", oldPhysioData.email);
-    }
-    // setting email from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.phone != null &&
-      oldPhysioData.phone != undefined &&
-      oldPhysioData.phone.length != 0
-    ) {
-      formik.setFieldValue("phone", oldPhysioData.phone);
-    }
-    if (
-      oldPhysioData &&
-      oldPhysioData.dob != null &&
-      oldPhysioData.dob != undefined &&
-      oldPhysioData.dob.length != 0
-    ) {
-      formik.setFieldValue("dob", oldPhysioData.dob);
-    }
-    if (
-      oldPhysioData &&
-      oldPhysioData.gender != null &&
-      oldPhysioData.gender != undefined &&
-      oldPhysioData.gender.length != 0
-    ) {
-      formik.setFieldValue("gender", oldPhysioData.gender);
-    }
 
+      // Step 2: Remove those traits from aboutText to get custom description
+      let customDescription = aboutText;
+      selectedTraits.forEach(trait => {
+        const regex = new RegExp(`\\b${trait}\\b`, 'gi');
+        customDescription = customDescription.replace(regex, '');
+      });
+
+      // Normalize spacing
+      customDescription = customDescription.replace(/\s+/g, ' ').trim();
+
+      // Step 3: Set values in Formik
+      formik.setValues({
+        fullName: oldPhysioData.fullName || "",
+        gender: oldPhysioData.gender != null
+          ? oldPhysioData.gender.toString()
+          : "",
+        dob: oldPhysioData.dob?.split("T")[0] || "",
+        email: oldPhysioData.email || "",
+        phone: oldPhysioData.phone || "",
+        selectedTraits: selectedTraits,
+        customDescription: customDescription,
+        about: `${selectedTraits.join(' ')} ${customDescription}`.trim(),
+      });
+    }
   }, [oldPhysioData]);
 
-  // clinic city and clinic state using pincode by google api
-  useEffect(() => {
-    const cityAndStateUsingPincode = () => {
-      if (formik.values.clinicPincode.length === 6) {
-        locationUsingPincode(formik.values.clinicPincode).then((res) => {
-          const city = res.results[0].address_components.find((data) => data.types.includes("locality")).long_name;
-          const state = res.results[0].address_components.find((data) =>
-            data.types.includes("administrative_area_level_1")
-          ).long_name;
 
-          formik.setFieldValue("clinicCity", city);
-          formik.setFieldValue("clinicState", state);
-        });
-      }
-    };
 
-    cityAndStateUsingPincode();
-  }, [formik.values.clinicPincode]);
 
-  // home city and home state using pincode by google api
-  useEffect(() => {
-    const cityAndStateUsingPincode = () => {
-      if (formik.values.homePincode.length === 6) {
-        locationUsingPincode(formik.values.homePincode).then((res) => {
-          const city = res.results[0].address_components.find((data) => data.types.includes("locality")).long_name;
-          const state = res.results[0].address_components.find((data) =>
-            data.types.includes("administrative_area_level_1")
-          ).long_name;
 
-          formik.setFieldValue("homeCity", city);
-          formik.setFieldValue("homeState", state);
-        });
-      }
-    };
 
-    cityAndStateUsingPincode();
-  }, [formik.values.homePincode]);
 
   if (physioConnectPhysioId == null || physioConnectPhysioId.length == 0) {
     const physioConnectPhysioId = sessionStorage.getItem("physioConnectId");
@@ -395,9 +295,9 @@ const PhysioConnectPersonalForm = () => {
                   <Option value="" disabled>
                     Select your gender
                   </Option>
-                  <Option value="male">Male</Option>
-                  <Option value="female">Female</Option>
-                  <Option value="other">Other</Option>
+                  <Option value="1">Male</Option>
+                  <Option value="0">Female</Option>
+                  <Option value="2">Other</Option>
                 </Select>
                 {formik.touched.gender && formik.errors.gender && (
                   <p className="text-red-500">{formik.errors.gender}</p>
@@ -417,7 +317,7 @@ const PhysioConnectPersonalForm = () => {
               {/* Selected traits chips - visible */}
               <div className="flex flex-wrap gap-2 mb-2">
                 {formik.values.selectedTraits?.map((trait, index) => (
-                  <div key={`${trait}-${index}`} className="flex items-center gap-1 px-3 py-1 bg-blue-gray-100 text-black rounded-full text-sm">
+                  <div key={`${trait}-${index}`} className="flex items-center gap-1 px-3 py-1 bg-[#F2FAF6] text-green rounded-full text-sm">
                     {trait}
                     <button
                       type="button"
@@ -430,7 +330,7 @@ const PhysioConnectPersonalForm = () => {
                           `${newTraits.join(' ')} ${formik.values.customDescription || ''}`.trim()
                         );
                       }}
-                      className="text-green-600 hover:text-green-800"
+                      className="text-red hover:text-green-800"
                     >
                       ×
                     </button>
@@ -456,7 +356,7 @@ const PhysioConnectPersonalForm = () => {
                       }
                     }}
                     className={`px-3 py-1 text-sm rounded-full border ${formik.values.selectedTraits?.includes(trait)
-                      ? 'bg-green-100 border-green-500 text-green-800'
+                      ? 'bg-green-100 border-green text-green'
                       : 'border-gray-300 hover:bg-gray-100'
                       }`}
                   >
@@ -499,7 +399,7 @@ const PhysioConnectPersonalForm = () => {
               <p className="text-center sm:text-left text-sm sm:text-base">
                 Already have an Account?{' '}
                 <span
-                  onClick={() => navigate('/login')}
+                  onClick={() => navigate('/login-physio')}
                   className="text-green hover:text-green hover:underline font-medium cursor-pointer"
                 >
                   Login

@@ -4,17 +4,20 @@ import { GoArrowLeft } from "react-icons/go";
 import {
   Button,
 
+  Checkbox,
+
   Input,
 
 } from "@material-tailwind/react";
 
 import { useEffect, useRef, useState } from "react";
 import {
-  getPhysioDataPhysioConnectApi,
-  locationUsingPincode,
+
+  getPhysioDataById,
   physioConnectDegreeApi,
   physioConnectProfessionalApi,
   physioConnectSpecializationsApi,
+
 } from "../../api/physioConnect";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,32 +28,49 @@ import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
 import StepIndicator from "../../components/StepIndicator";
 
 const PhysioConnectProfessionalForm = () => {
-  const homePincodeRef = useRef();
+
   const [allDegree, setAllDegree] = useState([]);
   const [allSpecialization, setAllSpecialization] = useState([]);
   const [oldPhysioData, setOldPhysioData] = useState(); //if filling form after first time
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
+  const [mptDegreeOpen, setMptDegreeOpen] = useState(false);
   const physioConnectPhysioId = useSelector(
     (state) => state?.physioConnectAuth?.physioId
   );
   const [degreeOpen, setDegreeOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const dropdownSpRef = useRef(null);
+  const dropdownMptRef = useRef(null);
+
+
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpen(false);
         setDegreeOpen(false);
       }
+
+      if (dropdownMptRef.current && !dropdownMptRef.current.contains(event.target)) {
+        setMptDegreeOpen(false);
+      }
+
+      if (dropdownSpRef.current && !dropdownSpRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+
+
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    if (open || degreeOpen || mptDegreeOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, [open, degreeOpen, mptDegreeOpen]);
 
   // google analytics
   useEffect(() => {
@@ -61,9 +81,22 @@ const PhysioConnectProfessionalForm = () => {
     });
   }, []);
 
-  // getting degree & specialisation from backend
+
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchOldData = async () => {
+      try {
+        const res = await getPhysioDataById(physioConnectPhysioId);
+        if (res.success) {
+          setOldPhysioData(res.physioData); // assuming `data` contains the physio details object
+        } else {
+          console.error("Error in response:", res.message);
+        }
+      } catch (error) {
+        console.error("Error fetching physio data:", error);
+      }
+
+
+
       await physioConnectDegreeApi().then((res) => {
         if (res.status >= 200 && res.status < 300) {
           setAllDegree(res.data.data);
@@ -83,101 +116,82 @@ const PhysioConnectProfessionalForm = () => {
           toast.error("Something went wrong");
         }
       });
-
-      await getPhysioDataPhysioConnectApi(physioConnectPhysioId)
-        .then((res) => {
-          if (res.status >= 200 && res.status < 300) {
-            setOldPhysioData(res.data);
-          } else {
-            console.log("inside else", res);
-          }
-        })
-        .catch((err) => console.log(err));
     };
 
-    fetchData();
+    fetchOldData();
   }, []);
-  const handleRemove = (id) => {
-    formik.setFieldValue(
-      "specialization",
-      formik.values.specialization.filter((item) => item !== id)
-    );
-  };
+
 
   const formik = useFormik({
     initialValues: {
-      degree: [],
+      bptDegree: {
+        degreeId: "",
+
+      },
+      mptDegree: {
+        degreeId: "",
+
+      },
+
       specialization: [],
-      serviceType: [],
-      clinicName: "",
-      clinicAddress: "",
-      clinicPincode: "",
-      clinicCity: "",
-      clinicState: "",
-      consultationFees: "",
-      treatmentCharges: "",
-      homeChargesUpto5km: "",
-      homeChargesUpto10km: "",
-      homePincode: "",
-      homeCity: "",
-      homeState: "",
-      AnotherTreatmentName: "",
-      AnotherTreatmentPrice: "",
-      MPT: "",
       experience: "",
+      serviceType: [],
       iapMember: "",
       iapNumber: "",
-      iapImage: null, // Added for image upload
     },
     validationSchema: Yup.object().shape({
-      iapMember: Yup.boolean().required("IAP is required"),
-      iapNumber: Yup.string(),
-      iapImage: Yup.mixed()
-        .nullable()
-      , // Validation for image
-      degree: Yup.array().required("Degree is required"),
+      iapMember: Yup.number().required("IAP member is required"),
+      iapNumber: Yup.string().when('iapMember', {
+        is: 1,
+        then: () => Yup.string().required("IAP number is required"),
+        otherwise: () => Yup.string().notRequired()
+      }),
+      bptDegree: Yup.object({
+        degreeId: Yup.string().required("BPT Degree is required"),
+
+      }),
+
+
+      // Validation for image
+
       specialization: Yup.array().required("Specialization is required"),
       serviceType: Yup.array().required("Service Type is required"),
-      clinicName: Yup.string("Clinic Name is required"),
-      clinicAddress: Yup.string("Clinic Address is required"),
-      clinicPincode: Yup.number("Clinic Pincode is required"),
-      clinicCity: Yup.string("Clinic City is required"),
-      clinicState: Yup.string("Clinic State is required"),
-      consultationFees: Yup.number("Consultation Fees is required"),
-      treatmentCharges: Yup.number("Treatment Charges is required"),
-      homeChargesUpto5km: Yup.number("Home Charges Upto 5km is required"),
-      homeChargesUpto10km: Yup.number("Home Charges Upto 10km is required"),
-      homePincode: Yup.number("Home Pincode is required"),
-      homeCity: Yup.string("Home City is required"),
-      homeState: Yup.string("Home State is required"),
-      AnotherTreatmentName: Yup.string("Another Treatment Name is required"),
-      AnotherTreatmentPrice: Yup.number("Another Treatment Price is required"),
-      MPT: Yup.boolean().required(
-        "check yes or no is required"
-      ),
-      experience: Yup.string().required("experience is required"),
+
+
+      experience: Yup.number()
+        .typeError("Experience must be a number")
+        .required("Experience is required")
+        .min(0, "Experience cannot be negative"),
     }),
     onSubmit: (values) => {
       const {
-        degree,
+        bptDegree,
+        mptDegree,
+
         specialization,
         experience,
-        MPT,
         serviceType,
         iapMember,
         iapNumber,
       } = values;
-      if (degree?.length == 0) return toast.error("Degree is Required");
+
       if (specialization?.length == 0)
         return toast.error("Specialization is required");
       if (serviceType?.length == 0)
         return toast.error("Please select treatment type");
       else {
         physioConnectProfessionalApi({
-          degree,
+          bptDegree: {
+            degreeId: bptDegree.degreeId,
+          },
+          mptDegree: {
+            degreeId: mptDegree.degreeId,
+
+          },
+
           specialization,
           experience,
-          MPT,
+
           serviceType,
           iapMember,
           iapNumber,
@@ -196,175 +210,68 @@ const PhysioConnectProfessionalForm = () => {
     },
   });
 
+
   useEffect(() => {
-    // setting degree from database
-    if (oldPhysioData && oldPhysioData.degree.length != 0) {
-      const tempDegreeId = [];
-      oldPhysioData.degree.degreeId.forEach((degree) => {
-        tempDegreeId.push(degree._id);
+    if (oldPhysioData) {
+      formik.setValues({
+
+
+        bptDegree: {
+          degreeId: oldPhysioData.bptDegree?.degreeId || "",
+        },
+        mptDegree: {
+          degreeId: oldPhysioData.mptDegree?.degreeId || "",
+        },
+        specialization: Array.isArray(oldPhysioData.specialization) ? oldPhysioData.specialization : [],
+        serviceType: Array.isArray(oldPhysioData.serviceType) ? oldPhysioData.serviceType : [],
+        experience: oldPhysioData.workExperience !== undefined ? String(oldPhysioData.workExperience) : "",
+        // ensure boolean
+        iapMember: Number(oldPhysioData.iapMember) || 0,    // ensure number
+        iapNumber: String(oldPhysioData.iapNumber || ""),   // ensure string
       });
-
-      formik.setFieldValue("degree", tempDegreeId);
-    }
-
-    // setting specialisation from database
-    if (oldPhysioData && oldPhysioData.specialization.length != 0) {
-      const tempSpecialisationId = [];
-      oldPhysioData.specialization.forEach((specialisation) => {
-        tempSpecialisationId.push(specialisation._id);
-      });
-      formik.setFieldValue("specialization", tempSpecialisationId);
-    }
-
-    // setting serviceType from database
-    if (oldPhysioData && oldPhysioData.serviceType.length != 0) {
-      const tempServiceTypeId = [];
-      oldPhysioData.serviceType.forEach((type) => {
-        tempServiceTypeId.push(type);
-      });
-      formik.setFieldValue("serviceType", tempServiceTypeId);
-    }
-
-    // setting clinic name from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.name != null &&
-      oldPhysioData.clinic.name != undefined &&
-      oldPhysioData.clinic.name.length != 0
-    ) {
-      formik.setFieldValue("clinicName", oldPhysioData.clinic.name);
-    }
-
-    // setting clinic address from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.address != null &&
-      oldPhysioData.clinic.address != undefined &&
-      oldPhysioData.clinic.address.length != 0
-    ) {
-      formik.setFieldValue("clinicAddress", oldPhysioData.clinic.address);
-    }
-
-    // setting clinic pincode from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.zipCode != null &&
-      oldPhysioData.clinic.zipCode != undefined &&
-      oldPhysioData.clinic.zipCode.length != 0
-    ) {
-      formik.setFieldValue("clinicPincode", oldPhysioData.clinic.zipCode);
-    }
-
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.city != null &&
-      oldPhysioData.clinic.city != undefined &&
-      oldPhysioData.clinic.city.length != 0
-    ) {
-      formik.setFieldValue("clinicCity", oldPhysioData.clinic.city);
-    }
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.state != null &&
-      oldPhysioData.clinic.state != undefined &&
-      oldPhysioData.clinic.state.length != 0
-    ) {
-      formik.setFieldValue("clinicState", oldPhysioData.clinic.state);
-    }
-
-    // setting consultation fees from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.clinic.charges != null &&
-      oldPhysioData.clinic.charges != undefined &&
-      oldPhysioData.clinic.charges.length != 0
-    ) {
-      formik.setFieldValue("consultationFees", oldPhysioData.clinic.charges);
-    }
-    // setting IAP from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.iapMember != null &&
-      oldPhysioData.iapMember != undefined
-    ) {
-      if (oldPhysioData.iapMember == 0) {
-        formik.setFieldValue("iapMember", false);
-      } else {
-        formik.setFieldValue("iapMember", true);
-      }
-    }
-
-    // setting IAP Number from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.iapNumber != null &&
-      oldPhysioData.iapNumber != undefined
-    ) {
-      formik.setFieldValue("iapNumber", oldPhysioData.iapNumber);
-    }
-    //  setting MPT from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.MPT != null &&
-      oldPhysioData.MPT != undefined
-    ) {
-      formik.setFieldValue(
-        "MPT",
-        oldPhysioData.MPT
-      );
-    }
-
-    // setting experience from database
-    if (
-      oldPhysioData &&
-      oldPhysioData.experience != null &&
-      oldPhysioData.experience != undefined
-    ) {
-      formik.setFieldValue("experience", oldPhysioData.experience);
     }
   }, [oldPhysioData]);
 
-  // clinic city and clinic state using pincode by google api
+
   useEffect(() => {
-    const cityAndStateUsingPincode = () => {
-      if (formik.values.clinicPincode.length === 6) {
-        locationUsingPincode(formik.values.clinicPincode).then((res) => {
-          const city = res.results[0].address_components.find((data) =>
-            data.types.includes("locality")
-          ).long_name;
-          const state = res.results[0].address_components.find((data) =>
-            data.types.includes("administrative_area_level_1")
-          ).long_name;
 
-          formik.setFieldValue("clinicCity", city);
-          formik.setFieldValue("clinicState", state);
-        });
+
+    const generalSpecialization = allSpecialization.find(
+      (s) => s.name === "General Physio"
+    );
+
+    if (!generalSpecialization) {
+      console.warn("General specialization not found!");
+      return;
+    }
+
+    const generalId = generalSpecialization._id;
+    console.log("General ID:", generalId);
+
+    const hasDegree = formik.values.bptDegree.degreeId
+      ? formik.values.bptDegree.degreeId.length > 0
+      : false;
+
+    const hasMaster = formik.values.mptDegree.degreeId
+      ? formik.values.mptDegree.degreeId.length > 0
+      : false;
+
+    if (hasDegree) {
+      // If no specialization is selected or general is missing, auto-select General
+      const current = formik.values.specialization || [];
+      if (!current.includes(generalId)) {
+        formik.setFieldValue("specialization", [generalId]);
       }
-    };
 
-    cityAndStateUsingPincode();
-  }, [formik.values.clinicPincode]);
 
-  // home city and home state using pincode by google api
-  useEffect(() => {
-    const cityAndStateUsingPincode = () => {
-      if (formik.values.homePincode.length === 6) {
-        locationUsingPincode(formik.values.homePincode).then((res) => {
-          const city = res.results[0].address_components.find((data) =>
-            data.types.includes("locality")
-          ).long_name;
-          const state = res.results[0].address_components.find((data) =>
-            data.types.includes("administrative_area_level_1")
-          ).long_name;
 
-          formik.setFieldValue("homeCity", city);
-          formik.setFieldValue("homeState", state);
-        });
-      }
-    };
+    } else {
+      // If no degree selected, clear specialization
 
-    cityAndStateUsingPincode();
-  }, [formik.values.homePincode]);
+      formik.setFieldValue("specialization", []);
+    }
+  }, [formik.values.bptDegree, formik.values.mptDegree, allSpecialization]);
+
 
   if (physioConnectPhysioId == null || physioConnectPhysioId.length == 0) {
     const physioConnectPhysioId = sessionStorage.getItem("physioConnectId");
@@ -391,138 +298,205 @@ const PhysioConnectProfessionalForm = () => {
           >
             <h6 className="font-semibold text-3xl">Professional Details</h6>
             <p className="text-sm font-semibold text-gray-700">Fill in your professional details below</p>
+            <label htmlFor="" className="text-sm font-semibold">
+              Select Degree
+            </label>
 
             {/* Degree Section */}
+            {/* Degree Section */}
             <div className="flex flex-col gap-2">
-              <label htmlFor="degree" className="text-sm font-semibold">
-                Select Degree
-              </label>
-              <div className="relative">
-                {/* Selected Items Display (Chips with Cross) */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formik.values.degree.map((selectedId) => {
-                    const selectedItem = allDegree.find(
-                      (item) => item._id === selectedId
-                    );
-                    return (
-                      selectedItem && (
-                        <div
-                          key={selectedId}
-                          className="flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm"
-                        >
-                          {selectedItem.name}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updatedDegrees =
-                                formik.values.degree.filter(
-                                  (id) => id !== selectedId
-                                );
-                              formik.setFieldValue("degree", updatedDegrees);
-                            }}
-                            className="text-gray-600 hover:text-gray-800"
+              {/* BPT Degree Selection */}
+              <div className="relative" ref={dropdownRef}>
+                {/* Selected Degree Chip */}
+                {formik.values.bptDegree.degreeId && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {(() => {
+                      const selectedItem = allDegree.find(
+                        (item) => item._id === formik.values.bptDegree.degreeId
+                      );
+                      return (
+                        selectedItem && (
+                          <div
+                            key={selectedItem._id}
+                            className="flex items-center gap-1 bg-[#F2FAF6] text-green px-2 py-1 rounded-full text-sm"
                           >
-                            ×
-                          </button>
-                        </div>
-                      )
-                    );
-                  })}
-                </div>
+                            {selectedItem.name}
+                            <button
+                              type="button"
 
-                {/* Dropdown Trigger Button */}
+                              onClick={() =>
+                                formik.setFieldValue("bptDegree.degreeId", null)
+                              }
+                              className="text-gray-600 hover:text-gray-800"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Dropdown Trigger */}
                 <button
+
                   type="button"
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setDegreeOpen(!degreeOpen)}
                 >
-                  <span>Select Degrees</span>
-                  <img
-                    src="/aboutImg/dropdown.png"
-                    className="w-4 h-4"
-                    alt=""
-                  />
-                  {/* <Button className="w-4 h-4" /> */}
+                  <span>Select BPT degree</span>
+                  <img src="/aboutImg/dropdown.png" className="w-4 h-4" alt="" />
                 </button>
 
                 {/* Dropdown Options */}
                 {degreeOpen && (
-                  <div ref={dropdownRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                  <div className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
                     <div className="flex flex-col gap-2">
-                      {allDegree.map((i) => (
-                        <label
-                          key={i._id}
-                          className="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded"
-                          onClick={() => {
-                            const isSelected = formik.values.degree.includes(
-                              i._id
-                            );
-                            let newDegrees;
-                            if (isSelected) {
-                              newDegrees = formik.values.degree.filter(
-                                (id) => id !== i._id
-                              );
-                            } else {
-                              newDegrees = [...formik.values.degree, i._id];
-                            }
-                            formik.setFieldValue("degree", newDegrees);
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            name="degree"
-                            className="w-4 h-4"
-                            value={i._id}
-                            checked={formik.values.degree.includes(i._id)}
-                            onChange={() => { }}
-                          />
-                          {i.name}
-                        </label>
-                      ))}
+                      {allDegree
+                        .filter(
+                          (i) =>
+                            i.name === "Bachelor of Physiotherapy(BPT)" ||
+                            i.name === "Diploma in Physiotherapy"
+                        )
+                        .map((i) => {
+                          const isSelected = formik.values.bptDegree.degreeId === i._id;
+                          return (
+                            <label
+                              htmlFor="bptdegree"
+                              key={i._id}
+                              className="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded"
+                              onClick={() =>
+                                formik.setFieldValue(
+                                  "bptDegree.degreeId",
+                                  isSelected ? null : i._id
+                                )
+                              }
+                            >
+                              <input
+                                type="checkbox"
+                                name="bptdegree"
+                                className="w-4 h-4"
+                                value={i._id}
+
+                                checked={isSelected}
+                                onChange={() => { }}
+                              />
+                              {i.name}
+                            </label>
+                          );
+                        })}
                     </div>
                   </div>
                 )}
               </div>
-              {formik.touched.degree && formik.errors.degree && (
-                <p className="text-red-500">{formik.errors.degree}</p>
+
+              {/* Validation Error */}
+              {formik.touched.bptDegree?.degreeId && formik.errors.bptDegree?.degreeId && (
+                <p className="text-red-500">{formik.errors.bptDegree.degreeId}</p>
               )}
             </div>
-            {/* MPT Section */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-semibold">
-                Have you completed MPT?
-              </label>
 
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="MPT"
-                    value="true"
-                    checked={formik.values.MPT === true}
-                    onChange={() => formik.setFieldValue("MPT", true)}
-                    className="accent-black"
-                  />
-                  <span className="text-sm">Yes</span>
-                </label>
 
-                <label className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    name="MPT"
-                    value="false"
-                    checked={formik.values.MPT === false}
-                    onChange={() => formik.setFieldValue("MPT", false)}
-                    className="accent-black"
-                  />
-                  <span className="text-sm">No</span>
-                </label>
+
+
+
+
+            {/* mpt degree */}
+            <div className="flex flex-col gap-2 mt-6">
+              {/* MPT Degree Selection */}
+              <div className="relative" ref={dropdownMptRef}>
+                {/* Selected Degree Chip */}
+                {formik.values.mptDegree.degreeId && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {(() => {
+                      const selectedItem = allDegree.find(
+                        (item) => item._id === formik.values.mptDegree.degreeId
+                      );
+                      return (
+                        selectedItem && (
+                          <div
+                            key={selectedItem._id}
+                            className="flex items-center gap-1 bg-[#F2FAF6] text-green px-2 py-1 rounded-full text-sm"
+                          >
+                            {selectedItem.name}
+                            <button
+                              type="button"
+
+                              onClick={() =>
+                                formik.setFieldValue("mptDegree.degreeId", null)
+                              }
+                              className="text-gray-600 hover:text-gray-800"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )
+                      );
+                    })()}
+                  </div>
+                )}
+
+                {/* Dropdown Trigger */}
+                <button
+
+                  type="button"
+                  className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
+                  onClick={() => setMptDegreeOpen(!mptDegreeOpen)}
+                >
+                  <span>Select MPT degree</span>
+                  <img src="/aboutImg/dropdown.png" className="w-4 h-4" alt="" />
+                </button>
+
+                {/* Dropdown Options */}
+                {mptDegreeOpen && (
+                  <div className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                    <div className="flex flex-col gap-2">
+                      {allDegree
+                        .filter(
+                          (i) =>
+                            i.name === "Master of Physiotherapy"
+                        )
+
+                        .map((i) => {
+                          const isSelected = formik.values.mptDegree.degreeId === i._id;
+                          return (
+                            <label
+                              htmlFor="mptdegree"
+                              key={i._id}
+                              className="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded"
+                              onClick={() =>
+                                formik.setFieldValue(
+                                  "mptDegree.degreeId",
+                                  isSelected ? null : i._id
+                                )
+                              }
+                            >
+                              <input
+                                type="checkbox"
+                                name="mptdegree"
+                                className="w-4 h-4"
+                                value={i._id}
+
+                                checked={isSelected}
+                                onChange={() => { }}
+                              />
+                              {i.name}
+                            </label>
+                          );
+                        })}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {formik.touched.MPT && formik.errors.MPT && (
-                <div className="text-red-500 text-sm mt-1">{formik.errors.MPT}</div>
+              {/* Validation Error */}
+              {formik.touched.mptDegree?.degreeId && formik.errors.mptDegree?.degreeId && (
+                <p className="text-red-500">{formik.errors.mptDegree.degreeId}</p>
               )}
             </div>
+
+
 
 
             <div className="flex flex-col gap-2">
@@ -540,11 +514,12 @@ const PhysioConnectProfessionalForm = () => {
                       selectedItem && (
                         <div
                           key={selectedId}
-                          className="flex items-center gap-1 bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-sm"
+                          className="flex items-center gap-1  bg-[#F2FAF6] text-green px-2 py-1 rounded-full text-sm"
                         >
                           {selectedItem.name}
                           <button
                             type="button"
+
                             onClick={() => {
                               const updatedSpecializations =
                                 formik.values.specialization.filter(
@@ -567,6 +542,7 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Trigger Button */}
                 <button
+
                   type="button"
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setOpen(!open)}
@@ -582,34 +558,46 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Options */}
                 {open && (
-                  <div ref={dropdownRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                  <div ref={dropdownSpRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
                     <div className="flex flex-col gap-2">
                       {allSpecialization.map((i) => (
-                        <label
+                        <label htmlFor="specialization"
                           key={i._id}
                           className="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded"
                           onClick={() => {
-                            const isSelected =
-                              formik.values.specialization.includes(i._id);
+                            const generalId = allSpecialization.find((s) => s.name === "General Physio")?._id;
+                            const isSelected = formik.values.specialization.includes(i._id);
+
+                            if (!formik.values.mptDegree?.degreeId) return;
+
+
+
+                            if (i._id === generalId) return; // Don't allow toggling General
+
+
+                            const currentSpecializations = formik.values.specialization;
+
+
                             let newSpecializations;
+
                             if (isSelected) {
-                              newSpecializations =
-                                formik.values.specialization.filter(
-                                  (id) => id !== i._id
-                                );
+                              // Deselect the clicked one (but keep General)
+                              newSpecializations = currentSpecializations.filter(
+                                (id) => id !== i._id
+                              );
                             } else {
-                              newSpecializations = [
-                                ...formik.values.specialization,
-                                i._id,
-                              ];
+                              // Deselect any non-general specialization and add new one
+                              newSpecializations = currentSpecializations
+                                .filter((id) => id === generalId)
+                                .concat(i._id);
                             }
-                            formik.setFieldValue(
-                              "specialization",
-                              newSpecializations
-                            );
+
+                            formik.setFieldValue("specialization", newSpecializations);
                           }}
+
                         >
                           <input
+
                             type="checkbox"
                             name="specialization"
                             className="w-4 h-4"
@@ -668,14 +656,12 @@ const PhysioConnectProfessionalForm = () => {
                 name="iapMember"
                 value={formik.values.iapMember === "" ? "" : formik.values.iapMember.toString()}
                 onChange={(e) => {
-                  const value = e.target.value === "true";
+                  const value = Number(e.target.value); // convert to number (0 or 1)
                   formik.setFieldValue("iapMember", value);
 
-                  // Reset related fields if "No" is selected
-                  if (!value) {
-                    formik.setFieldValue("iapMember", false);
-                    formik.setFieldValue("iapNumber", ""); // Reset IAP number
-                    formik.setFieldValue("iapImage", []); // Reset uploaded images
+                  if (value === 0) {
+                    formik.setFieldValue("iapNumber", ""); // reset IAP number
+                    formik.setFieldValue("iapImage", []); // reset images
                   }
                 }}
                 className="border border-gray-300 rounded-md px-3 py-2 w-full cursor-pointer focus:outline-none focus:ring-1 focus:ring-black focus:border-black bg-white"
@@ -683,9 +669,10 @@ const PhysioConnectProfessionalForm = () => {
                 <option value="" disabled hidden>
                   Select an option
                 </option>
-                <option value="true">Yes</option>
-                <option value="false">No</option>
+                <option value={1}>Yes</option>
+                <option value={0}>No</option>
               </select>
+
 
               {formik.touched.iapMember && formik.errors.iapMember && (
                 <div className="text-red-500 text-sm mt-1">{formik.errors.iapMember}</div>
@@ -693,7 +680,7 @@ const PhysioConnectProfessionalForm = () => {
             </div>
 
 
-            {formik.values.iapMember === true && (
+            {formik.values.iapMember === 1 && (
               <>
                 {/* IAP Number Input */}
                 <div className="flex flex-col gap-2">
@@ -703,6 +690,7 @@ const PhysioConnectProfessionalForm = () => {
                   <Input
                     size="md"
                     name="iapNumber"
+                    required={formik.values.iapMember === 1}
                     value={formik.values.iapNumber}
                     onChange={formik.handleChange}
                     labelProps={{ className: "hidden" }}
@@ -715,56 +703,9 @@ const PhysioConnectProfessionalForm = () => {
                     {formik.errors.iapNumber}
                   </div>
                 ) : null}
-
-                {/* IAP Image Upload */}
-                {/* <div>
-	<label htmlFor="iapImages" className="block text-sm font-medium text-gray-700">
-		Upload IAP Certificates
-	</label>
-	<input
-		type="file"
-		id="iapImages"
-		name="iapImages"
-		accept="image/*"
-		multiple
-		onChange={(event) => {
-			const files = Array.from(event.target.files);
-			formik.setFieldValue("iapImages", [...(formik.values.iapImages || []), ...files]);
-		}}
-		className="mt-1 block w-full border border-gray-300 shadow-sm sm:text-sm rounded-md"
-	/>
-	{formik.errors.iapImages && formik.touched.iapImages && (
-		<p className="text-red-500 text-sm mt-1">{formik.errors.iapImages}</p>
-	)}
-
-	{/* Preview the uploaded images */}
-                {/* {formik.values.iapImages && formik.values.iapImages.length > 0 && (
-		<div className="mt-2 flex flex-wrap gap-2">
-			{formik.values.iapImages.map((file, index) => (
-				<div key={index} className="relative">
-					<img
-						src={URL.createObjectURL(file)}
-						alt={`IAP Certificate ${index + 1}`}
-						className="h-32 w-auto rounded-lg border"
-					/>
-					<button
-						type="button"
-						className="absolute top-0 right-0 bg-red-500 text-white text-xs px-2 py-1 rounded"
-						onClick={() => {
-							const newFiles = formik.values.iapImages.filter((_, i) => i !== index);
-							formik.setFieldValue("iapImages", newFiles);
-						}}
-					>
-						X
-					</button>
-				</div>
-			))}
-		</div>
-	)}
-</div> */}
-
               </>
             )}
+
 
             <div className="flex flex-col gap-2">
               <label htmlFor="serviceType" className="text-sm font-semibold">
@@ -772,25 +713,28 @@ const PhysioConnectProfessionalForm = () => {
               </label>
               <div className="flex gap-2 mt-2">
                 <label className="flex items-center gap-2 text-sm text-gray-900 font-medium">
-                  <input
-                    type="checkbox"
+                  <Checkbox
+                    className="rounded-sm h-4 w-4 border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+                    checked={formik.values.serviceType.includes("clinic")}
                     name="serviceType"
                     value="clinic"
-                    checked={formik.values.serviceType.includes("clinic")}
+                    type="checkbox"
                     onChange={formik.handleChange}
-                    className="w-4 h-4"
+
                   />
                   Clinic
                 </label>
 
                 <label className="flex items-center gap-2 text-sm text-gray-900 font-medium">
-                  <input
+
+                  <Checkbox
+                    className="rounded-sm h-4 w-4 border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+                    checked={formik.values.serviceType.includes("home")}
                     type="checkbox"
                     name="serviceType"
                     value="home"
-                    checked={formik.values.serviceType.includes("home")}
                     onChange={formik.handleChange}
-                    className="w-4 h-4"
+
                   />
                   Home Care
                 </label>

@@ -52,26 +52,69 @@ const PhysioConnectSignup = () => {
 	});
 
 	const handleOtpSubmit = async () => {
-	try {
-		const res = await physioConnectOtpVerify(formik.values.fullName, formik.values.mobile, otp);
+		try {
+			console.log("OTP Submit Values:", formik.values);
 
-		if (res?.data?.physio?.listingCharges?.some(item => item.paymentStatus === 1)) {
-			dispatch(setSuccessModalOpen());
-		} else {
-			toast.success("login successful", { id: "loginSuccess", className: "capitalize z-10" });
-			setOtp("");
-			sessionStorage.setItem("physioConnectId", res.data.physio._id);
-			dispatch(setPhysioConnectPhysioId(res.data.physio._id));
-			setTimeout(() => navigate("/physio-connect/personal-details"), 1500);
+			const res = await physioConnectOtpVerify(
+				formik.values.mobile,
+				otp,
+				formik.values.fullName
+			);
+
+			console.log("OTP Submit Response:", res);
+
+			const isNew = res?.data?.isNew;
+			const physioId = res?.data?.physio?._id;
+
+			if (!physioId) {
+				throw new Error("Physio ID missing from response");
+			}
+
+			// Show appropriate success toast
+			toast.success(
+				isNew ? "Welcome aboard! Sign-up successful." : "You're already registered. Head to login..",
+				{
+					id: isNew ? "signupSuccess" : "loginPrompt",
+					className: "capitalize z-10",
+				}
+			);
+
+
+			// Store ID and update Redux
+			sessionStorage.setItem("physioConnectId", physioId);
+			dispatch(setPhysioConnectPhysioId(physioId));
+
+			setOtp(""); // Reset OTP input
+
+			// Delay navigation based on user status
+			// Then redirect
+			setTimeout(() => {
+				if (isNew) {
+					navigate("/physio-connect/personal-details");
+				} else {
+					navigate("/login-physio"); // <- You are redirecting to login page
+				}
+			}, 1500);
+
+		} catch (error) {
+			console.error("OTP Submit Error:", error);
+
+			if (error.response?.status >= 400 && error.response?.status < 500) {
+				toast.error("Invalid OTP Code", {
+					id: "OtpErrorLogin1",
+					className: "capitalize z-10",
+				});
+			} else {
+				toast.error("Something went wrong", {
+					id: "OtpErrorLogin2",
+					className: "capitalize z-10",
+				});
+			}
 		}
-	} catch (error) {
-		if (error.response?.status >= 400 && error.response?.status < 500) {
-			toast.error("Invalid OTP Code", { id: "OtpErrorLogin1", className: "capitalize z-10" });
-		} else {
-			toast.error("Something went wrong", { id: "OtpErrorLogin2", className: "capitalize z-10" });
-		}
-	}
-};
+	};
+
+
+
 
 
 	return (

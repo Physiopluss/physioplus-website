@@ -3,10 +3,9 @@ import { Navigate, useNavigate } from "react-router-dom";
 import PrincipleCard from "../../components/PrincipleCard";
 import { useEffect, useState } from "react";
 import {
-	physioConnectCouponApi,
-	// physioConnectFreePayment,
-	physioConnectPhysioDataApi,
-	physioConnectPriceAndExperienceApi,
+
+
+	getPhysioDataById,
 	physioConnectRazorPayOrderApi,
 } from "../../api/physioConnect";
 import toast from "react-hot-toast";
@@ -14,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SuccessModal from "../../components/SuccessModal";
 import { setSuccessModalOpen } from "../../slices/modalSlice";
 import ReactGA from "react-ga4";
-import { SwipeableButton } from "react-swipeable-button";
+
 import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
 import Modal from "../../components/Modal";
 import StepIndicator from "../../components/StepIndicator";
@@ -22,20 +21,21 @@ import StepIndicator from "../../components/StepIndicator";
 const PhysioConnectPayment = () => {
 	const physioConnectPhysioId = useSelector((state) => state?.physioConnectAuth?.physioId);
 	const dispatch = useDispatch();
-	const [coupon, setCoupon] = useState("NEW500");
+	const [coupon, setCoupon] = useState("PHYSIOFIRST");
 	const [couponApplied, setCouponApplied] = useState();
 	const [couponResponse, setCouponResponse] = useState({});
 	// const [priceAccordingToExperience, setPriceAccordingToExperience] = useState();
 	const [mobileNumber, setMobileNumber] = useState();
 	const navigate = useNavigate();
-	const [selectedPrice, SetSelectedPrice] = useState(0);
+	const [selectedPrice, SetSelectedPrice] = useState(2499);
 	const [selectedExperienceId, SetSelectedExperienceId] = useState();
 	const [discountedPrice, SetDiscountedPrice] = useState();
-	const [amoutToPay, setAmountToPay] = useState();
+	const [amoutToPay, setAmountToPay] = useState(2499);
 	const [showCouponInput, setShowCouponInput] = useState(false);
 	const [showPayment, setShowPayment] = useState(false);
 	//const [modal,setModal] = useState(false); // Added state to manage Terms of Service modal visibility
 	const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal visibility
+	const [isChecked, setIsChecked] = useState(true);
 	// Function to open the modal
 	const openModal = () => {
 		setIsModalOpen(true);
@@ -64,82 +64,23 @@ const PhysioConnectPayment = () => {
 		coupon && couponResponse && couponResponse.couponName == coupon && SetDiscountedPrice(couponResponse.discount);
 	}, [coupon, couponResponse]);
 
-	// price according to experience logic
-	//
-	//
-	// getting physiodata & price according to experience
-	// useEffect(() => {
-	// 	const fetchData = async () => {
-	// 		const [priceData, physioData] = await Promise.all([
-	// 			physioConnectPriceAndExperienceApi(),
-	// 			physioConnectPhysioDataApi(physioConnectPhysioId),
-	// 		]);
-	// 		setPriceAccordingToExperience(priceData);
-	// 		setMobileNumber(physioData.data.phone);
 
-	// 		let tmpPrice;
-	// 		if (physioData.data.workExperience < 16) {
-	// 			tmpPrice = priceData.data.filter((item) => item.experience > physioData.data.workExperience);
-	// 		} else {
-	// 			tmpPrice = priceData.data.filter((item) => item.experience == 16);
-	// 		}
-
-	// 		if (tmpPrice.length > 1) {
-	// 			SetSelectedPrice(tmpPrice.reduce((max, item) => (item.price > max.price ? item : max)).price);
-	// 			const tempExperience = tmpPrice.filter((item) => item.price == selectedPrice);
-	// 			SetSelectedExperienceId(tempExperience[0]._id);
-	// 		} else {
-	// 			SetSelectedPrice(tmpPrice[0].price);
-	// 			SetSelectedExperienceId(tmpPrice[0]._id);
-	// 		}
-	// 	};
-	// 	fetchData();
-	// }, [physioConnectPhysioId, selectedPrice]);
-
-	// remove coupon if price is more than 1000
-	// useEffect(() => {
-	// 	if (selectedPrice > 1000) {
-	// 		setCoupon("PHYSIO300");
-	// 	}
-	// }, [selectedPrice]);
-	//
-	// end here
 
 	useEffect(() => {
 		const fetchData = async () => {
-			const [priceData, physioData] = await Promise.all([
-				physioConnectPriceAndExperienceApi(),
-				physioConnectPhysioDataApi(physioConnectPhysioId),
+			const [physioData] = await Promise.all([
+				getPhysioDataById(physioConnectPhysioId)
+
 			]);
 			// setPriceAccordingToExperience(priceData);
-			setMobileNumber(physioData.data.phone);
+			setMobileNumber(physioData.phone);
 
-			let tmpPrice = priceData.data.filter((item) => item.experience == 100);
-
-			if (tmpPrice.length > 1) {
-				SetSelectedPrice(tmpPrice.reduce((max, item) => (item.price > max.price ? item : max)).price);
-				const tempExperience = tmpPrice.filter((item) => item.price == selectedPrice);
-				SetSelectedExperienceId(tempExperience[0]._id);
-			} else {
-				SetSelectedPrice(tmpPrice[0].price);
-				SetSelectedExperienceId(tmpPrice[0]._id);
-			}
 		};
 		fetchData();
 	}, [physioConnectPhysioId, selectedPrice]);
 
 	// getting total price after applying coupon
-	useEffect(() => {
-		discountedPrice != 0 && discountedPrice != null && discountedPrice != undefined
-			? couponResponse.couponType == 0
-				? discountedPrice > selectedPrice
-					? setAmountToPay(0)
-					: setAmountToPay(selectedPrice - discountedPrice)
-				: (discountedPrice * selectedPrice) / 100 > selectedPrice
-					? setAmountToPay(0)
-					: setAmountToPay(selectedPrice - (discountedPrice * selectedPrice) / 100)
-			: setAmountToPay(selectedPrice);
-	}, [selectedPrice, discountedPrice, couponResponse]);
+
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -195,7 +136,7 @@ const PhysioConnectPayment = () => {
 							<p className="text-base font-semibold">Listing Charges</p>
 							<div className="flex justify-between text-sm font-semibold">
 								<p>Amount to be Paid Per Year</p>
-								<p>{"₹ 3,499" || selectedPrice} </p>
+								<p>{(selectedPrice + 1000).toLocaleString()} </p>
 							</div>
 							{amoutToPay != 0 && (
 								<>
@@ -273,7 +214,7 @@ const PhysioConnectPayment = () => {
 							<div className="flex justify-between  text-md font-semibold">
 								<p>Total Amount to pay</p>
 
-								<p> ₹ {amoutToPay}</p>
+								<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
 							</div>
 						</div>
 
@@ -299,7 +240,11 @@ const PhysioConnectPayment = () => {
 
 						{/* Payment Option */}
 						<div className="flex items-center space-x-2">
-							<Checkbox className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green" defaultChecked checked={true} />
+							<Checkbox
+								className="w-4 h-4  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+								checked={isChecked}
+								onChange={(e) => setIsChecked(e.target.checked)}
+							/>
 							<p className="text-base font-medium">Online</p>
 						</div>
 
@@ -307,8 +252,11 @@ const PhysioConnectPayment = () => {
 
 						{/* Terms & Conditions */}
 						<div className="flex items-start space-x-2">
-							<Checkbox className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green" defaultChecked checked={true} />
-							<p className="text-sm">
+							<Checkbox
+								className="w-4 h-4  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+								checked={isChecked}
+								onChange={(e) => setIsChecked(e.target.checked)}
+							/><p className="text-sm">
 								By proceeding, I agree to Physioplus{" "}
 								<span className="text-green underline cursor-pointer" onClick={openModal}>
 									Terms of Service
@@ -325,7 +273,7 @@ const PhysioConnectPayment = () => {
 							<Button
 								className="w-full text-white text-base font-medium py-3 rounded-full bg-green hover:bg-green-700 transition-all duration-300"
 								onClick={() => {
-									physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied, selectedExperienceId)
+									physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied)
 										.then(() => {
 											dispatch(setSuccessModalOpen());
 										})
@@ -388,12 +336,12 @@ const PhysioConnectPayment = () => {
 						dispatch(setSuccessModalOpen());
 						// Push the current state and replace it to clear history
 						window.history.pushState(null, null, window.location.href);
-						window.history.replaceState(null, null, "/physio-connect");
-						navigate("/physio-connect", { replace: true });
+						window.history.replaceState(null, null, "/login-physio");
+						navigate("/login-physio", { replace: true });
 
 						// Prevent back navigation
 						window.addEventListener("popstate", () => {
-							navigate("/physio-connect", { replace: true });
+							navigate("/login-physio", { replace: true });
 						});
 					}}
 				/>
@@ -409,7 +357,7 @@ const PhysioConnectPayment = () => {
 							<p className="text-base font-semibold">Listing Charges</p>
 							<div className="flex justify-between text-sm font-semibold">
 								<p>Amount to be Paid Per Year</p>
-								<p>{"₹ 3,499" || selectedPrice} </p>
+								<p>{(selectedPrice + 1000).toLocaleString()} </p>
 							</div>
 						</div>
 
@@ -490,7 +438,7 @@ const PhysioConnectPayment = () => {
 						<div className="flex justify-between  text-md font-semibold">
 							<p>Total Amount to pay</p>
 
-							<p> ₹ {amoutToPay}</p>
+							<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
 						</div>
 					</div>
 
@@ -545,41 +493,54 @@ const PhysioConnectPayment = () => {
 						</div>
 					</div>
 
-					{/* Payment Method - Fixed at bottom */}
-					<div className=" fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg border-t z-10">
-						{/* Payment Method Header */}
-						<div className="text-lg font-semibold">Payment Method</div>
+					<div className="fixed bottom-0 left-0 right-0 bg-white px-3 py-1 shadow border-t z-50 text-xs">
+						{/* Header */}
+						<div className="font-semibold mb-1 mt-2">Payment</div>
 
 						{/* Payment Option */}
-						<div className="flex items-center space-x-2">
-							<Checkbox className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green" defaultChecked checked={true} />
-							<p className="text-sm font-medium">Online</p>
+						<div className="flex items-center space-x-1 ">
+							<Checkbox
+								className="w-3.5 h-3.5  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+								checked={isChecked}
+								onChange={(e) => setIsChecked(e.target.checked)}
+							/>
+							<p>Online</p>
 						</div>
 
-						<hr className="my-2 border-gray-300" />
-						<div className="flex items-center justify-between mb-3">
+						<hr className=" border-gray-200" />
 
-							<div className="flex items-center space-x-2">
-								<Checkbox className="w-4 h-4 hover:before:opacity-0 checked:bg-green text-green" defaultChecked checked={true} />
-								<p className="text-sm">I agree to Terms & Conditions</p>
+						{/* Agreement and Price */}
+						<div className="flex items-center justify-between ">
+							<div className="flex items-center space-x-1">
+								<Checkbox
+									className="w-3.5 h-3.5  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+									checked={isChecked}
+									onChange={(e) => setIsChecked(e.target.checked)}
+								/>
+								<p>I agree to Terms</p>
 							</div>
 							<p className="font-semibold">₹2,499</p>
 						</div>
+
+						{/* Pay Now Button */}
 						<Button
-							className="w-full text-white text-base font-medium py-3 rounded-full bg-green hover:bg-green-700"
+							className="w-full text-white text-md font-medium py-2 rounded-full bg-green hover:bg-green-700"
 							onClick={() => {
-								physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied, selectedExperienceId)
-									.then(() => {
-										dispatch(setSuccessModalOpen());
-									})
-									.catch((err) => {
-										toast.error(err);
-									});
+								physioConnectRazorPayOrderApi(
+									physioConnectPhysioId,
+									amoutToPay,
+									mobileNumber,
+									couponApplied,
+
+								)
+									.then(() => dispatch(setSuccessModalOpen()))
+									.catch((err) => toast.error(err));
 							}}
 						>
 							Pay Now
 						</Button>
 					</div>
+
 				</div>
 			</div>
 		</>
