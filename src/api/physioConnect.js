@@ -1,4 +1,7 @@
 import axios from "axios";
+import { commonInstance, instance } from "./axiosConfig";
+import { toast } from "react-hot-toast";
+
 const BaseUrl = import.meta.env.VITE_BASE_URL;
 const GOOGLE_KEY = import.meta.env.VITE_GOOGLE_KEY;
 
@@ -19,24 +22,105 @@ export const physioConnectSignUp = async (mobile) => {
 	}
 };
 
-export const physioConnectOtpVerify = async (name, mobile, otp) => {
+
+export const physioConnectLogin = async (mobile) => {
 	try {
-		const response = await axios.post(`${BaseUrl}web/physio/verifyOtp`, {
-			name,
+		const response = await instance.post(`web/physio/loginPhysioOtp`, {
 			phone: mobile,
-			otp,
 		});
+		if (response.status >= 200 && response.status < 300) {
+			return response;
+		}
+		else if (response.status >= 400 && response.status < 500) {
+			return response;
+		}
+		else {
+			return new Error("Something went wrong");
+		}
+	}
+	catch (error) {
+		if (error.response) {
+			return error.response;
+		} else {
+			return error.message;
+		}
+	}
+}
+
+
+
+export const physioConnectOtpVerify = async (phone, otp, fullName) => {
+	try {
+		// Get current location
+		const getLocation = () =>
+			new Promise((resolve) => {
+				if (!navigator.geolocation) {
+					toast.error("Geolocation is not supported by your browser.");
+					resolve({ latitude: null, longitude: null });
+				} else {
+					navigator.geolocation.getCurrentPosition(
+						(pos) =>
+							resolve({
+								latitude: pos.coords.latitude,
+								longitude: pos.coords.longitude,
+							}),
+						(err) => {
+							console.warn("Geolocation error:", err);
+							toast.error("Unable to fetch location. Please enable location services.");
+							resolve({ latitude: null, longitude: null });
+						}
+					);
+				}
+			});
+
+		const { latitude, longitude } = await getLocation();
+
+		const payload = {
+			name: fullName,
+			phone: phone,
+			otp,
+			latitude: latitude ? latitude.toString() : null,
+			longitude: longitude ? longitude.toString() : null,
+			location: {
+				type: "Point",
+				coordinates: longitude && latitude ? [longitude, latitude] : [0, 0],
+			},
+		};
+
+		const response = await axios.post(`${BaseUrl}web/physio/verifyOtp`, payload);
+
 		if (response.status >= 200 && response.status < 300) {
 			return response;
 		} else if (response.status >= 400 && response.status < 500) {
 			return response;
 		} else {
-			return new Error("Something went wrong");
+			toast.error("Something went wrong. Please try again.");
+			return new Error("Unexpected server response");
 		}
 	} catch (error) {
+		toast.error("OTP verification failed: " + (error?.message || "Unknown error"));
 		return error.response;
 	}
 };
+
+// export const physioConnectOtpVerify = async (phone, otp, fullName) => {
+// 	try {
+// 		const response = await axios.post(`${BaseUrl}web/physio/verifyOtp`, {
+// 			name: fullName,
+// 			phone: phone,
+// 			otp,
+// 		});
+// 		if (response.status >= 200 && response.status < 300) {
+// 			return response;
+// 		} else if (response.status >= 400 && response.status < 500) {
+// 			return response;
+// 		} else {
+// 			return new Error("Something went wrong");
+// 		}
+// 	} catch (error) {
+// 		return error.response;
+// 	}
+// };
 
 export const physioConnectDegreeApi = async () => {
 	try {
@@ -56,6 +140,21 @@ export const physioConnectDegreeApi = async () => {
 export const physioConnectSpecializationsApi = async () => {
 	try {
 		const response = await axios.get(`${BaseUrl}web/all-specializations`);
+		if (response.status >= 200 && response.status < 300) {
+			return response;
+		} else if (response.status >= 400 && response.status < 500) {
+			return response;
+		} else {
+			return new Error("Something went wrong");
+		}
+	} catch (error) {
+		return error.response;
+	}
+};
+
+export const physioConnectSubSpecializationsApi = async () => {
+	try {
+		const response = await axios.get(`${BaseUrl}web/all-subspecializations`);
 		if (response.status >= 200 && response.status < 300) {
 			return response;
 		} else if (response.status >= 400 && response.status < 500) {
@@ -121,24 +220,95 @@ export const physioConnectSpecializationsApi = async () => {
 // 	}
 // };
 
+
+export const physioConnectProfileEdit = async (physioData) => {
+	try {
+		// Get geolocation dynamically
+		const getLocation = () =>
+			new Promise((resolve) => {
+				if (!navigator.geolocation) {
+					resolve({ latitude: null, longitude: null });
+				} else {
+					navigator.geolocation.getCurrentPosition(
+						(pos) => resolve({
+							latitude: pos.coords.latitude,
+							longitude: pos.coords.longitude
+						}),
+						(err) => {
+
+							console.error("Geolocation error:", err); // Log actual error for debugging
+							toast.error("Location access denied.", {
+								id: "geo-error",
+								className: "capitalize z-10",
+							});
+							resolve({ latitude: null, longitude: null });
+						}
+					);
+				}
+			});
+
+		const { latitude, longitude } = await getLocation();
+
+		const payload = {
+			...physioData,
+			latitude: latitude ? latitude.toString() : null,
+			longitude: longitude ? longitude.toString() : null,
+			location: {
+				type: "Point",
+				coordinates: longitude && latitude ? [longitude, latitude] : [0, 0],
+			},
+		};
+
+		// Send request with merged location data
+		const response = await axios.put(`${BaseUrl}web/physio/physioConnectProfileEdit`, payload);
+
+		if (response.status === 200) {
+			toast.success(response.data?.message || "Profile updated!");
+			return response.data;
+		} else {
+			toast.error(response.data?.message || "Submission failed");
+		}
+	} catch (error) {
+		toast.error("Submit error: " + (error?.message || error));
+	}
+};
+
+// export const physioConnectProfileEdit = async (physioData) => {
+// 	try {
+// 		const response = await axios.put(`${BaseUrl}web/physio/physioConnectProfileEdit`, physioData);
+
+// 		if (response.status === 200) {
+// 			toast.success(response.data?.message || "Profile updated!");
+// 			return response.data; // optional, return data if needed
+// 		} else {
+// 			toast.error(response.data?.message || "Submission failed");
+// 		}
+// 	} catch (error) {
+// 		toast.error("Submit error: " + (error?.message || error));
+// 	}
+// };
+
+
+
+
 export const physioConnectPersonalApi = async ({
 	physioConnectPhysioId,
 	fullName,
 	gender,
 	dob,
+	phone,
 	email,
-
 	about,
 }) => {
 	try {
 		const response = await axios.post(`${BaseUrl}web/physio/createPhysioPersonalDetails?physioId=${physioConnectPhysioId}`, {
 			physioId: physioConnectPhysioId,
-			fullName:fullName,
-			gender:gender,
-			dob:dob,
-			email:email,
-			
-			about:about,
+			fullName: fullName,
+			gender: gender,
+			dob: dob,
+			email: email,
+			phone: phone,
+			about: about,
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response;
@@ -153,24 +323,27 @@ export const physioConnectPersonalApi = async ({
 };
 export const physioConnectProfessionalApi = async ({
 	physioConnectPhysioId,
-	degree,
+	bptDegree,
+	mptDegree,
 	specialization,
 	experience,
-	insurance,
 	serviceType,
 	iapMember,
 	iapNumber,
 }) => {
 	try {
 		const response = await axios.post(`${BaseUrl}web/physio/createPhysioProfessionalDetails?physioId=${physioConnectPhysioId}`, {
+
 			physioId: physioConnectPhysioId,
-			degree:degree,
-			specialization:specialization,
-			experience:experience,
-			insurance:insurance,
-			serviceType:serviceType,
-			iapMember:iapMember,
-			iapNumber:iapNumber,
+			bptDegree,
+			mptDegree,
+			specialization: specialization,
+			experience: experience,
+			bptDegreeId: bptDegree.bptDegreeId,
+			mptDegreeId: mptDegree.mptDegreeId,
+			serviceType: serviceType,
+			iapMember: iapMember,
+			iapNumber: iapNumber,
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response;
@@ -185,40 +358,37 @@ export const physioConnectProfessionalApi = async ({
 };
 
 export const physioConnectBusinessApi = async (
-	
-            clinicName,
-            clinicAddress,
-            clinicPincode,
-            clinicCity,
-            clinicState,
-            clinicCharges,
-            clinicDuration,
-            homePincode,
-            homeCity,
-            homeState,
-           
-			homeDuration,
-        
-            homeCharges,
-            homeCharges10Km,
+
+	clinicName,
+	clinicAddress,
+	clinicPincode,
+	clinicCity,
+	clinicState,
+	clinicCharges,
+	clinicDuration,
+	homePincode,
+	homeCity,
+	homeState,
+	homeDuration,
+	homeCharges,
 	physioConnectPhysioId
 ) => {
 	try {
 		const response = await axios.post(`${BaseUrl}web/physio/createPhysioBusinessDetails`, {
 			physioId: physioConnectPhysioId,
-			clinicName:clinicName,
-            clinicAddress:clinicAddress,
-            clinicPincode:clinicPincode,
-            clinicCity:clinicCity,
-            clinicState:clinicState,
-            clinicCharges:clinicCharges,
-            clinicDuration:clinicDuration,
-            homePincode:homePincode,
-            homeCity:homeCity,
-            homeState:homeState,
-			homeDuration:homeDuration,
-            homeCharges:homeCharges,
-            homeCharges10Km:homeCharges10Km,
+			clinicName: clinicName,
+			clinicAddress: clinicAddress,
+			clinicPincode: clinicPincode,
+			clinicCity: clinicCity,
+			clinicState: clinicState,
+			clinicCharges: clinicCharges,
+			clinicDuration: clinicDuration,
+			homePincode: homePincode,
+			homeCity: homeCity,
+			homeState: homeState,
+			homeDuration: homeDuration,
+			homeCharges: homeCharges,
+
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response;
@@ -231,47 +401,9 @@ export const physioConnectBusinessApi = async (
 		return error.response;
 	}
 };
-// export const physioConnectWorkExperiencePageApi = async (
-// 	IAPInDigit,
-// 	IAP_number,
-// 	treatInsuredPatientInDigit,
-// 	experience,
-// 	physioConnectPhysioId
-// ) => {
-// 	try {
-// 		const response = await axios.post(`${BaseUrl}web/physio/workExperiences`, {
-// 			physioId: physioConnectPhysioId,
-// 			workExperience: experience,
-// 			iapMember: IAPInDigit,
-// 			iapNumber: IAP_number,
-// 			treatInsuranceclaims: treatInsuredPatientInDigit,
-// 		});
-// 		if (response.status >= 200 && response.status < 300) {
-// 			return response;
-// 		} else if (response.status >= 400 && response.status < 500) {
-// 			return response;
-// 		} else {
-// 			return new Error("Something went wrong");
-// 		}
-// 	} catch (error) {
-// 		return error.response;
-// 	}
-// };
 
-export const physioConnectPriceAndExperienceApi = async () => {
-	try {
-		const response = await axios.get(`${BaseUrl}web/experience-price`);
-		if (response.status >= 200 && response.status < 300) {
-			return response.data;
-		} else if (response.status >= 400 && response.status < 500) {
-			return response;
-		} else {
-			return new Error("Something went wrong");
-		}
-	} catch (error) {
-		return error.response;
-	}
-};
+
+
 
 export const physioConnectCouponApi = async (couponCode) => {
 	try {
@@ -339,7 +471,7 @@ export const physioConnectRazorPayOrderApi = async (
 	amoutToPay,
 	mobileNumber,
 	couponApplied,
-	selectedExperienceId
+
 ) => {
 	try {
 		const response = await axios.post(
@@ -348,7 +480,7 @@ export const physioConnectRazorPayOrderApi = async (
 				physioId: physioConnectPhysioId,
 				amount: amoutToPay,
 				couponName: couponApplied,
-				experiencePriceId: selectedExperienceId,
+
 			},
 			{ headers: { "Content-Type": "application/json" } }
 		);
@@ -459,9 +591,9 @@ export const getPhysioDataPhysioConnectApi = async (physioConnectPhysioId) => {
 		return error.response;
 	}
 };
-export const  getPhysioDataById   = async (physioConnectPhysioId) => {
+export const getPhysioDataById = async (physioConnectPhysioId) => {
 	try {
-		const response = await axios.get(`${BaseUrl}web/physio/getPhysioPersonalDetailsById?Id=${physioConnectPhysioId}`);
+		const response = await axios.get(`${BaseUrl}web/physio/getPhysioDetailsById?Id=${physioConnectPhysioId}`);
 		if (response.status >= 200 && response.status < 300) {
 			return response.data;
 		} else if (response.status >= 400 && response.status < 500) {
@@ -473,3 +605,26 @@ export const  getPhysioDataById   = async (physioConnectPhysioId) => {
 		return error.response;
 	}
 };
+
+
+export const getPresignedUrl = async (file, folder) => {
+	const params = {
+		fileName: file.name,
+		fileType: file.type,
+		folder: folder,
+	};
+
+	const res = await commonInstance.get("/get-presigned-url", { params });
+	console.log(res.data);
+	return res.data; // { uploadUrl, fileUrl, fileKey }
+};
+
+export const uploadFileToS3 = async (file, presignedUrl) => {
+	await axios.put(presignedUrl, file, {
+		headers: {
+			"Content-Type": file.type,
+		},
+	});
+	console.log("File uploaded successfully", presignedUrl);
+};
+
