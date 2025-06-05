@@ -2,9 +2,10 @@ import { Button, Checkbox } from "@material-tailwind/react";
 import { Navigate, useNavigate } from "react-router-dom";
 import PrincipleCard from "../../components/PrincipleCard";
 import { useEffect, useState } from "react";
+import { SwipeableButton } from "react-swipeable-button";
 import {
 
-
+	physioConnectCouponApi,
 	getPhysioDataById,
 	physioConnectRazorPayOrderApi,
 } from "../../api/physioConnect";
@@ -21,16 +22,18 @@ import StepIndicator from "../../components/StepIndicator";
 const PhysioConnectPayment = () => {
 	const physioConnectPhysioId = useSelector((state) => state?.physioConnectAuth?.physioId);
 	const dispatch = useDispatch();
-	const [coupon, setCoupon] = useState("PHYSIOFIRST");
+	const [coupon, setCoupon] = useState("");
+	const [swipeDiscount, setSwipeDiscount] = useState(0);
+
 	const [couponApplied, setCouponApplied] = useState();
 	const [couponResponse, setCouponResponse] = useState({});
 	// const [priceAccordingToExperience, setPriceAccordingToExperience] = useState();
 	const [mobileNumber, setMobileNumber] = useState();
 	const navigate = useNavigate();
-	const [selectedPrice, SetSelectedPrice] = useState(2499);
-	const [selectedExperienceId, SetSelectedExperienceId] = useState();
+	const [selectedPrice, SetSelectedPrice] = useState(0);
+
 	const [discountedPrice, SetDiscountedPrice] = useState();
-	const [amoutToPay, setAmountToPay] = useState(2499);
+	const [amoutToPay, setAmountToPay] = useState(0);
 	const [showCouponInput, setShowCouponInput] = useState(false);
 	const [showPayment, setShowPayment] = useState(false);
 	//const [modal,setModal] = useState(false); // Added state to manage Terms of Service modal visibility
@@ -54,10 +57,7 @@ const PhysioConnectPayment = () => {
 		});
 	}, []);
 
-	// scroll to top
-	useEffect(() => {
-		window.scrollTo(0, 0);
-	}, []);
+
 
 	// getting coupon response
 	useEffect(() => {
@@ -76,11 +76,48 @@ const PhysioConnectPayment = () => {
 			setMobileNumber(physioData.phone);
 
 		};
+		SetSelectedPrice(3499);
 		fetchData();
 	}, [physioConnectPhysioId, selectedPrice]);
 
 	// getting total price after applying coupon
 
+
+	// useEffect(() => {
+	// 	discountedPrice != 0 && discountedPrice != null && discountedPrice != undefined
+	// 		? couponResponse.couponType == 0
+	// 			? discountedPrice > selectedPrice
+	// 				? setAmountToPay(0)
+	// 				: setAmountToPay(selectedPrice - discountedPrice)
+	// 			: (discountedPrice * selectedPrice) / 100 > selectedPrice
+	// 				? setAmountToPay(0)
+	// 				: setAmountToPay(selectedPrice - (discountedPrice * selectedPrice) / 100)
+	// 		: setAmountToPay(selectedPrice);
+	// }, [selectedPrice, discountedPrice, couponResponse]);
+
+	useEffect(() => {
+		if (!selectedPrice) return;
+
+		let totalDiscount = 0;
+
+		if (discountedPrice && couponResponse) {
+			if (couponResponse.couponType === 0) {
+				// ₹ flat discount
+				totalDiscount += discountedPrice;
+			} else {
+				// % discount
+				totalDiscount += (discountedPrice * selectedPrice) / 100;
+			}
+		}
+
+		// Add swipe discount
+		totalDiscount += swipeDiscount || 0;
+
+		// Cap discount to not exceed price
+		if (totalDiscount > selectedPrice) totalDiscount = selectedPrice;
+
+		setAmountToPay(selectedPrice - totalDiscount);
+	}, [selectedPrice, discountedPrice, couponResponse, swipeDiscount]);
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -136,84 +173,130 @@ const PhysioConnectPayment = () => {
 							<p className="text-base font-semibold">Listing Charges</p>
 							<div className="flex justify-between text-sm font-semibold">
 								<p>Amount to be Paid Per Year</p>
-								<p>{(selectedPrice + 1000).toLocaleString()} </p>
+								<p>₹ {selectedPrice.toLocaleString()} </p>
 							</div>
-							{amoutToPay != 0 && (
-								<>
-									<div className="relative flex w-full">
-										<input
-											name="coupon"
-											placeholder="Enter coupon code"
-											className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
-											value={"PHYSIOFIRST" || coupon}
-											onChange={(e) => setCoupon(e.target.value)}
-										/>
-										<div className="absolute right-0.5 top-0 h-full flex items-center">
-											<Button
-												size="sm"
-												className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
-											//   onClick={(e) => {
-											//     e.preventDefault();
-											//     if (coupon) {
-											//       physioConnectCouponApi(coupon)
-											//         .then((res) => {
-											//           if (res.status >= 200 && res.status < 300) {
-											//             setCouponResponse(res.data);
-											//             setCouponApplied(res.data.couponName);
-											//           } else {
-											//             toast.error(res.data.message);
-											//           }
-											//         })
-											//         .catch((err) => {
-											//           toast.error(err.message);
-											//         });
-											//     } else {
-											//       toast.error("Please enter a valid coupon code");
-											//     }
-											//   }}
-											>
-												Apply
-											</Button>
-										</div>
-									</div>
 
-									{/* Optional: Add a button to reset the coupon if needed */}
-									{couponApplied && (
-										<div className="flex justify-end">
-											<button
-												className="text-right text-green"
-												onClick={() => {
-													setCoupon("");
-													setCouponResponse({});
-													setCouponApplied(null);
-													SetDiscountedPrice(null);
+							{amoutToPay !== 0 && (
+								<>
+									{showCouponInput ? (
+										<div className="relative flex w-full">
+											<input
+												name="coupon"
+												placeholder="Enter coupon code"
+												className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
+												value={coupon}
+												onChange={(e) => setCoupon(e.target.value)}
+											/>
+											<div className="absolute right-0.5 top-0 h-full flex items-center">
+												<Button
+													size="sm"
+													className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
+													onClick={(e) => {
+														e.preventDefault();
+														if (coupon) {
+															physioConnectCouponApi(coupon, physioConnectPhysioId)
+																.then((res) => {
+																	if (res.status >= 200 && res.status < 300) {
+																		setCouponResponse(res.data);
+																		setCouponApplied(res.data.couponName);
+																	} else {
+																		toast.error(res.data.message);
+																	}
+																})
+																.catch((err) => {
+																	toast.error(err.message);
+																});
+														} else {
+															toast.error("Please enter a valid coupon code");
+														}
+													}}
+												>
+													Apply
+												</Button>
+											</div>
+										</div>
+									) : (
+										<div className="flex flex-col gap-1 w-full font-sans font-semibold">
+											<SwipeableButton
+												style={{
+													width: "100%",
+													maxWidth: "320px",
+													margin: "0 auto",
 												}}
-											>
-												Remove Coupon
-											</button>
+												onSuccess={() => {
+													setSwipeDiscount(1000);
+
+												}}
+												text="Best Offer for You"
+												text_unlocked="You Saved ₹1000 !!!"
+												sliderTextColor="#fff"
+												sliderIconColor="#fff"
+												sliderColor="green"
+												background_color="#eee"
+												borderRadius={30}
+												circle
+												autoWidth
+												disabled={false}
+												name="coupon-btn"
+											/>
+										</div>
+									)}
+
+									<div className="flex justify-end">
+										<button
+											className="text-right text-green"
+											onClick={() => {
+												setShowCouponInput((prev) => !prev);
+												setCoupon(showCouponInput ? "test" : "");
+												setCouponResponse({});
+												setCouponApplied(null);
+												SetDiscountedPrice(null);
+											}}
+										>
+											{!showCouponInput ? "Have Coupon Code" : "Didn't Have Coupon Code"}
+										</button>
+									</div>
+								</>
+							)}
+
+							{((discountedPrice > 0 || swipeDiscount > 0)) && (
+								<>
+									<hr className="border-gray-200" />
+									{discountedPrice > 0 && (
+										<div className="flex justify-between text-sm font-normal">
+											<p>Coupon Discount</p>
+											{couponResponse.couponType === 0 ? (
+												<p>₹ {discountedPrice.toLocaleString()}</p>
+											) : (
+												<p>{discountedPrice.toLocaleString()} %</p>
+											)}
+										</div>
+									)}
+									{swipeDiscount > 0 && (
+										<div className="flex justify-between text-sm font-normal">
+											<p>Swiped Discount</p>
+											<p>₹ {swipeDiscount.toLocaleString()}</p>
 										</div>
 									)}
 								</>
 							)}
+
 							<hr className="border-gray-200" />
 							<div className="flex justify-between text-sm font-semibold text-green">
-								<p>Discount</p>
-								{discountedPrice ? (
-									couponResponse.couponType === 0 ? (
-										<p>₹ {discountedPrice}</p>
-									) : (
-										<p>{discountedPrice} %</p>
-									)
-								) : (
-									<p>₹ 1,000</p>
-								)}
-							</div>
+								<p>Total Discount</p>
+								<p>
+									₹{" "}
+									{
+										((couponResponse?.couponType === 0
+											? discountedPrice
+											: (Math.round((discountedPrice * selectedPrice) / 100)) || 0)
+											+ (swipeDiscount || 0)).toLocaleString()
+									}
+								</p> </div>
 
-
-							{amoutToPay != 0 && <hr className="border-black" />}
-							<div className="flex justify-between  text-md font-semibold">
+							{amoutToPay !== 0 && <hr className="border-black" />}
+							<div className="flex justify-between text-md font-semibold">
 								<p>Total Amount to pay</p>
-
 								<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
 							</div>
 						</div>
@@ -357,91 +440,140 @@ const PhysioConnectPayment = () => {
 							<p className="text-base font-semibold">Listing Charges</p>
 							<div className="flex justify-between text-sm font-semibold">
 								<p>Amount to be Paid Per Year</p>
-								<p>{(selectedPrice + 1000).toLocaleString()} </p>
+								<p>{selectedPrice.toLocaleString()} </p>
 							</div>
 						</div>
 
-						{amoutToPay != 0 && (
+						{amoutToPay !== 0 && (
 							<>
-								<div className="relative flex w-full">
-									<input
-										name="coupon"
-										placeholder="Enter coupon code"
-										className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
-										value={"PHYSIOFIRST" || coupon}
-										onChange={(e) => setCoupon(e.target.value)}
-									/>
-									<div className="absolute right-0.5 top-0 h-full flex items-center">
-										<Button
-											size="sm"
-											className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
-										//   onClick={(e) => {
-										//     e.preventDefault();
-										//     if (coupon) {
-										//       physioConnectCouponApi(coupon)
-										//         .then((res) => {
-										//           if (res.status >= 200 && res.status < 300) {
-										//             setCouponResponse(res.data);
-										//             setCouponApplied(res.data.couponName);
-										//           } else {
-										//             toast.error(res.data.message);
-										//           }
-										//         })
-										//         .catch((err) => {
-										//           toast.error(err.message);
-										//         });
-										//     } else {
-										//       toast.error("Please enter a valid coupon code");
-										//     }
-										//   }}
-										>
-											Apply
-										</Button>
+								{showCouponInput ? (
+									<div className="relative flex w-full">
+										<input
+											name="coupon"
+											placeholder="Enter coupon code"
+											className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
+											value={coupon}
+											onChange={(e) => setCoupon(e.target.value)}
+										/>
+										<div className="absolute right-0.5 top-0 h-full flex items-center">
+											<Button
+												size="sm"
+												className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
+												onClick={(e) => {
+													e.preventDefault();
+													if (coupon) {
+														physioConnectCouponApi(coupon, physioConnectPhysioId)
+															.then((res) => {
+																if (res.status >= 200 && res.status < 300) {
+																	setCouponResponse(res.data);
+																	setCouponApplied(res.data.couponName);
+																} else {
+																	toast.error(res.data.message);
+																}
+															})
+															.catch((err) => {
+																toast.error(err.message);
+															});
+													} else {
+														toast.error("Please enter a valid coupon code");
+													}
+												}}
+											>
+												Apply
+											</Button>
+										</div>
 									</div>
-								</div>
-
-								{/* Optional: Add a button to reset the coupon if needed */}
-								{couponApplied && (
-									<div className="flex justify-end">
-										<button
-											className="text-right text-green"
-											onClick={() => {
-												setCoupon("");
-												setCouponResponse({});
-												setCouponApplied(null);
-												SetDiscountedPrice(null);
+								) : (
+									<div className="flex flex-col gap-1 w-full font-sans font-semibold">
+										<SwipeableButton
+											style={{
+												width: "100%",
+												maxWidth: "320px",
+												margin: "0 auto",
 											}}
-										>
-											Remove Coupon
-										</button>
+											onSuccess={() => {
+												setSwipeDiscount(1000);
+
+											}}
+											text="Best Offer for You"
+											text_unlocked="You Saved ₹1000 !!!"
+											sliderTextColor="#fff"
+											sliderIconColor="#fff"
+											sliderColor="green"
+											background_color="#eee"
+											borderRadius={30}
+											circle
+											autoWidth
+											disabled={false}
+											name="coupon-btn"
+										/>
+									</div>
+								)}
+
+								<div className="flex justify-end">
+									<button
+										className="text-right text-green"
+										onClick={() => {
+											setShowCouponInput((prev) => !prev);
+											setCoupon(showCouponInput ? "test" : "");
+											setCouponResponse({});
+											setCouponApplied(null);
+											SetDiscountedPrice(null);
+										}}
+									>
+										{!showCouponInput ? "Have Coupon Code" : "Didn't Have Coupon Code"}
+									</button>
+								</div>
+							</>
+						)}
+
+						{((discountedPrice > 0 || swipeDiscount > 0)) && (
+							<>
+								<hr className="border-gray-200" />
+								{discountedPrice > 0 && (
+									<div className="flex justify-between text-sm font-normal">
+										<p>Coupon Discount</p>
+										{couponResponse.couponType === 0 ? (
+											<p>₹ {discountedPrice.toLocaleString()}</p>
+										) : (
+											<p>{discountedPrice.toLocaleString()} %</p>
+										)}
+									</div>
+								)}
+								{swipeDiscount > 0 && (
+									<div className="flex justify-between text-sm font-normal">
+										<p>Swiped Discount</p>
+										<p>₹ {swipeDiscount.toLocaleString()}</p>
 									</div>
 								)}
 							</>
 						)}
 
-						{/* Discount - Same conditional rendering as web */}
 						<hr className="border-gray-200" />
 						<div className="flex justify-between text-sm font-semibold text-green">
-							<p>Discount</p>
-							{discountedPrice ? (
-								couponResponse.couponType === 0 ? (
-									<p>₹ {discountedPrice}</p>
-								) : (
-									<p>{discountedPrice} %</p>
-								)
-							) : (
-								<p>₹ 1,000</p>
-							)}
-						</div>
+							<p>Total Discount</p>
+							<p>
+								₹{" "}
+								{
+									((couponResponse?.couponType === 0
+										? discountedPrice
+										: (Math.round((discountedPrice * selectedPrice) / 100)) || 0)
+										+ (swipeDiscount || 0)).toLocaleString()
+								}
+							</p> </div>
 
-						{amoutToPay != 0 && <hr className="border-black" />}
-						<div className="flex justify-between  text-md font-semibold">
+						{amoutToPay !== 0 && <hr className="border-black" />}
+						<div className="flex justify-between text-md font-semibold">
 							<p>Total Amount to pay</p>
-
 							<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
 						</div>
 					</div>
 
+
+					<Modal
+						isOpen={isModalOpen}
+						closeModal={closeModal}
+					/>
 					{/* Benefits Cards - Stacked vertically for mobile */}
 					<div className="space-y-4 mt-6">
 						<div className="bg-white p-4 rounded-lg shadow-sm">
@@ -497,29 +629,40 @@ const PhysioConnectPayment = () => {
 						{/* Header */}
 						<div className="font-semibold mb-1 mt-2">Payment</div>
 
-						{/* Payment Option */}
-						<div className="flex items-center space-x-1 ">
-							<Checkbox
-								className="w-3.5 h-3.5  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
-								checked={isChecked}
-								onChange={(e) => setIsChecked(e.target.checked)}
-							/>
-							<p>Online</p>
-						</div>
 
-						<hr className=" border-gray-200" />
+
 
 						{/* Agreement and Price */}
 						<div className="flex items-center justify-between ">
-							<div className="flex items-center space-x-1">
+							{/* Payment Option */}
+							<div className="flex items-center space-x-1 ">
 								<Checkbox
 									className="w-3.5 h-3.5  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
 									checked={isChecked}
 									onChange={(e) => setIsChecked(e.target.checked)}
 								/>
-								<p>I agree to Terms</p>
+								<p>Online</p>
 							</div>
-							<p className="font-semibold">₹2,499</p>
+
+							<p className="font-semibold">₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
+						</div>
+						<hr className=" border-gray-200" />
+
+						<div className="flex items-start space-x-2">
+							<Checkbox
+								className="w-4 h-4  rounded-sm  border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
+								checked={isChecked}
+								onChange={(e) => setIsChecked(e.target.checked)}
+							/><p className="text-sm">
+								By proceeding, I agree to Physioplus{" "}
+								<span className="text-green underline cursor-pointer" onClick={openModal}>
+									Terms of Service
+								</span>{" "}
+								and{" "}
+								<span className="text-green underline cursor-pointer" onClick={openModal}>
+									Refund Policy
+								</span>.
+							</p>
 						</div>
 
 						{/* Pay Now Button */}

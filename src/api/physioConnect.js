@@ -1,7 +1,6 @@
 import axios from "axios";
 import { commonInstance, instance } from "./axiosConfig";
 import { toast } from "react-hot-toast";
-
 const BaseUrl = import.meta.env.VITE_BASE_URL;
 const GOOGLE_KEY = import.meta.env.VITE_GOOGLE_KEY;
 
@@ -339,7 +338,7 @@ export const physioConnectProfessionalApi = async ({
 			mptDegree,
 			specialization: specialization,
 			experience: experience,
-			
+
 			serviceType: serviceType,
 			iapMember: iapMember,
 			iapNumber: iapNumber,
@@ -404,12 +403,13 @@ export const physioConnectBusinessApi = async (
 
 
 
-export const physioConnectCouponApi = async (couponCode) => {
+export const physioConnectCouponApi = async (couponCode, physioConnectPhysioId) => {
 	try {
 		const response = await axios.post(
-			`${BaseUrl}web/coupon?couponName`,
+			`${BaseUrl}web/physio/coupon?couponName`,
 			{
 				couponName: couponCode,
+				physioId: physioConnectPhysioId,
 			},
 			{
 				headers: { "Content-Type": "application/json" },
