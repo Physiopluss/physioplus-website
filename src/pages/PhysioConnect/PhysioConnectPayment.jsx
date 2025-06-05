@@ -170,136 +170,148 @@ const PhysioConnectPayment = () => {
 
 						{/* sub form */}
 						<div className="flex flex-col gap-4 border border-gray-200 rounded-lg bg-white p-4 shadow-sm">
-							<p className="text-base font-semibold">Listing Charges</p>
-							<div className="flex justify-between text-sm font-semibold">
-								<p>Amount to be Paid Per Year</p>
-								<p>₹ {selectedPrice.toLocaleString()} </p>
-							</div>
+  <p className="text-base font-semibold">Listing Charges</p>
+  <div className="flex justify-between text-sm font-semibold">
+    <p>Amount to be Paid Per Year</p>
+    <p>₹ {selectedPrice.toLocaleString()} </p>
+  </div>
 
-							{amoutToPay !== 0 && (
-								<>
-									{showCouponInput ? (
-										<div className="relative flex w-full">
-											<input
-												name="coupon"
-												placeholder="Enter coupon code"
-												className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
-												value={coupon}
-												onChange={(e) => setCoupon(e.target.value)}
-											/>
-											<div className="absolute right-0.5 top-0 h-full flex items-center">
-												<Button
-													size="sm"
-													className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
-													onClick={(e) => {
-														e.preventDefault();
-														if (coupon) {
-															physioConnectCouponApi(coupon, physioConnectPhysioId)
-																.then((res) => {
-																	if (res.status >= 200 && res.status < 300) {
-																		setCouponResponse(res.data);
-																		setCouponApplied(res.data.couponName);
-																	} else {
-																		toast.error(res.data.message);
-																	}
-																})
-																.catch((err) => {
-																	toast.error(err.message);
-																});
-														} else {
-															toast.error("Please enter a valid coupon code");
-														}
-													}}
-												>
-													Apply
-												</Button>
-											</div>
-										</div>
-									) : (
-										<div className="flex flex-col gap-1 w-full font-sans font-semibold">
-											<SwipeableButton
-												style={{
-													width: "100%",
-													maxWidth: "320px",
-													margin: "0 auto",
-												}}
-												onSuccess={() => {
-													setSwipeDiscount(1000);
+  {amoutToPay !== 0 && (
+    <>
+      {showCouponInput ? (
+        <div className="relative flex w-full">
+          <input
+            name="coupon"
+            placeholder="Enter coupon code"
+            className="w-full h-full bg-transparent text-base text-blue-gray-700 font-sans font-normal outline-none transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 border focus:border-2 focus:placeholder:opacity-100 px-3 py-2.5 rounded-[7px] border-blue-gray-200 focus:border-gray-900 focus:ring-2 focus:ring-black placeholder:text-blue-gray-300 placeholder:opacity-100 ring-1 ring-[#EAEBEC]"
+            value={coupon}
+            onChange={(e) => setCoupon(e.target.value)}
+          />
+          <div className="absolute right-0.5 top-0 h-full flex items-center">
+            <Button
+              size="sm"
+              className="py-2.5 px-8 text-black bg-[#E6F4EC] shadow-none hover:shadow-none w-auto"
+              onClick={(e) => {
+                e.preventDefault();
+                if (coupon) {
+                  physioConnectCouponApi(coupon, physioConnectPhysioId)
+                    .then((res) => {
+                      if (res.status >= 200 && res.status < 300) {
+                        setCouponResponse(res.data);
+                        setCouponApplied(res.data.couponName);
+                        // Don't clear swipe discount when coupon is applied
+                      } else {
+                        toast.error(res.data.message);
+                      }
+                    })
+                    .catch((err) => {
+                      toast.error(err.message);
+                    });
+                } else {
+                  toast.error("Please enter a valid coupon code");
+                }
+              }}
+            >
+              Apply
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-1 w-full font-sans font-semibold">
+          <SwipeableButton
+            style={{
+              width: "100%",
+              maxWidth: "320px",
+              margin: "0 auto",
+            }}
+            onSuccess={() => {
+              // Always set swipe discount regardless of coupon
+              setSwipeDiscount(1000);
+            }}
+            text="Best Offer for You"
+            text_unlocked="You Saved ₹1000 !!!"
+            sliderTextColor="#fff"
+            sliderIconColor="#fff"
+            sliderColor="green"
+            background_color="#eee"
+            borderRadius={30}
+            circle
+            autoWidth
+            disabled={false}
+            name="coupon-btn"
+          />
+        </div>
+      )}
 
-												}}
-												text="Best Offer for You"
-												text_unlocked="You Saved ₹1000 !!!"
-												sliderTextColor="#fff"
-												sliderIconColor="#fff"
-												sliderColor="green"
-												background_color="#eee"
-												borderRadius={30}
-												circle
-												autoWidth
-												disabled={false}
-												name="coupon-btn"
-											/>
-										</div>
-									)}
+      <div className="flex justify-end">
+        <button
+          className="text-right text-green"
+          onClick={() => {
+            setShowCouponInput((prev) => !prev);
+            setCoupon(showCouponInput ? "test" : "");
+            setCouponResponse({});
+            setCouponApplied(null);
+            SetDiscountedPrice(null);
+			setSwipeDiscount(1000);
+          }}
+        >
+          {!showCouponInput ? "Have Coupon Code" : "Didn't Have Coupon Code"}
+        </button>
+      </div>
+    </>
+  )}
 
-									<div className="flex justify-end">
-										<button
-											className="text-right text-green"
-											onClick={() => {
-												setShowCouponInput((prev) => !prev);
-												setCoupon(showCouponInput ? "test" : "");
-												setCouponResponse({});
-												setCouponApplied(null);
-												SetDiscountedPrice(null);
-											}}
-										>
-											{!showCouponInput ? "Have Coupon Code" : "Didn't Have Coupon Code"}
-										</button>
-									</div>
-								</>
-							)}
+  {(discountedPrice > 0 || swipeDiscount > 0) && (
+    <>
+      <hr className="border-gray-200" />
+      {discountedPrice > 0 && (
+        <div className="flex justify-between text-sm font-normal">
+          <p>Coupon Discount ({couponApplied})</p>
+          {couponResponse.couponType === 0 ? (
+            <p>₹ {discountedPrice.toLocaleString()}</p>
+          ) : (
+            <p>{discountedPrice.toLocaleString()}%</p>
+          )}
+        </div>
+      )}
+      {swipeDiscount > 0 && (
+        <div className="flex justify-between text-sm font-normal">
+          <p>Special Discount</p>
+          <p>₹ {swipeDiscount.toLocaleString()}</p>
+        </div>
+      )}
+    </>
+  )}
 
-							{((discountedPrice > 0 || swipeDiscount > 0)) && (
-								<>
-									<hr className="border-gray-200" />
-									{discountedPrice > 0 && (
-										<div className="flex justify-between text-sm font-normal">
-											<p>Coupon Discount</p>
-											{couponResponse.couponType === 0 ? (
-												<p>₹ {discountedPrice.toLocaleString()}</p>
-											) : (
-												<p>{discountedPrice.toLocaleString()} %</p>
-											)}
-										</div>
-									)}
-									{swipeDiscount > 0 && (
-										<div className="flex justify-between text-sm font-normal">
-											<p>Swiped Discount</p>
-											<p>₹ {swipeDiscount.toLocaleString()}</p>
-										</div>
-									)}
-								</>
-							)}
+  <hr className="border-gray-200" />
+  <div className="flex justify-between text-sm font-semibold text-green">
+    <p>Total Discount</p>
+    <p>
+      ₹{" "}
+      {(
+        (couponResponse?.couponType === 0
+          ? discountedPrice || 0
+          : Math.round((discountedPrice * selectedPrice) / 100) || 0) +
+        (swipeDiscount || 0)
+      ).toLocaleString()}
+    </p>
+  </div>
 
-							<hr className="border-gray-200" />
-							<div className="flex justify-between text-sm font-semibold text-green">
-								<p>Total Discount</p>
-								<p>
-									₹{" "}
-									{
-										((couponResponse?.couponType === 0
-											? discountedPrice
-											: (Math.round((discountedPrice * selectedPrice) / 100)) || 0)
-											+ (swipeDiscount || 0)).toLocaleString()
-									}
-								</p> </div>
-
-							{amoutToPay !== 0 && <hr className="border-black" />}
-							<div className="flex justify-between text-md font-semibold">
-								<p>Total Amount to pay</p>
-								<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
-							</div>
-						</div>
+  {amoutToPay !== 0 && <hr className="border-black" />}
+  <div className="flex justify-between text-md font-semibold">
+    <p>Total Amount to pay</p>
+    <p>
+      ₹{" "}
+      {(
+        selectedPrice -
+        ((couponResponse?.couponType === 0
+          ? discountedPrice || 0
+          : Math.round((discountedPrice * selectedPrice) / 100) || 0) +
+          (swipeDiscount || 0))
+      ).toLocaleString()}
+    </p>
+  </div>
+</div>
 
 
 					</form>

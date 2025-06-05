@@ -654,7 +654,7 @@ const Businessprofile = () => {
                     <MultiFileUpload
                       file={formik.values.clinicImage}
                       setFile={(f) => formik.setFieldValue("clinicImage", f)}
-                      maxFiles={2}
+                      maxFiles={8}
                       error={formik.errors.clinicImage}
                       touched={formik.touched.clinicImage}
                       disabled={!editMode}
@@ -976,7 +976,7 @@ const Businessprofile = () => {
                         file={formik.values.patientImage}
                         maxSize={5 * 1024 * 1024} // 5MB max
                         setFile={(f) => formik.setFieldValue("patientImage", f)}
-                        maxFiles={2}
+                        maxFiles={5}
                         error={formik.errors.patientImage}
                         touched={formik.touched.patientImage}
                         disabled={!editMode}

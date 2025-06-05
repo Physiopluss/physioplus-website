@@ -47,8 +47,7 @@ const Profilephysio = () => {
       email: "",
       phone: "",
       about: "",
-      selectedTraits: [],
-      customDescription: "",
+
     },
     validationSchema: Yup.object().shape({
       fullName: Yup.string().required("Name is required"),
@@ -59,11 +58,7 @@ const Profilephysio = () => {
       about: Yup.string()
         .required("Description is required")
         .max(500, "Description cannot exceed 500 characters"),
-      selectedTraits: Yup.array()
-        .of(Yup.string())
-        .max(10, "You can select up to 10 traits"),
-      customDescription: Yup.string()
-        .max(400, "Custom description too long"),
+
     }),
     onSubmit: (values) => {
       updatePhysioData({ ...values });
@@ -282,31 +277,57 @@ const Profilephysio = () => {
               <div className="space-y-2">
                 <label htmlFor="about" className="text-sm font-semibold">About Physio</label>
 
-                {/* Small blocks for quick selection */}
-                <div className="flex gap-2">
-                  {Object.entries(autofillTexts).map(([key, text]) => (
-                    <Button type="button" key={key} variant="outline" onClick={() => formik.setFieldValue("about", `${formik.values.about || ""} ${text}`.trim())}>
-                      {key}
-                    </Button>
-                  ))}
+                {/* Autofill Buttons */}
+                <div className="flex gap-2 flex-wrap">
+                  {Object.entries(autofillTexts).map(([key, text]) => {
+                    const isSelected = formik.values.about?.includes(text);
+
+                    return (
+                      <button
+                        type="button"
+                        key={key}
+                        className={`px-3 py-1 rounded-md text-sm border transition-all duration-200
+            ${isSelected
+                            ? 'bg-[#e6f5e8] text-green border-green font-semibold'
+                            : 'bg-white text-green border-gray-300 hover:bg-gray-100'}
+          `}
+                        onClick={() => {
+                          const current = formik.values.about || "";
+                          let updatedText;
+
+                          if (isSelected) {
+                            const regex = new RegExp(`\\s*${text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'g');
+                            updatedText = current.replace(regex, " ").replace(/\s+/g, " ").trim();
+                          } else {
+                            updatedText = `${current} ${text}`.trim();
+                          }
+
+                          formik.setFieldValue("about", updatedText);
+                        }}
+                        disabled={!editMode}
+                      >
+                        {key}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Visible textarea for custom input only */}
+                {/* Custom Textarea */}
                 <textarea
                   rows="4"
                   placeholder="Enter additional description..."
                   className="w-full p-2 border border-gray-300 bg-white focus:border-black focus:outline-none rounded-md"
                   value={formik.values.about || ''}
                   disabled={!editMode}
-                  onChange={(e) => {
-                    formik.setFieldValue("about", e.target.value);
-                  }}
+                  onChange={(e) => formik.setFieldValue("about", e.target.value)}
                 />
 
+                {/* Validation Error */}
                 {formik.touched.about && formik.errors.about && (
                   <p className="text-red-500">{formik.errors.about}</p>
                 )}
               </div>
+
               {/* Login & Submit Button - Responsive Version */}
               <div className="w-full flex flex-col-reverse sm:flex-row justify-end items-center gap-4 mt-4">
 

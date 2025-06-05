@@ -8,31 +8,37 @@ import { useSelector } from "react-redux";
 const PhysioContext = createContext();
 
 export const PhysioProvider = ({ children }) => {
-
+  const userType = localStorage.getItem("userType");
   const userId = useSelector((e) => e.auth.user?.userId);
 
   const [physioData, setPhysioData] = useState({});
   const [loading, setLoading] = useState(false);
 
-
-  // ✅ Fetch initial data from old API
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || userType !== "physio") return;  // Only fetch for physio users
+
     setLoading(true);
+
     getPhysioDataById(userId)
       .then((res) => {
-        console.log(res);
         if (res.status >= 200 && res.status < 300) {
           setPhysioData(res.physioData);
         } else {
-          toast.error("Failed to load physio data");
+          // For physio users only, show error; otherwise, silently ignore
+          if (userType === "physio") {
+            toast.error("Failed to load physio data");
+          }
         }
       })
-      .catch((err) => toast.error("Error: " + err?.message || err))
+      .catch((err) => {
+        if (userType === "physio") {
+          toast.error("Error: " + (err?.message || err));
+        }
+      })
       .finally(() => setLoading(false));
-  }, [userId]);
+  }, [userId, userType]);
 
-  // ✅ Update specific form values
+  // Update function remains the same
   const updatePhysioData = (newData) => {
     setPhysioData((prev) => {
       const updated = { ...prev, ...newData };

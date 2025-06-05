@@ -9,7 +9,7 @@ const Footer = () => {
 		<div className="w-full flex flex-col justify-center items-center relative ">
 			{/*Contact Us */}
 			<section className="absolute max-w-full flex flex-col md:flex-row -top-4 md:top-16 sm:flex-row justify-center items-center bg-[#F1F9F4] rounded-lg p-14 ">
-				<div className="flex flex-col text-center sm:text-left w-full md:w-1/2 gap-8">
+				<div className="flex flex-col text-justify sm:text-left w-full md:w-1/2 gap-8">
 					<h6 className="sm:text-4xl text-3xl self-start font-bold">Contact Us</h6>
 					<p className="w-[110%] text-base">
 						Whether you have questions about our services, want to book an appointment, or just need some advice, we're
