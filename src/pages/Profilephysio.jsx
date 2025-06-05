@@ -18,6 +18,17 @@ const Profilephysio = () => {
   const dispatch = useDispatch();
   const { updatePhysioData, physioData } = usePhysio();
   const { userId } = useSelector((e) => e.auth.user || {});
+
+  const autofillTexts = {
+    "Passionate": "I am dedicated to guiding patients on their journey to recovery with energy, empathy, and unwavering commitment.",
+    "Experienced": "With years of hands-on practice, I've developed the skills and knowledge to provide effective, personalized treatments that address each patient's unique needs.",
+    "Compassionate": "I understand the challenges of recovery and approach each patient with care, patience, and empathy to make their healing journey as comfortable as possible.",
+    "Innovative": "I constantly explore new techniques and technologies to enhance treatments, ensuring my patients receive cutting-edge care that's both effective and engaging.",
+    "Trustworthy": "Building strong, honest relationships with my patients is my priority, creating a safe space where they feel comfortable sharing their concerns and goals.",
+    "Motivated": "I am driven to help patients achieve their best possible outcomes, encouraging them every step of the way to stay positive and committed to their recovery.",
+    "Approachable": "I maintain an open and friendly environment where patients feel heard, understood, and supported."
+  };
+
   if (!userId) {
     navigate("login-physio");
   }
@@ -55,8 +66,7 @@ const Profilephysio = () => {
         .max(400, "Custom description too long"),
     }),
     onSubmit: (values) => {
-      const about = `${values.selectedTraits.join(" ")} ${values.customDescription}`.trim();
-      updatePhysioData({ ...values, about });
+      updatePhysioData({ ...values });
       navigate("/professional", { state: { editMode } });
     },
   });
@@ -64,32 +74,13 @@ const Profilephysio = () => {
   // Load old data
   useEffect(() => {
     if (physioData && physioData.fullName && !formik.values.fullName) {
-      const allTraits = ['Passionate', 'Hard working', 'Dedicated', 'Experienced', 'Patient-focused'];
-      const aboutText = physioData.about || "";
-
-      const selectedTraits = allTraits.filter(trait =>
-        new RegExp(`\\b${trait}\\b`, 'i').test(aboutText)
-      );
-
-      let customDescription = aboutText;
-      selectedTraits.forEach(trait => {
-        customDescription = customDescription.replace(
-          new RegExp(`\\b${trait}\\b`, 'gi'),
-          ""
-        );
-      });
-
-      customDescription = customDescription.replace(/\s+/g, " ").trim();
-
       formik.setValues({
         fullName: physioData.fullName || "",
         gender: physioData.gender?.toString() || "",
         dob: physioData.dob?.split("T")[0] || "",
         email: physioData.email || "",
         phone: physioData.phone || "",
-        selectedTraits,
-        customDescription,
-        about: `${selectedTraits.join(" ")} ${customDescription}`.trim(),
+        about: physioData.about || "",
       });
     }
   }, [physioData]);
@@ -284,9 +275,6 @@ const Profilephysio = () => {
                   )}
                 </div>
 
-
-
-
               </div>
 
               {/* Description Field */}
@@ -294,83 +282,24 @@ const Profilephysio = () => {
               <div className="space-y-2">
                 <label htmlFor="about" className="text-sm font-semibold">About Physio</label>
 
-                {/* Selected traits chips - visible */}
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formik.values.selectedTraits?.map((trait, index) => (
-                    <div key={`${trait}-${index}`} className="flex items-center gap-1 px-3 py-1 bg-[#F2FAF6] text-green rounded-full text-sm">
-                      {trait}
-                      <button
-                        type="button"
-                        disabled={!editMode}
-                        onClick={() => {
-                          const newTraits = formik.values.selectedTraits.filter(t => t !== trait);
-                          formik.setFieldValue('selectedTraits', newTraits);
-                          // Update the combined description
-                          formik.setFieldValue(
-                            'about',
-                            `${newTraits.join(' ')} ${formik.values.customDescription || ''}`.trim()
-                          );
-                        }}
-                        className="text-red hover:text-green-800"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
                 {/* Small blocks for quick selection */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {['Passionate', 'Hard working', 'Dedicated', 'Experienced', 'Patient-focused'].map((trait) => (
-                    <button
-                      key={trait}
-                      type="button"
-                      disabled={!editMode}
-                      onClick={() => {
-                        if (!formik.values.selectedTraits?.includes(trait)) {
-                          const newTraits = [...(formik.values.selectedTraits || []), trait];
-                          formik.setFieldValue('selectedTraits', newTraits);
-                          // Update the combined description
-                          formik.setFieldValue(
-                            'about',
-                            `${newTraits.join(' ')} ${formik.values.customDescription || ''}`.trim()
-                          );
-                        }
-                      }}
-                      className={`px-3 py-1 text-sm rounded-full border ${formik.values.selectedTraits?.includes(trait)
-                        ? 'bg-green-100 border-green text-green'
-                        : 'border-gray-300 hover:bg-gray-100'
-                        }`}
-                    >
-                      {trait}
-                    </button>
+                <div className="flex gap-2">
+                  {Object.entries(autofillTexts).map(([key, text]) => (
+                    <Button type="button" key={key} variant="outline" onClick={() => formik.setFieldValue("about", `${formik.values.about || ""} ${text}`.trim())}>
+                      {key}
+                    </Button>
                   ))}
                 </div>
-
-                {/* Hidden textarea that maintains full description state */}
-                <textarea
-                  name="about"
-                  id="about"
-                  className="hidden"
-                  value={formik.values.about}
-                  disabled={!editMode}
-                  onChange={formik.handleChange}
-                />
 
                 {/* Visible textarea for custom input only */}
                 <textarea
                   rows="4"
                   placeholder="Enter additional description..."
                   className="w-full p-2 border border-gray-300 bg-white focus:border-black focus:outline-none rounded-md"
-                  value={formik.values.customDescription || ''}
+                  value={formik.values.about || ''}
                   disabled={!editMode}
                   onChange={(e) => {
-                    formik.setFieldValue('customDescription', e.target.value);
-                    // Combine with selected traits
-                    formik.setFieldValue(
-                      'about',
-                      `${(formik.values.selectedTraits || []).join(' ')} ${e.target.value}`.trim()
-                    );
+                    formik.setFieldValue("about", e.target.value);
                   }}
                 />
 
