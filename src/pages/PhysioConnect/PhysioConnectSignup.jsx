@@ -63,8 +63,14 @@ const PhysioConnectSignup = () => {
 
 
 
+
+			console.log(res?.data);
 			const isNew = res?.data?.isNew;
+			const isPhysioConnectPaid = res?.data?.data?.isPhysioConnectPaid;
 			const physioId = res?.data?.physio?._id;
+
+			console.log(isPhysioConnectPaid);
+
 
 			if (!physioId) {
 				throw new Error("Physio ID missing from response");
@@ -72,9 +78,13 @@ const PhysioConnectSignup = () => {
 
 			// Show appropriate success toast
 			toast.success(
-				isNew ? "Welcome aboard! Sign-up successful." : "You're already registered. Head to login..",
+				isNew
+					? "Welcome aboard! Sign-up successful."
+					: !isPhysioConnectPaid
+						? "You're registered. Please complete your profile."
+						: "You're already registered. Head to login.",
 				{
-					id: isNew ? "signupSuccess" : "loginPrompt",
+					id: isNew ? "signupSuccess" : !isPhysioConnectPaid ? "profilePrompt" : "loginPrompt",
 					className: "capitalize z-10",
 				}
 			);
@@ -86,13 +96,12 @@ const PhysioConnectSignup = () => {
 
 			setOtp(""); // Reset OTP input
 
-			// Delay navigation based on user status
-			// Then redirect
+			// ✅ Delay then navigate conditionally
 			setTimeout(() => {
-				if (isNew) {
+				if (isNew || isPhysioConnectPaid === false) {
 					navigate("/physio-connect/personal-details");
 				} else {
-					navigate("/login-physio"); // <- You are redirecting to login page
+					navigate("/login-physio");
 				}
 			}, 1500);
 

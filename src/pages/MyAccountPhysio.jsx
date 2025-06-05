@@ -82,11 +82,17 @@ const MyAccountPhysio = () => {
                 <MdPersonOutline className="text-3xl text-black" />
                 <h2 className="text-xl font-semibold">My Profile</h2>
               </div>
-              {!physioData?.isPhysioConnectProfileCompleted && (
-                <span className="text-xs font-semibold bg-red-600 text-white px-2 py-0.5 rounded">
-                  Incomplete Profile
-                </span>
-              )}
+              <span
+                className={`text-xs font-semibold px-2 py-0.5 rounded ${physioData?.isPhysioConnectProfileCompleted
+                  ? "bg-[#e5f2e2] text-green"
+                  : "bg-red-600 text-white"
+                  }`}
+              >
+                {physioData?.isPhysioConnectProfileCompleted
+                  ? "Profile Completed"
+                  : "Incomplete Profile"}
+              </span>
+
             </div>
             <p className="text-sm  mt-3 ml-11">
               Manage your Personal details, Professional details & Business details

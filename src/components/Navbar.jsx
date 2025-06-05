@@ -184,13 +184,16 @@ export default function Navbar() {
           >
             {isNavOpen ? <IoMdClose className="h-6 w-6" /> : <IoMdMenu className="h-6 w-6" />}
           </IconButton>
-          <Button
-            onClick={() => navigate("/physios")}
-            className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
-          >
-            Book an appointment
-          </Button>
+          {userType !== "physio" && (
+            <Button
+              onClick={() => navigate("/physios")}
+              className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
+            >
+              Book an appointment
+            </Button>
+          )}
         </div>
+
 
         <Collapse open={isNavOpen} className="overflow-y-auto">
           {isNavOpen && (
@@ -321,9 +324,13 @@ export default function Navbar() {
                   <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">Support</MenuItem>
                 </Typography>
               </Link>
-              <Button className="text-nowrap text-sm lg:text-base font-semibold w-full    text-black  bg-white border-2  border-green  rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200">
-                Book an appointment
-              </Button>
+              {userType !== "physio" && (
+                <Button
+                  className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200"
+                >
+                  Book an appointment
+                </Button>
+              )}
               <div className="cursor-pointer mt-2 flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
                 <MdOutlinePhoneInTalk className="w-4 h-4 text-black" />
                 <span className="text-sm text-black">+91 8107333576</span>
