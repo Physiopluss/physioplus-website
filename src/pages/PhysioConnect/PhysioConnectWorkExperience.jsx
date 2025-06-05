@@ -220,7 +220,7 @@ const PhysioConnectWorkExperience = () => {
                 clinicPincode: oldPhysioData.clinic?.zipCode?.toString() ?? "",
                 clinicCity: oldPhysioData?.city ?? "",
                 clinicState: oldPhysioData?.state ?? "",
-                clinicCharges: oldPhysioData.clinic?.consultationCharges?.toString() ?? "",
+                clinicCharges: oldPhysioData.clinic?.charges?.toString() ?? "",
                 clinicDuration: oldPhysioData.clinic?.duration?.toString() ?? "",
 
                 homePincode: oldPhysioData.home?.zipCode?.toString() ?? "",

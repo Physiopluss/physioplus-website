@@ -200,7 +200,7 @@ const Professionalprofile = () => {
         .min(0, "Experience cannot be negative"),
     }),
     onSubmit: (values) => {
-     
+
 
       updatePhysioData({
 
@@ -296,12 +296,12 @@ const Professionalprofile = () => {
     );
 
     if (!generalSpecialization) {
-      console.warn("General specialization not found!");
+      console.log("General specialization not found!");
       return;
     }
 
     const generalId = generalSpecialization._id;
-   
+
 
     const hasDegree = formik.values.bptDegree.degreeId
       ? formik.values.bptDegree.degreeId.length > 0

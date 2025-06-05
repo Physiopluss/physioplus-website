@@ -163,67 +163,102 @@ const Businessprofile = () => {
           otherwise: (schema) => schema.notRequired(),
         }),
 
-
       timings: Yup.object({
-        start: Yup.string().required('Start time is required'),
-        end: Yup.string()
-          .required('End time is required')
-          .test(
-            'is-after-start',
-            'End time must be after start time',
-            function (end) {
-              const { start } = this.parent;
-              return !start || !end || end > start;
-            }
-          )
+        start: Yup.string().when('serviceType', {
+          is: (val) => val?.includes('clinic'),
+          then: (schema) => schema.required('Start time is required'),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        end: Yup.string().when(['serviceType', 'timings.start'], {
+          is: (serviceType, start) =>
+            serviceType?.includes('clinic') && !!start,
+          then: (schema) =>
+            schema
+              .required('End time is required')
+              .test('is-after-start', 'End time must be after start time', function (end) {
+                const { start } = this.parent;
+                return !start || !end || end > start;
+              }),
+          otherwise: (schema) => schema.notRequired(),
+        }),
       }),
 
       clinicWorkingDays: Yup.array()
-        .of(Yup.string().oneOf(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], "Invalid day"))
-        .min(1, "Select at least one clinic working day")
-        .when("serviceType", {
-          is: val => val && val.includes("clinic"),
-          then: schema => schema.required("Clinic working days are required"),
-          otherwise: schema => schema.notRequired(),
+        .of(
+          Yup.string().oneOf(
+            ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            'Invalid day'
+          )
+        )
+        .when('serviceType', {
+          is: (val) => val?.includes('clinic'),
+          then: (schema) =>
+            schema.min(1, 'Select at least one clinic working day').required('Clinic working days are required'),
+          otherwise: (schema) => schema.notRequired(),
         }),
 
       homeWorkingDays: Yup.array()
-        .of(Yup.string().oneOf(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], "Invalid day"))
-        .min(1, "Select at least one home working day")
-        .when("serviceType", {
-          is: val => val && val.includes("home"),
-          then: schema => schema.required("Home working days are required"),
-          otherwise: schema => schema.notRequired(),
+        .of(
+          Yup.string().oneOf(
+            ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            'Invalid day'
+          )
+        )
+        .when('serviceType', {
+          is: (val) => val?.includes('home'),
+          then: (schema) =>
+            schema.min(1, 'Select at least one home working day').required('Home working days are required'),
+          otherwise: (schema) => schema.notRequired(),
         }),
 
-      mode: Yup.array().min(1, "Please select at least one mode"),
-
+      mode: Yup.array()
+        .of(Yup.string().oneOf(['Morning', 'Evening']))
+        .when('serviceType', {
+          is: (val) => val?.includes('home'),
+          then: (schema) => schema.min(1, 'Please select at least one mode').required(),
+          otherwise: (schema) => schema.notRequired(),
+        }),
 
       morningTimings: Yup.object({
-        start: Yup.string().required('Morning start time is required'),
-        end: Yup.string()
-          .required('Morning end time is required')
-          .test(
-            'morning-is-after-start',
-            'Morning end time must be after start time',
-            function (end) {
-              const { start } = this.parent;
-              return !start || !end || end > start;
-            }
-          )
+        start: Yup.string().when(['serviceType', 'mode'], {
+          is: (serviceType, mode) =>
+            serviceType?.includes('home') && mode?.includes('Morning'),
+          then: (schema) => schema.required('Morning start time is required'),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        end: Yup.string().when(['serviceType', 'mode', 'morningTimings.start'], {
+          is: (serviceType, mode, start) =>
+            serviceType?.includes('home') && mode?.includes('Morning') && !!start,
+          then: (schema) =>
+            schema
+              .required('Morning end time is required')
+              .test('morning-after-start', 'Morning end time must be after start time', function (end) {
+                const { start } = this.parent;
+                return !start || !end || end > start;
+              }),
+          otherwise: (schema) => schema.notRequired(),
+        }),
       }),
+
       eveningTimings: Yup.object({
-        start: Yup.string().required('Evening start time is required'),
-        end: Yup.string()
-          .required('Evening end time is required')
-          .test(
-            'evening-is-after-start',
-            'Evening end time must be after start time',
-            function (end) {
-              const { start } = this.parent;
-              return !start || !end || end > start;
-            }
-          )
+        start: Yup.string().when(['serviceType', 'mode'], {
+          is: (serviceType, mode) =>
+            serviceType?.includes('home') && mode?.includes('Evening'),
+          then: (schema) => schema.required('Evening start time is required'),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        end: Yup.string().when(['serviceType', 'mode', 'eveningTimings.start'], {
+          is: (serviceType, mode, start) =>
+            serviceType?.includes('home') && mode?.includes('Evening') && !!start,
+          then: (schema) =>
+            schema
+              .required('Evening end time is required')
+              .test('evening-after-start', 'Evening end time must be after start time', function (end) {
+                const { start } = this.parent;
+                return !start || !end || end > start;
+              }),
+          otherwise: (schema) => schema.notRequired(),
+        }),
       }),
 
       // Home Fields

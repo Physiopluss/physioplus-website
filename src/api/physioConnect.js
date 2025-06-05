@@ -339,8 +339,7 @@ export const physioConnectProfessionalApi = async ({
 			mptDegree,
 			specialization: specialization,
 			experience: experience,
-			bptDegreeId: bptDegree.bptDegreeId,
-			mptDegreeId: mptDegree.mptDegreeId,
+			
 			serviceType: serviceType,
 			iapMember: iapMember,
 			iapNumber: iapNumber,
