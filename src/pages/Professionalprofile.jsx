@@ -819,10 +819,26 @@ const Professionalprofile = () => {
                     </div>
                   )}
                 </div>
-                {formik.touched.specialization &&
-                  formik.errors.specialization && (
-                    <p className="text-red-500">{formik.errors.specialization}</p>
+                {formik.values?.bptDegree?.degreeId?.length > 0 &&
+                  !formik.values?.mptDegree?.degreeId?.length &&
+                  formik.values?.specialization?.length === 1 &&
+                  allSpecialization.find((s) => s.name === "General Physio")?._id === formik.values.specialization[0] && (
+                    <p className="text-yellow-900 text-sm font-medium">
+                      You selected only BPT. So you only get General Physio.
+                    </p>
                   )}
+
+                {formik.values?.bptDegree?.degreeId?.length > 0 &&
+                  formik.values?.mptDegree?.degreeId?.length > 0 && (
+                    <p className="text-yellow-900 text-sm font-medium">
+                      You can select one more specialization.
+                    </p>
+                  )}
+
+                {formik.touched.specialization && formik.errors.specialization && (
+                  <p className="text-red-500">{formik.errors.specialization}</p>
+                )}
+
               </div>
 
               {/* Sub Specialization */}
