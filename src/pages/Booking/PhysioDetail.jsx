@@ -332,8 +332,7 @@ const PhysioDetail = () => {
             <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full flex flex-wrap">
               {[
                 physioData?.bptDegree?.degreeId,
-                physioData?.mptDegree?.degreeId,
-                ...(Array.isArray(physioData?.degree?.degreeId) ? physioData.degree.degreeId : [])
+                physioData?.mptDegree?.degreeId
               ]
                 .filter((deg) => deg && deg._id)
                 .map((deg, index) => (
@@ -345,17 +344,18 @@ const PhysioDetail = () => {
                   </span>
                 ))
               }
+
               {
-                // Fallback if no valid degree found
+                // Fallback if neither BPT nor MPT is present
                 !(
                   physioData?.bptDegree?.degreeId?._id ||
-                  physioData?.mptDegree?.degreeId?._id ||
-                  (Array.isArray(physioData?.degree?.degreeId) && physioData.degree.degreeId.length)
+                  physioData?.mptDegree?.degreeId?._id
                 ) && (
                   <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
                 )
               }
             </div>
+
 
             {/* <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">
               {physioData?.degree?.degreeId?.length !== 0 ? (
