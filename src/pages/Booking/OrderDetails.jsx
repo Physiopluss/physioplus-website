@@ -9,23 +9,16 @@ import { Breadcrumbs } from "@material-tailwind/react";
 import moment from "moment";
 
 import { RiFileDownloadLine } from "react-icons/ri";
+import InvoiceDownloader from "../../components/InvoiceDownloader";
 
 
 const OrderDetails = () => {
     const { userId, userToken } = useSelector((e) => e.auth.user || {});
-
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const { state } = useLocation();
     const orderData = state?.orderData;
-
-
-
-
-
-    console.log(orderData);
-
-
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -234,7 +227,7 @@ const OrderDetails = () => {
                                 </h4>
 
                                 <p className="text-sm font-semibold text-green">
-                                    {orderData?.couponId._id
+                                    {orderData?.couponId
                                         ? orderData?.couponId.couponType === 0
                                             ? `- ₹ ${orderData?.couponId.discount}`
                                             : orderData?.couponId.couponType === 1 && displayAmount
@@ -242,6 +235,16 @@ const OrderDetails = () => {
                                                 : "No Discount"
                                         : "No Discount"}
                                 </p>
+
+                                {/* <p className="text-sm font-semibold text-green">
+                                    {orderData?.couponId._id
+                                        ? orderData?.couponId.couponType === 0
+                                            ? `- ₹ ${orderData?.couponId.discount}`
+                                            : orderData?.couponId.couponType === 1 && displayAmount
+                                                ? `- ₹ ${(displayAmount * orderData?.couponId.discount / 100).toFixed(2)}`
+                                                : "No Discount"
+                                        : "No Discount"}
+                                </p> */}
 
 
                             </div>
@@ -268,10 +271,18 @@ const OrderDetails = () => {
 
                             </div>
                         </div>
-                        <button className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center ">
+                        <button onClick={() => setIsModalOpen(true)}
+                            disabled={!orderData.invoice}
+                            className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed">
                             <RiFileDownloadLine className="w-5 h-5" />
                             Download Invoice
                         </button>
+                        <InvoiceDownloader
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            invoiceData={orderData.invoice}
+                            filename={orderData.invoice ? `Invoice_${orderData.invoice.invoiceNumber}.pdf` : "Invoice_unknown.pdf"}
+                        />
                     </div>
 
 

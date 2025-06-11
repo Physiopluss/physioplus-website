@@ -39,18 +39,22 @@ const OrderHistory = () => {
       .finally(() => setLoading(false));
   }, [userId, userToken]);
 
+
   orders != null && (reversedOrders = [...orders]?.reverse());
 
 
-  const filteredOrders = reversedOrders?.filter((order) => {
-    const matchesStatus =
-      statusFilter === "All"
-        ? true
-        : statusFilter === "Completed"
-          ? order?.appointmentCompleted === true
-          : order?.appointmentCompleted === false;
 
-    const matchesSearch = order?.physioId?.fullName
+  const filteredOrders = reversedOrders?.filter((order) => {
+    // Status filtering
+    const matchesStatus =
+      statusFilter === "All" ? true :
+        statusFilter === "Completed" ? order?.appointmentCompleted === true :
+          statusFilter === "Upcoming" ? order?.appointmentCompleted === false && order?.status !== "Canceled" :
+            statusFilter === "Canceled" ? order?.status === "Canceled" :
+              true; // default case
+
+    // Search filtering
+    const matchesSearch = order?.patientId?.fullName
       ?.toLowerCase()
       .includes(searchQuery.toLowerCase());
 
@@ -132,7 +136,7 @@ const OrderHistory = () => {
             </button>
 
             <button
-              onClick={() => setStatusFilter("All")}
+              onClick={() => setStatusFilter("Canceled")}
               className="text-gray-600 hover:text-green-600 pb-1"
             >
               <div className="flex items-center gap-2">
@@ -170,21 +174,6 @@ const OrderHistory = () => {
           ))}
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     </div>
   );
 };
