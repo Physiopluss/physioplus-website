@@ -4,7 +4,6 @@ import PrincipleCard from "../../components/PrincipleCard";
 import { useEffect, useState } from "react";
 import { SwipeableButton } from "react-swipeable-button";
 import {
-
 	physioConnectCouponApi,
 	getPhysioDataById,
 	physioConnectRazorPayOrderApi,
@@ -14,9 +13,8 @@ import { useDispatch, useSelector } from "react-redux";
 import SuccessModal from "../../components/SuccessModal";
 import { setSuccessModalOpen } from "../../slices/modalSlice";
 import ReactGA from "react-ga4";
-
 import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
-import Modal from "../../components/Modal";
+
 import StepIndicator from "../../components/StepIndicator";
 
 const PhysioConnectPayment = () => {
@@ -24,30 +22,24 @@ const PhysioConnectPayment = () => {
 	const dispatch = useDispatch();
 	const [coupon, setCoupon] = useState("");
 	const [swipeDiscount, setSwipeDiscount] = useState(0);
-
 	const [couponApplied, setCouponApplied] = useState();
+	const [couponAppliedId, setCouponAppliedId] = useState();
 	const [couponResponse, setCouponResponse] = useState({});
 	// const [priceAccordingToExperience, setPriceAccordingToExperience] = useState();
 	const [mobileNumber, setMobileNumber] = useState();
 	const navigate = useNavigate();
 	const [selectedPrice, SetSelectedPrice] = useState(0);
-
 	const [discountedPrice, SetDiscountedPrice] = useState();
 	const [amoutToPay, setAmountToPay] = useState(0);
 	const [showCouponInput, setShowCouponInput] = useState(false);
 	const [showPayment, setShowPayment] = useState(false);
 	//const [modal,setModal] = useState(false); // Added state to manage Terms of Service modal visibility
-	const [isModalOpen, setIsModalOpen] = useState(false); // State to control the modal visibility
+	// State to control the modal visibility
 	const [isChecked, setIsChecked] = useState(true);
 	// Function to open the modal
-	const openModal = () => {
-		setIsModalOpen(true);
-	};
 
 	// Function to close the modal
-	const closeModal = () => {
-		setIsModalOpen(false);
-	};
+
 	// google analytics
 	useEffect(() => {
 		ReactGA.send({
@@ -199,6 +191,7 @@ const PhysioConnectPayment = () => {
 																	if (res.status >= 200 && res.status < 300) {
 																		setCouponResponse(res.data);
 																		setCouponApplied(res.data.couponName);
+																		setCouponAppliedId(res.data._id);
 																		// Don't clear swipe discount when coupon is applied
 																	} else {
 																		toast.error(res.data.message);
@@ -316,11 +309,7 @@ const PhysioConnectPayment = () => {
 
 					</form>
 
-					{/* Render the Modal */}
-					<Modal
-						isOpen={isModalOpen}
-						closeModal={closeModal}
-					/>
+
 
 					<div
 						className={`h-fit flex flex-col gap-0 bg-white px-6 py-6 border rounded-lg shadow-md 
@@ -353,11 +342,11 @@ const PhysioConnectPayment = () => {
 								onChange={(e) => setIsChecked(e.target.checked)}
 							/><p className="text-sm">
 								By proceeding, I agree to Physioplus{" "}
-								<span className="text-green underline cursor-pointer" onClick={openModal}>
+								<span className="text-green underline cursor-pointer" onClick={() => window.open('/physio-terms&condition', '_blank')}>
 									Terms of Service
 								</span>{" "}
 								and{" "}
-								<span className="text-green underline cursor-pointer" onClick={openModal}>
+								<span className="text-green underline cursor-pointer" onClick={() => window.open('/physio-refund-policy', '_blank')}>
 									Refund Policy
 								</span>.
 							</p>
@@ -368,7 +357,7 @@ const PhysioConnectPayment = () => {
 							<Button
 								className="w-full text-white text-base font-medium py-3 rounded-full bg-green hover:bg-green-700 transition-all duration-300"
 								onClick={() => {
-									physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponApplied)
+									physioConnectRazorPayOrderApi(physioConnectPhysioId, amoutToPay, mobileNumber, couponAppliedId)
 										.then(() => {
 											dispatch(setSuccessModalOpen());
 										})
@@ -479,6 +468,7 @@ const PhysioConnectPayment = () => {
 																if (res.status >= 200 && res.status < 300) {
 																	setCouponResponse(res.data);
 																	setCouponApplied(res.data.couponName);
+																	setCouponAppliedId(res.data._id);
 																} else {
 																	toast.error(res.data.message);
 																}
@@ -583,10 +573,7 @@ const PhysioConnectPayment = () => {
 					</div>
 
 
-					<Modal
-						isOpen={isModalOpen}
-						closeModal={closeModal}
-					/>
+
 					{/* Benefits Cards - Stacked vertically for mobile */}
 					<div className="space-y-4 mt-6">
 						<div className="bg-white p-4 rounded-lg shadow-sm">
@@ -668,11 +655,12 @@ const PhysioConnectPayment = () => {
 								onChange={(e) => setIsChecked(e.target.checked)}
 							/><p className="text-sm">
 								By proceeding, I agree to Physioplus{" "}
-								<span className="text-green underline cursor-pointer" onClick={openModal}>
+								<span className="text-green underline cursor-pointer" onClick={() => window.open('/physio-terms&condition', '_blank')}
+								>
 									Terms of Service
 								</span>{" "}
 								and{" "}
-								<span className="text-green underline cursor-pointer" onClick={openModal}>
+								<span className="text-green underline cursor-pointer" onClick={() => window.open('/physio-refund-policy', '_blank')}>
 									Refund Policy
 								</span>.
 							</p>
@@ -686,7 +674,7 @@ const PhysioConnectPayment = () => {
 									physioConnectPhysioId,
 									amoutToPay,
 									mobileNumber,
-									couponApplied,
+									couponAppliedId,
 
 								)
 									.then(() => dispatch(setSuccessModalOpen()))

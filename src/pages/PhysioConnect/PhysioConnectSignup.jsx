@@ -60,18 +60,9 @@ const PhysioConnectSignup = () => {
 				otp,
 				formik.values.fullName
 			);
-
-
-
-
-			console.log(res?.data);
 			const isNew = res?.data?.isNew;
 			const isPhysioConnectPaid = res?.data?.data?.isPhysioConnectPaid;
 			const physioId = res?.data?.physio?._id;
-
-			console.log(isPhysioConnectPaid);
-
-
 			if (!physioId) {
 				throw new Error("Physio ID missing from response");
 			}
