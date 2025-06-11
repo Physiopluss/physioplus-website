@@ -27,7 +27,6 @@ const PhysioDetail = () => {
   const dispatch = useDispatch();
   const physioData = data?.data;
   const physioId = data?.data?._id;
-  console.log(physioData);
   // const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = useGetPhysioReviewsQuery(physioId);
   // useEffect(() => {
   // 	dispatch(setPhysioDetail({ physioId, physioData }));
@@ -329,32 +328,24 @@ const PhysioDetail = () => {
 
             {/* degree */}
 
-            <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full flex flex-wrap">
-              {[
-                physioData?.bptDegree?.degreeId,
-                physioData?.mptDegree?.degreeId
-              ]
-                .filter((deg) => deg && deg._id)
-                .map((deg, index) => (
-                  <span
-                    key={index}
-                    className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 m-1"
-                  >
-                    {deg.name}
-                  </span>
-                ))
-              }
+            {(physioData?.bptDegree?.degreeId?._id || physioData?.mptDegree?.degreeId?._id) && (
+              <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full flex flex-wrap">
+                {[
+                  physioData?.bptDegree?.degreeId,
+                  physioData?.mptDegree?.degreeId
+                ]
+                  .filter((deg) => deg && deg._id)
+                  .map((deg, index) => (
+                    <span
+                      key={index}
+                      className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 m-1"
+                    >
+                      {deg.name}
+                    </span>
+                  ))}
+              </div>
+            )}
 
-              {
-                // Fallback if neither BPT nor MPT is present
-                !(
-                  physioData?.bptDegree?.degreeId?._id ||
-                  physioData?.mptDegree?.degreeId?._id
-                ) && (
-                  <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
-                )
-              }
-            </div>
 
 
             {/* <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">

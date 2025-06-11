@@ -1,4 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
+
+
 import {
   Input,
   Button,
@@ -28,12 +30,14 @@ import ReactGA from "react-ga4";
 import { jwtDecode } from "jwt-decode";
 import Modal from "../../components/Modal";
 import axios from "axios";
+import { singlePatient } from "../../api/patient";
 const Booking = () => {
   const [paymentType, setPaymentType] = useState("online");
   const [couponName, setCouponName] = useState("FIRST50");
   const [couponResponse, setCouponResponse] = useState();
   const [amountToPay, setAmountToPay] = useState();
   const [loading, setLoading] = useState(false);
+
 
   const { slug } = useParams();
   const dispatch = useDispatch();
@@ -57,6 +61,8 @@ const Booking = () => {
   const physioName = data?.data.fullName
   const physioId = data?.data?._id;
 
+
+
   // store physio all data in redux
   dispatch(() => dispatch(setPhysioDetail({ physioId, allData })));
 
@@ -79,21 +85,42 @@ const Booking = () => {
   }
 
   useEffect(() => {
-    const token = JSON.parse(localStorage.getItem("user")).userToken;
-    const decoded = jwtDecode(token);
-    formik.setValues({
-      patientName: decoded.patient.fullName,
-      age: new Date(decoded.patient.dob).getFullYear(),
-      gender: decoded.patient.gender,
-      phone:
-        decoded.patient.phone.length === 13
-          ? decoded.patient.phone.slice(3, 13)
-          : decoded.patient.phone.length === 10
-            ? decoded.patient.phone
-            : "",
-      painNotes: "",
-    });
+    const userId = JSON.parse(localStorage.getItem("user"))?.userId;
+
+    if (!userId) return;
+
+    singlePatient(userId)
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          const patient = res.data?.data;
+
+          if (!patient) return;
+          console.log(patient);
+
+          formik.setValues({
+            patientName: patient.fullName || "",
+            age: patient.dob ? new Date(patient.dob).getFullYear() : "",
+            gender: patient.gender ?? "",
+            appointmentAddress: patient.appointmentAddress || "",
+            phone:
+              patient.phone?.length === 13
+                ? patient.phone.slice(3, 13)
+                : patient.phone?.length === 10
+                  ? patient.phone
+                  : "",
+            painNotes: "",
+          });
+        } else {
+          toast.error("Failed to fetch patient data.");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        toast.error("Something went wrong while fetching patient info.");
+      });
   }, []);
+
+
 
   // google analytics
   useEffect(() => {
@@ -130,6 +157,7 @@ const Booking = () => {
       state: "",
       city: "",
       pincode: "",
+      appointmentAddress: "",
     },
     validationSchema: Yup.object().shape({
       patientName: Yup.string()
@@ -139,6 +167,11 @@ const Booking = () => {
       age: Yup.number().required("Age is required"),
       state: Yup.string().required("State is required"),
       city: Yup.string().required("City is required"),
+      appointmentAddress: Yup.string().when([], {
+        is: () => serviceTypeString === "home",
+        then: (schema) => schema.required("Address is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
       pincode: Yup.string()
         .matches(/^\d{6}$/, "Pincode must be a 6-digit number")
         .required("Pincode is required"),
@@ -152,10 +185,10 @@ const Booking = () => {
       if (!userToken) toast.error("User not found");
       else if (!selectedDate) toast.error("Date is not selected");
       else if (!time) toast.error("Time slot is not selected");
-      else
+      else {
         try {
-          paymentType == "online"
-            ? appointmentDataToRazorpay({
+          if (paymentType == "online") {
+            appointmentDataToRazorpay({
               userToken,
               patientId,
               physioId,
@@ -163,6 +196,7 @@ const Booking = () => {
               time,
               patientName: values.patientName,
               age: values.age,
+              appointmentAddress: values.appointmentAddress,
               gender: values.gender,
               phone: values.phone,
               amount: amountToPay,
@@ -190,47 +224,13 @@ const Booking = () => {
               })
               .catch(() => {
                 toast.error("Something went wrong");
-              })
-            : cashAppointment({
-              userToken,
-              patientId,
-              physioId,
-              date: selectedDate,
-              time,
-              patientName: values.patientName,
-              age: values.age,
-              gender: values.gender,
-              phone: values.phone,
-              amount: amountToPay,
-              serviceTypeString,
-              timeInString,
-              painNotes: values.painNotes,
-              couponId:
-                couponResponse?.status >= 200 && couponResponse?.status < 300
-                  ? couponResponse.data._id
-                  : null,
-            })
-              .then(() => {
-                toast.success("Appointment has been created");
-                dispatch(emptyBooking());
-                setTimeout(() => {
-                  navigate("/order-success", {
-                    state: {
-                      physioName,
-                      Date: fullDateString,
-
-                      timeInString
-                    },
-                  });
-
-                }, 1000);
-              })
-              .catch(() => {
-                toast.error("Something went wrong");
               });
+          }
         } catch (err) {
+          console.log("error:", err)
           return new Error(err);
         }
+      }
     },
   });
   // Function to fetch state and city from pincode
@@ -335,51 +335,8 @@ const Booking = () => {
                     </span>
                   )}
                 </div>
-                <div>
-                  <label htmlFor="pincode" className="text-sm">
-                    Pincode
-                  </label>
-                  <Input
-                    required
-                    size="md"
-                    name="pincode"
-                    onChange={formik.handleChange}
-                    value={formik.values.pincode}
-                    placeholder="Enter Your Pincode"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
-                  />
-                  {formik.errors.pincode && formik.touched.pincode && (
-                    <span className="text-red-500 text-sm">
-                      {formik.errors.pincode}
-                    </span>
-                  )}
-                </div>
 
-                <div>
-                  <label htmlFor="state" className="text-sm">
-                    State
-                  </label>
-                  <Input
-                    size="md"
-                    name="state"
-                    value={formik.values.state}
-                    placeholder="Enter Your State"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
-                  />
-                </div>
 
-                <div>
-                  <label htmlFor="city" className="text-sm">
-                    City
-                  </label>
-                  <Input
-                    size="md"
-                    name="city"
-                    value={formik.values.city}
-                    placeholder="Enter Your City"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
-                  />
-                </div>
                 <div>
                   <label htmlFor="phone" className="text-sm">
                     Mobile Number
@@ -428,6 +385,73 @@ const Booking = () => {
                       {formik.errors.gender}
                     </span>
                   )}
+                </div>
+
+                {serviceTypeString === "home" && (
+                  <div>
+                    <label htmlFor="appointmentAddress" className="text-sm">
+                      Address
+                    </label>
+                    <Input
+                      size="md"
+                      name="appointmentAddress"
+                      value={formik.values.appointmentAddress} // ✅ Correct field
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      placeholder="Enter your address"
+                      className="border border-[#A9ABB2] !border-t-[#A9ABB2]"
+                    />
+                    {formik.touched.appointmentAddress && formik.errors.appointmentAddress && (
+                      <p className="text-xs text-red-500">{formik.errors.appointmentAddress}</p>
+                    )}
+                  </div>
+                )}
+
+                <div>
+                  <label htmlFor="pincode" className="text-sm">
+                    Pincode
+                  </label>
+                  <Input
+                    required
+                    size="md"
+                    name="pincode"
+                    onChange={formik.handleChange}
+                    value={formik.values.pincode}
+                    placeholder="Enter Your Pincode"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
+                  />
+                  {formik.errors.pincode && formik.touched.pincode && (
+                    <span className="text-red-500 text-sm">
+                      {formik.errors.pincode}
+                    </span>
+                  )}
+                </div>
+
+
+                <div>
+                  <label htmlFor="state" className="text-sm">
+                    State
+                  </label>
+                  <Input
+                    size="md"
+                    name="state"
+                    value={formik.values.state}
+                    placeholder="Enter Your State"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="city" className="text-sm">
+                    City
+                  </label>
+                  <Input
+                    size="md"
+                    name="city"
+                    value={formik.values.city}
+                    placeholder="Enter Your City"
+                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
+                  />
                 </div>
                 <div className="col-span-1 lg:col-span-2">
                   <label htmlFor="painNotes" className="text-sm">
