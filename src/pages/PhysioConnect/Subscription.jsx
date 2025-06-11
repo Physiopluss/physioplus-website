@@ -31,20 +31,18 @@ const Subscription = () => {
     try {
       setLoading(true);
 
-
       // Call the API
       const response = await physioRefundRequest(
         userId,
-
         refundPercentage === 1 ? "full" : "partial",
-        userToken // Make sure you have access to userToken
+        userToken
       );
 
       // Handle success
-      toast.success(`Refund request  submitted successfully!`);
+      toast.success(`Refund request submitted successfully!`);
 
-      // Refresh data or update state as needed
-      // fetchPhysioData(); // Uncomment if you need to refresh data
+      // Reload the page
+      window.location.reload();
 
     } catch (error) {
       console.error("Refund request failed:", error);
@@ -113,8 +111,10 @@ const Subscription = () => {
         physioData?.subscriptionId?.startAt,
         physioData?.subscriptionId?.expireAt
       ),
-      isExpired: !physioData?.subscriptionId?.expireAt ||
-        moment().isAfter(moment(physioData.subscriptionId.expireAt)),
+      isExpired:
+        physioData?.subscriptionId?.expireAt
+          ? moment().isAfter(moment(physioData.subscriptionId.expireAt))
+          : false,
       daysLeft: physioData?.subscriptionId?.expireAt
         ? Math.max(0, moment(physioData.subscriptionId.expireAt).diff(moment(), 'days'))
         : 0,
@@ -190,7 +190,7 @@ const Subscription = () => {
                         : "text-white border-white hover:bg-white hover:text-green"
                         } transition-all`}
                     >
-                      {plan.active ? "Active" : "Expired"}
+                      {plan.active ? "Active" : plan.isExpired ? "Expired" : "Subscribe"}
                     </button>
                   </div>
 
