@@ -469,7 +469,7 @@ export const physioConnectRazorPayOrderApi = async (
 	physioConnectPhysioId,
 	amoutToPay,
 	mobileNumber,
-	couponApplied,
+	couponAppliedId,
 
 ) => {
 	try {
@@ -478,7 +478,7 @@ export const physioConnectRazorPayOrderApi = async (
 			{
 				physioId: physioConnectPhysioId,
 				amount: amoutToPay,
-				couponName: couponApplied,
+				couponId: couponAppliedId,
 
 			},
 			{ headers: { "Content-Type": "application/json" } }
@@ -627,3 +627,157 @@ export const uploadFileToS3 = async (file, presignedUrl) => {
 	console.log("File uploaded successfully", presignedUrl);
 };
 
+// all orders of physio
+
+export const physioAllOrders = async (physioId, userToken) => {
+
+	try {
+		const response = await instance.get(
+			`web/appointment/appointmentByPhysioId?physioId=${physioId}`,
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`
+				},
+			}
+		);
+
+		if (!response.data) throw new Error("No data received");
+		return response.data;
+
+	} catch (error) {
+		// Convert error to a proper Error object
+		let errorMessage = "Failed to fetch orders";
+
+		if (error.response) {
+			errorMessage = error.response.data?.message ||
+				error.response.statusText ||
+				`Server error: ${error.response.status}`;
+		} else if (error.message) {
+			errorMessage = error.message;
+		}
+
+		throw new Error(errorMessage); // Always throw an Error object
+	}
+};
+
+
+export const physioWithdrawalRequest = async (physioId, amount, userToken) => {
+	try {
+		const response = await instance.post(
+			`web/physio/PhysioWalletWithdrawTransaction`,
+			{ physioId, amount },
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`
+				}
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.error("POST request failed:", error.response?.data || error.message);
+		throw error.response?.data || new Error("Something went wrong");
+	}
+};
+
+
+
+export const physioWalletWithdrawTransaction = async (physioId, userToken) => {
+	try {
+		const response = await instance.get(
+			`web/physio/getPhysioWalletWithdrawalRequest`,
+			{
+				params: { physioId },
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
+		console.log("Withdrawal Response data:", response.data);
+		return response.data;
+	} catch (error) {
+		console.error(
+			"Wallet withdrawal fetch failed:",
+			error.response?.data || error.message
+		);
+		throw error.response?.data || new Error("Something went wrong");
+	}
+};
+
+export const physioWalletTransaction = async (physioId, userToken) => {
+	try {
+		const response = await instance.get(
+			`web/physio/getPhysioWalletTransaction`,
+			{
+				params: { physioId },
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.error(
+			"Wallet transaction fetch failed:",
+			error.response?.data || error.message
+		);
+		throw error.response?.data || new Error("Something went wrong");
+	}
+};
+
+
+
+export const physioWalletData = async (physioId, userToken) => {
+	try {
+		const response = await instance.get(
+			`web/physio/getPhysioWalletData`,
+			{
+				params: { physioId },
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.error(
+			"Wallet transaction fetch failed:",
+			error.response?.data || error.message
+		);
+		throw error.response?.data || new Error("Something went wrong");
+	}
+};
+
+
+
+
+export const physioRefundRequest = async (userId, refundType, userToken) => {
+	try {
+		const response = await instance.post(
+			"web/physio/request-refund",
+			{
+				physioId: userId,
+
+				refundShare: refundType, // either "full" or "partial"
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
+
+		return response.data;
+	} catch (error) {
+		console.error("API Error in physioRefundRequest:", error);
+		throw error.response?.data || { message: "Something went wrong while processing the refund." };
+	}
+};
