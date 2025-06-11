@@ -21,6 +21,7 @@ export default function SlotComponent({ physioData }) {
 	const userToken = useSelector((state) => state?.auth?.user?.userToken);
 	const dispatch = useDispatch();
 	const [timeSlots, setTimeSlots] = useState([]);
+	const userType = localStorage.getItem("userType");
 
 	// get service type
 	const service = useMemo(() => {
@@ -363,13 +364,18 @@ export default function SlotComponent({ physioData }) {
 
 			{/* Continue Button */}
 			<button
-				className="w-full py-1.5 bg-green text-white rounded-full text-lg mt-2"
+				className={`w-full py-1.5 rounded-full text-lg mt-2 ${userType === "physio"
+					? "bg-gray-400 cursor-not-allowed text-white"
+					: "bg-green text-white hover:bg-green-700"
+					}`}
+				disabled={userType === "physio"}
 				onClick={() => {
+					if (userType === "physio") return; // prevent any action if physio
+
 					if (!userToken) {
 						navigate("/login", { state: { from: `/booking/${slug}` } });
 						return;
 					}
-
 
 					if (!selectedDate || !selectedTime) {
 						toast.error("Please Select Date and Time");
@@ -382,6 +388,7 @@ export default function SlotComponent({ physioData }) {
 			>
 				Continue Booking
 			</button>
+
 		</div>
 	);
 }

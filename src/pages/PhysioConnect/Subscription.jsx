@@ -97,7 +97,7 @@ const Subscription = () => {
     {
       name: "Pro Plan",
       amount: 3499,
-      gradient: "from-[#167237] to-[#16aa40]",
+      gradient: "from-[#039443] to-[#17b882]",
       validFrom: physioData?.subscriptionId?.startAt
         ? moment(physioData.subscriptionId.startAt).format('DD MMM YYYY')
         : 'N/A',
