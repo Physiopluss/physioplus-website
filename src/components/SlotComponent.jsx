@@ -59,6 +59,8 @@ export default function SlotComponent({ physioData }) {
 		while (startTime < endTime) {
 			const timeSlot = startTime.format("hh:mm A");
 
+
+			console.log("slots", slots);
 			// For today, only add future time slots
 			if (isToday) {
 				const slotTime = moment(selectedDate).set({
@@ -146,6 +148,17 @@ export default function SlotComponent({ physioData }) {
 			}
 		}
 		setWorkingDaySlot(slots);
+
+		// Auto-select today's date if it's part of working days
+		const today = moment().format("yyyy-MM-DD");
+		if (slots.includes(today)) {
+			setSelectedDate(today);
+			dispatch({
+				type: "booking/setSelectedDate",
+				payload: moment(today).format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
+			});
+		}
+
 	}, [activeTab, physioData]);
 
 	// set time slots
