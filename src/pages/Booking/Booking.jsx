@@ -7,7 +7,6 @@ import {
   Select,
   Option,
   Textarea,
-  Radio,
   Checkbox,
   Breadcrumbs,
 } from "@material-tailwind/react";
@@ -575,11 +574,11 @@ const Booking = () => {
           <div className="flex flex-col gap-2 p-2 shadow-sm rounded-md">
             <p className="text-lg font-bold ">Payment Options</p>
             <span className="flex flex-col gap-0 text-sm sm:text-base">
-              <Radio
+              <Checkbox
                 name="paymentType"
                 label={"Online"}
                 value={"online"}
-                className={"w-4 h-4 "}
+                className="w-4 h-4 hover:before:opacity-0 border border-green checked:bg-green text-green "
                 defaultChecked
                 onClick={(e) => {
                   setPaymentType(e.target.value.toLowerCase());
@@ -600,7 +599,7 @@ const Booking = () => {
                   >
                     Terms of Service
                   </span>{" "}
-                  and Cancellation Policies.
+                  and No Cancellation Policies.
                 </label>
               </div>
             </span>
