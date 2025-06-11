@@ -12,6 +12,7 @@ export const PhysioProvider = ({ children }) => {
   const userId = useSelector((e) => e.auth.user?.userId);
 
   const [physioData, setPhysioData] = useState({});
+  const [invoiceData, setInvoiceData] = useState({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export const PhysioProvider = ({ children }) => {
     getPhysioDataById(userId)
       .then((res) => {
         if (res.status >= 200 && res.status < 300) {
+          setInvoiceData(res.invoiceData);
           setPhysioData(res.physioData);
         } else {
           // For physio users only, show error; otherwise, silently ignore
@@ -87,7 +89,7 @@ export const PhysioProvider = ({ children }) => {
 
   return (
     <PhysioContext.Provider
-      value={{ physioData, updatePhysioData, submitFinalData, loading }}
+      value={{ invoiceData, physioData, updatePhysioData, submitFinalData, loading }}
     >
       {children}
     </PhysioContext.Provider>
