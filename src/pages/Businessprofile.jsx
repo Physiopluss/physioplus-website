@@ -7,7 +7,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { MdOutlineEdit } from "react-icons/md";
 import Loading from "../components/Loading";
 import { useDispatch, useSelector } from "react-redux";
-import StepIndicatorprofile from "../pages/StepIndicatorprofile";
+import StepIndicatorprofile from "./StepIndicatorprofile";
 import { locationUsingPincode, } from "../api/physioConnect";
 import { Breadcrumbs, Checkbox } from "@material-tailwind/react";
 import { useFormik } from "formik";
