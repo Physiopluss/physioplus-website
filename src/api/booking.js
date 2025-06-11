@@ -128,6 +128,7 @@ export const appointmentDataToRazorpay = async ({
 	time,
 	patientName,
 	age,
+	appointmentAddress,
 	gender,
 	phone,
 	amount,
@@ -158,6 +159,11 @@ export const appointmentDataToRazorpay = async ({
 
 	if (!time) {
 		throw new Error("time is null or undefined");
+	}
+
+	// ✅ Only validate address if serviceType is 'home'
+	if (serviceTypeString === "home" && !appointmentAddress) {
+		throw new Error("address is required for home service");
 	}
 
 	if (!patientName) {
@@ -197,6 +203,7 @@ export const appointmentDataToRazorpay = async ({
 				gender,
 				phone,
 				amount,
+				appointmentAddress,
 				serviceType: serviceTypeString == "home" ? 0 : 1,
 				timeInString,
 				painNotes,
