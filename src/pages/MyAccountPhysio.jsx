@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ReactGA from "react-ga4";
 import toast from "react-hot-toast";
-import Loading from "../components/Loading";
+
 import { setLogOut } from "../slices/authSlice";
-import OrderCard from "../components/OrderCard";
+
 import { usePhysio } from "../context/PhysioContext";
 import {
   MdLogout,
@@ -28,7 +28,7 @@ const MyAccountPhysio = () => {
   const dispatch = useDispatch();
 
   if (!userId) {
-    navigate("/login");
+    navigate("/login-physio");
   }
 
   let reversedOrders;
@@ -100,6 +100,8 @@ const MyAccountPhysio = () => {
 
           </Link>
           {/* My Consultation Card */}
+          <Link to="/all-consultation">
+
           <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center gap-3">
               <PiHandbagBold className="text-3xl text-black" />
@@ -109,8 +111,10 @@ const MyAccountPhysio = () => {
               See and manage your consultation through here only
             </p>
           </div>
+          </Link>
 
           {/* My Wallet Card */}
+           <Link to="/wallet">
           <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -118,14 +122,16 @@ const MyAccountPhysio = () => {
                 <h2 className="text-xl font-semibold">My Wallet</h2>
               </div>
               <span className="text-xs font-semibold bg-green text-white px-2 py-0.5 rounded">
-                ₹{physioData?.wallet ?? 0}
+               ₹ {(physioData?.wallet || 0).toFixed(2).toLocaleString("en-IN")}
               </span>
             </div>
             <p className="text-sm  mt-3 ml-11">
               Here you can check the wallet amount and you can withdraw the amount from there
             </p>
           </div>
+          </Link>
           {/* View Subscription Card */}
+           <Link to="/subscription">
           <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
             <div className="flex items-center gap-3">
               <TbClipboardText className="text-3xl text-black" />
@@ -135,6 +141,7 @@ const MyAccountPhysio = () => {
               Click to view subscription details
             </p>
           </div>
+          </Link>
           {/* Logout Card */}
           <div
             className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer"
