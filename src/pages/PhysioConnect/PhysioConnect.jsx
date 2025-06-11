@@ -494,11 +494,10 @@ const PhysioConnect = () => {
 												{data?.benefits?.map((benefit, benefitIndex) => (
 													<p
 														key={benefitIndex}
-														className={`w-2/3 text-xs sm:text-sm md:text-base font-small text-white cursor-pointer mx-0 my-1 px-2 flex rounded-lg items-center py-1 ${
-															selectedBenefits[index] === benefit.title
+														className={`w-2/3 text-xs sm:text-sm md:text-base font-small text-white cursor-pointer mx-0 my-1 px-2 flex rounded-lg items-center py-1 ${selectedBenefits[index] === benefit.title
 																? "bg-white bg-opacity-20  px-4" // Green background and white text when selected
 																: "hover:bg-white hover:bg-opacity-20"
-														}`}
+															}`}
 														onClick={() => handleBenefitClick(index, benefit.title)} // Update the selected benefit for this card
 													>
 														<img
