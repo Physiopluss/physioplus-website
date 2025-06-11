@@ -13,6 +13,11 @@ import ErrorComp from "./components/ErrorComp";
 import Cta from "./components/Cta";
 import NoInternet from "./components/NoInternet";
 import OrderDetails from "./pages/Booking/OrderDetails";
+import Subscription from "./pages/PhysioConnect/Subscription";
+import Wallet from "./pages/PhysioConnect/Wallet";
+import ConsultationDetails from "./pages/PhysioConnect/ConsultationDetails";
+import AllConsultation from "./pages/PhysioConnect/AllConsultation";
+import PhysioRefundPolicy from "./pages/PhysioRefundPolicy";
 
 
 // auth
@@ -174,13 +179,40 @@ const router = createBrowserRouter([
 				),
 			},
 			{
-				path: "/order-history-physio",
+				path: "/all-consultation",
 				element: (
 					<Suspense fallback={<Loading />}>
-						<OrderHistoryPhysio />
+						<AllConsultation />
 					</Suspense>
 				),
 			},
+			{
+				path: "/consultation-details",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<ConsultationDetails />
+					</Suspense>
+				),
+			},
+
+				{
+				path: "/wallet",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Wallet />
+					</Suspense>
+				),
+			},
+
+			{
+				path: "/subscription",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Subscription />
+					</Suspense>
+				),
+			},
+
 			{
 				path: "/professional",
 				element: (
@@ -198,7 +230,7 @@ const router = createBrowserRouter([
 				),
 			},
 			{
-				path: "//review-profile",
+				path: "/review-profile",
 				element: (
 					<Suspense fallback={<Loading />}>
 						<Reviewprofile />
@@ -267,6 +299,22 @@ const router = createBrowserRouter([
 				element: (
 					<Suspense fallback={<Loading />}>
 						<Refund />
+					</Suspense>
+				),
+			},
+			{
+				path: "/physio-refund-policy",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<PhysioRefundPolicy />
+					</Suspense>
+				),
+			},
+			{
+				path: "/physio-terms&condition",
+				element: (
+					<Suspense fallback={<Loading />}>
+						<Terms />
 					</Suspense>
 				),
 			},
