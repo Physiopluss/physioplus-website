@@ -96,6 +96,7 @@ const ConsulationCard = ({ orderData }) => {
                             <InvoiceDownloader
                                 isOpen={isModalOpen}
                                 onClose={() => setIsModalOpen(false)}
+                                orderData={orderData}
                                 invoiceData={orderData.invoice}
                                 filename={orderData.invoice ? `Invoice_${orderData.invoice.invoiceNumber}.pdf` : "Invoice_unknown.pdf"}
                             />

@@ -696,7 +696,6 @@ export const physioWalletWithdrawTransaction = async (physioId, userToken) => {
 				},
 			}
 		);
-		console.log("Withdrawal Response data:", response.data);
 		return response.data;
 	} catch (error) {
 		console.error(

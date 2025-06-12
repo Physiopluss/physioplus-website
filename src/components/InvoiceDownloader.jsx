@@ -1,9 +1,8 @@
 import React, { useRef } from 'react';
 import html2pdf from 'html2pdf.js';
 
-const InvoiceDownloader = ({ isOpen, onClose, invoiceData, filename = "invoice.pdf" }) => {
+const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename = "invoice.pdf" }) => {
   const invoiceRef = useRef();
-
   const handleDownload = () => {
     if (!invoiceRef.current) return;
 
@@ -118,22 +117,68 @@ const InvoiceDownloader = ({ isOpen, onClose, invoiceData, filename = "invoice.p
 
           {/* Totals Section */}
           <div className="mt-6 flex justify-end text-sm">
-            <div className="w-full max-w-xs space-y-2">
+            <div className="w-full max-w-xs space-y-2 text-sm">
+              {/* Subtotal */}
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span>₹{invoiceData.type === 'subscription' ? invoiceData.amount : invoiceData.appointmentAmount}</span>
+                <span>
+                  ₹{(invoiceData.type === 'subscription'
+                    ? invoiceData.amount
+                    : invoiceData.appointmentAmount
+                  ).toLocaleString('en-IN', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
-              {invoiceData.couponDiscount && (
+
+              {/* Coupon Discount */}
+              {invoiceData?.type === "appointment" && orderData?.couponId && (
                 <div className="flex justify-between text-green-700">
-                  <span>Coupon Discount ({invoiceData.couponName || 'Applied'}):</span>
-                  <span>- ₹{invoiceData.couponDiscount}</span>
+                  <span>
+                    Coupon Discount ({orderData.couponId.couponName || 'Applied'}):
+                  </span>
+                  <span className="text-green">
+                    {orderData.couponId.couponType === 0 ? (
+                      // Flat discount
+                      `- ₹ ${orderData.couponId.discount.toLocaleString('en-IN', {
+                        minimumFractionDigits: orderData.couponId.discount % 1 === 0 ? 0 : 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                    ) : (
+                      // Percentage discount
+                      (() => {
+                        const baseAmount = invoiceData.appointmentAmount;
+
+                        if (!baseAmount) return "No Discount";
+
+                        const percentageDiscount = (baseAmount * orderData.couponId.discount) / 100;
+
+                        return `- ₹ ${percentageDiscount.toLocaleString('en-IN', {
+                          minimumFractionDigits: percentageDiscount % 1 === 0 ? 0 : 2,
+                          maximumFractionDigits: 2,
+                        })}`;
+                      })()
+                    )}
+                  </span>
                 </div>
               )}
+
+
+              {/* Total */}
               <div className="flex justify-between font-semibold border-t pt-2">
                 <span>Total Amount:</span>
-                <span>₹{invoiceData.amount}</span>
+                <span>
+                  ₹
+                  {invoiceData.amount.toLocaleString('en-IN', {
+                    minimumFractionDigits:
+                      invoiceData.amount % 1 === 0 ? 0 : 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
               </div>
             </div>
+
           </div>
 
           {/* Footer */}

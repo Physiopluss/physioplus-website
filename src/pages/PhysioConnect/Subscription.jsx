@@ -133,6 +133,7 @@ const Subscription = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  console.log(invoiceData);
   const invoice = {
 
     invoiceNumber: invoiceData.invoiceNumber,
@@ -144,7 +145,10 @@ const Subscription = () => {
     physioAddress: invoiceData.physioAddress,
     physioCity: physioData.city,
     physioState: physioData.state,
-    amount: invoiceData.amount
+    amount: invoiceData.amount,
+    couponName: invoiceData.couponName,
+    couponType: invoiceData.couponType,
+    couponDiscount: invoiceData.couponDiscount,
 
   };
 

@@ -112,7 +112,7 @@ export default function Navbar() {
               allowHover
             >
               <MenuHandler>
-                <div className="cursor-pointer text-sm">
+                <div className="cursor-pointer text-sm text-green">
                   Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
                 </div>
               </MenuHandler>
@@ -149,7 +149,7 @@ export default function Navbar() {
                     navigate("../");
                   }}
                 >
-                  <Typography as="span" variant="small" className="font-normal">
+                  <Typography as="span" variant="small" className="font-normal text-red-600 hover:text-red-900">
                     Sign Out
                   </Typography>
                 </MenuItem>
@@ -230,7 +230,7 @@ export default function Navbar() {
                           className="font-normal"
                         >
 
-                          <div className="cursor-pointer text-sm">
+                          <div className="cursor-pointer text-sm text-green">
                             Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
                           </div>
 
@@ -260,7 +260,7 @@ export default function Navbar() {
                       </Link>
                       <MenuItem
                         key={3}
-                        className={`flex items-center gap-2 rounded text-sm`}
+                        className={`flex items-center gap-2 rounded text-sm text-red-600 hover:text-red-900`}
                         onClick={() => {
                           closeMenu();
                           localStorage.removeItem("user");
