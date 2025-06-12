@@ -102,45 +102,49 @@ const MyAccountPhysio = () => {
           {/* My Consultation Card */}
           <Link to="/all-consultation">
 
-          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-center gap-3">
-              <PiHandbagBold className="text-3xl text-black" />
-              <h2 className="text-xl font-semibold">My Consultation</h2>
+            <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center gap-3">
+                <PiHandbagBold className="text-3xl text-black" />
+                <h2 className="text-xl font-semibold">My Consultation</h2>
+              </div>
+              <p className="text-sm mt-3 ml-11">
+                See and manage your consultation through here only
+              </p>
             </div>
-            <p className="text-sm mt-3 ml-11">
-              See and manage your consultation through here only
-            </p>
-          </div>
           </Link>
 
           {/* My Wallet Card */}
-           <Link to="/wallet">
-          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <PiWalletBold className="text-3xl text-black" />
-                <h2 className="text-xl font-semibold">My Wallet</h2>
+          <Link to="/wallet">
+            <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <PiWalletBold className="text-3xl text-black" />
+                  <h2 className="text-xl font-semibold">My Wallet</h2>
+                </div>
+                <span className="text-xs font-semibold bg-green text-white px-2 py-0.5 rounded">
+                  ₹ {(physioData?.wallet || 0).toLocaleString("en-IN", {
+                    minimumFractionDigits: (physioData?.wallet % 1 === 0 ? 0 : 2),
+                    maximumFractionDigits: 2,
+                  })}
+
+                </span>
               </div>
-              <span className="text-xs font-semibold bg-green text-white px-2 py-0.5 rounded">
-               ₹ {(physioData?.wallet || 0).toFixed(2).toLocaleString("en-IN")}
-              </span>
+              <p className="text-sm  mt-3 ml-11">
+                Here you can check the wallet amount and you can withdraw the amount from there
+              </p>
             </div>
-            <p className="text-sm  mt-3 ml-11">
-              Here you can check the wallet amount and you can withdraw the amount from there
-            </p>
-          </div>
           </Link>
           {/* View Subscription Card */}
-           <Link to="/subscription">
-          <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
-            <div className="flex items-center gap-3">
-              <TbClipboardText className="text-3xl text-black" />
-              <h2 className="text-xl font-semibold">View Subscription</h2>
+          <Link to="/subscription">
+            <div className="px-4 py-2 border rounded-xl shadow-sm hover:shadow-md transition-all">
+              <div className="flex items-center gap-3">
+                <TbClipboardText className="text-3xl text-black" />
+                <h2 className="text-xl font-semibold">View Subscription</h2>
+              </div>
+              <p className="text-sm  mt-3 ml-11">
+                Click to view subscription details
+              </p>
             </div>
-            <p className="text-sm  mt-3 ml-11">
-              Click to view subscription details
-            </p>
-          </div>
           </Link>
           {/* Logout Card */}
           <div

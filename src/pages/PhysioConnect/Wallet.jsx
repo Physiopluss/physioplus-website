@@ -220,7 +220,10 @@ const Wallet = () => {
               <PiWalletBold className="text-sm text-black" />
               <h2 className="text-sm font-semibold">My Wallet</h2>
               <span className="text-xs font-semibold bg-green text-white px-2 py-0.5 rounded">
-                ₹ {(wallet?.physioWallet || 0).toFixed(2).toLocaleString("en-IN")}
+                ₹ {(wallet?.physioWallet || 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: (wallet?.physioWallet % 1 === 0 ? 0 : 2),
+                  maximumFractionDigits: 2,
+                })}
               </span>
             </div>
 
@@ -359,7 +362,10 @@ const Wallet = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm text-gray-600">Wallet Balance</p>
-                <p className="text-lg font-semibold">₹ {(wallet?.physioWallet || 0).toFixed(2).toLocaleString("en-IN")}</p>
+                <p className="text-lg font-semibold">₹ {(wallet?.physioWallet || 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: (wallet?.physioWallet % 1 === 0 ? 0 : 2),
+                  maximumFractionDigits: 2,
+                })}</p>
               </div>
             </div>
 
@@ -370,7 +376,10 @@ const Wallet = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm text-gray-600">Physioplus 22%</p>
-                <p className="text-lg font-semibold">   ₹ {(wallet?.physioPlusEarning || 0).toFixed(2).toLocaleString("en-IN")}
+                <p className="text-lg font-semibold">   ₹ {(wallet?.physioPlusEarning || 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: (wallet?.physioPlusEarning % 1 === 0 ? 0 : 2),
+                  maximumFractionDigits: 2,
+                })}
                 </p>
               </div>
             </div>
@@ -382,7 +391,10 @@ const Wallet = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm text-gray-600">GST 18%</p>
-                <p className="text-lg font-semibold">₹ {(wallet?.gstAmount || 0).toFixed(2).toLocaleString("en-IN")}</p>
+                <p className="text-lg font-semibold">₹ {(wallet?.gstAmount || 0).toLocaleString("en-IN", {
+                  minimumFractionDigits: (wallet?.gstAmount % 1 === 0 ? 0 : 2),
+                  maximumFractionDigits: 2,
+                })}</p>
               </div>
             </div>
           </div>
