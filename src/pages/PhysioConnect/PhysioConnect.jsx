@@ -113,13 +113,13 @@ const PhysioConnect = () => {
 					</div>
 					{/* cards grid */}
 					<div className="w-full grid  grid-cols-2 md:grid-cols-5 md:grid-rows-4 gap-2 text-start">
-						<div className="row-start-3 row-span-2 md:row-span-3 rounded-lg px-4 py-2 pb-10 border border-[#EAEBEC] bg-gradient-to-tl from-[#16CE67] to-[#012D14] text-white relative flex flex-col justify-center gap-3">
+						<div className="row-start-3 row-span-2 md:row-span-3 rounded-lg px-4 py-2 pb-10 border border-[#EAEBEC] bg-gradient-to-tl from-[#16CE67] to-[#012D14] text-white relative flex flex-col justify-center gap-3 transition-transform duration-200 hover:scale-95">
 							<p className="text-2xl font-semibold">74%</p>
 							<p className="text-base font-semibold">Guaranteed Client Flow</p>
 							<p className="text-sm font-medium">Grow Your Practice with a Steady Stream of Patients</p>
 							<button
 								onClick={() => navigate("signup")}
-								className="absolute -bottom-1 -right-0.5 bg-[#039342] rounded-tl-2xl rounded-br-2xl text-white border-2 border-white px-4 py-2"
+								className="absolute -bottom-1 -right-0.5 bg-[#039342] rounded-tl-2xl rounded-br-2xl text-white border-2 border-white px-4 py-2 transition-transform duration-200 hover:scale-105"
 							>
 								Join Now
 							</button>
@@ -128,11 +128,11 @@ const PhysioConnect = () => {
 							<p className="text-2xl font-semibold">Earn Upto</p>
 							<p className="text-base font-semibold">50,000 / Month</p>
 						</div>
-						<div className="col-start-1 row-start-1 md:col-start-2 md:row-span-3 md:row-start-2 rounded-lg px-4 py-2 pb-20 border border-[#EAEBEC] bg-[#FFFBED] flex flex-col justify-start relative overflow-hidden gap-1.5">
+						<div className="col-start-1 row-start-1 md:col-start-2 md:row-span-3 md:row-start-2 rounded-lg px-4 py-2 pb-20 border border-[#EAEBEC] bg-[#FFFBED] flex flex-col justify-start relative overflow-hidden gap-1.5 transition-transform duration-200 hover:scale-95">
 							<p className="text-base font-semibold">Join India’s Largest Physio Network</p>
 							<p className="text-sm font-medium">Join India’s Largest Physio Network</p>
 							<button
-								className="w-fit text-green"
+								className="w-fit text-green transition-transform duration-200 hover:scale-105 z-10"
 								onClick={() => navigate("signup")}
 							>
 								Join Now
@@ -143,21 +143,21 @@ const PhysioConnect = () => {
 								className="absolute bottom-0 right-0"
 							/>
 						</div>
-						<div className="col-span-2 col-start-1 row-start-2 md:col-span-1 md:col-start-3 md:row-start-3 md:row-span-2 rounded-lg px-4 py-4 md:py-2 border border-[#EAEBEC] flex flex-col justify-around bg-green">
+						<div className="col-span-2 col-start-1 row-start-2 md:col-span-1 md:col-start-3 md:row-start-3 md:row-span-2 rounded-lg px-4 py-4 md:py-2 border border-[#EAEBEC] flex flex-col justify-around bg-green transition-transform duration-200 hover:scale-105">
 							<p className="text-xl text-center font-semibold text-white">Already 1283+ Physio With Us Over India</p>
 							<button
 								onClick={() => navigate("signup")}
-								className="w-full bg-white text-base font-medium rounded-lg mt-2 py-1"
+								className="w-full bg-white text-base font-medium rounded-lg mt-2 py-1 "
 							>
 								Join Now
 							</button>
 						</div>
-						<div className="col-start-2 row-start-1 md:col-start-4 md:row-span-3 md:row-start-2 rounded-lg px-4 py-2 pb-20 border border-[#EAEBEC] bg-[#FFFBED] flex flex-col justify-start relative overflow-hidden gap-1.5">
+						<div className="col-start-2 row-start-1 md:col-start-4 md:row-span-3 md:row-start-2 rounded-lg px-4 py-2 pb-20 border border-[#EAEBEC] bg-[#FFFBED] flex flex-col justify-start relative overflow-hidden gap-1.5 transition-transform duration-200 hover:scale-95">
 							<p className="text-base font-semibold">Boost Your Clinic’s Revenue by</p>
 							<p className="text-sm font-medium">Unlock Up to 40% More Revenue</p>
 							<button
 								onClick={() => navigate("signup")}
-								className="w-fit text-green"
+								className="w-fit text-green transition-transform duration-200 hover:scale-105 z-10"
 							>
 								Join Now
 							</button>
@@ -167,13 +167,13 @@ const PhysioConnect = () => {
 								className="absolute bottom-0 right-0"
 							/>
 						</div>
-						<div className="col-start-2 row-span-2 row-start-4 md:col-start-5 md:row-start-1 md:row-span-3 rounded-lg px-4 py-2 pb-10 border border-[#EAEBEC] bg-gradient-to-tl from-[#16CE67] to-[#012D14] text-white flex flex-col justify-center relative gap-3">
+						<div className="col-start-2 row-span-2 row-start-4 md:col-start-5 md:row-start-1 md:row-span-3 rounded-lg px-4 py-2 pb-10 border border-[#EAEBEC] bg-gradient-to-tl from-[#16CE67] to-[#012D14] text-white flex flex-col justify-center relative gap-3 transition-transform duration-200 hover:scale-95">
 							<p className="text-2xl font-semibold mb-2">91%</p>
 							<p className="text-base font-semibold mb-1">Boost Your Clinic’s Online Presence</p>
 							<p className="text-sm font-medium">Increase Your Digital Visibility</p>
 							<button
 								onClick={() => navigate("signup")}
-								className="absolute -bottom-1 -right-0.5 bg-[#039342] rounded-tl-2xl rounded-br-2xl text-white border-2 border-white px-4 py-2"
+								className="absolute -bottom-1 -right-0.5 bg-[#039342] rounded-tl-2xl rounded-br-2xl text-white border-2 border-white px-4 py-2 transition-transform duration-200 hover:scale-105"
 							>
 								Join Now
 							</button>
@@ -495,8 +495,8 @@ const PhysioConnect = () => {
 													<p
 														key={benefitIndex}
 														className={`w-2/3 text-xs sm:text-sm md:text-base font-small text-white cursor-pointer mx-0 my-1 px-2 flex rounded-lg items-center py-1 ${selectedBenefits[index] === benefit.title
-																? "bg-white bg-opacity-20  px-4" // Green background and white text when selected
-																: "hover:bg-white hover:bg-opacity-20"
+															? "bg-white bg-opacity-20  px-4" // Green background and white text when selected
+															: "hover:bg-white hover:bg-opacity-20"
 															}`}
 														onClick={() => handleBenefitClick(index, benefit.title)} // Update the selected benefit for this card
 													>

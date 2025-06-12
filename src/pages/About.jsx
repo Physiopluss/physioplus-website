@@ -347,7 +347,7 @@ const AboutUs = () => {
 									{card.map((card, i) => (
 										<Card
 											key={i}
-											className="w-full md:max-w-[30%] overflow-hidden mb-4 ml-4"
+											className="w-full md:max-w-[30%] overflow-hidden mb-4 ml-4 transition-transform duration-200 hover:scale-105"
 										>
 											<img
 												src={card.img}

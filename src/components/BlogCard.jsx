@@ -7,7 +7,8 @@ export default function BlogCard({ id, title, description, youTubeLink, image, s
 	const navigate = useNavigate();
 	return (
 		<Card
-			className={"gap-2 border border-[#EAEBEC] shadow-none cursor-pointer text-black items-stretch"}
+			className="gap-2 border border-[#EAEBEC] shadow-none cursor-pointer text-black items-stretch transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_12px_rgba(34,197,94,0.2)]"
+
 			onClick={() => navigate(`/blog/${id}`)}
 			key={id}
 		>
