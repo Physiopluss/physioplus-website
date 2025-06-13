@@ -5,7 +5,6 @@ import { MdOutlineEdit } from "react-icons/md";
 import Loading from "../components/Loading";
 import { useDispatch, useSelector } from "react-redux";
 import StepIndicatorprofile from "../pages/StepIndicatorprofile";
-import { physioConnectPhysioDataApi } from "../api/physioConnect";
 import { Breadcrumbs } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import * as Yup from 'yup';

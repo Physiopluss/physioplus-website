@@ -102,24 +102,7 @@ export const physioConnectOtpVerify = async (phone, otp, fullName) => {
 	}
 };
 
-// export const physioConnectOtpVerify = async (phone, otp, fullName) => {
-// 	try {
-// 		const response = await axios.post(`${BaseUrl}web/physio/verifyOtp`, {
-// 			name: fullName,
-// 			phone: phone,
-// 			otp,
-// 		});
-// 		if (response.status >= 200 && response.status < 300) {
-// 			return response;
-// 		} else if (response.status >= 400 && response.status < 500) {
-// 			return response;
-// 		} else {
-// 			return new Error("Something went wrong");
-// 		}
-// 	} catch (error) {
-// 		return error.response;
-// 	}
-// };
+
 
 export const physioConnectDegreeApi = async () => {
 	try {
@@ -166,58 +149,6 @@ export const physioConnectSubSpecializationsApi = async () => {
 	}
 };
 
-// export const physioConnectProfessionalsApi = async ({
-// 	physioConnectPhysioId,
-// 	degree,
-// 	specialization,
-// 	serviceType,
-// 	clinicName,
-// 	clinicAddress,
-// 	clinicPincode,
-// 	clinicCity,
-// 	clinicState,
-// 	consultationFees,
-// 	treatmentCharges,
-// 	homeChargesUpto5km,
-// 	homeChargesUpto10km,
-// 	homePincode,
-// 	homeState,
-// 	homeCity,
-// 	AnotherTreatmentName,
-// 	AnotherTreatmentPrice,
-// }) => {
-// 	try {
-// 		const response = await axios.post(`${BaseUrl}web/physio/ProfessionalDetails`, {
-// 			physioId: physioConnectPhysioId,
-// 			degreeId: degree,
-// 			specializationId: specialization,
-// 			serviceType: serviceType,
-// 			clinicName: clinicName,
-// 			address: clinicAddress,
-// 			zipCode: clinicPincode,
-// 			homeZipCode: homePincode,
-// 			homeState: homeState,
-// 			homeCity: homeCity,
-// 			city: clinicCity,
-// 			state: clinicState,
-// 			charges: consultationFees,
-// 			consultationCharges: treatmentCharges,
-// 			consultationChargesUp5Km: homeChargesUpto5km,
-// 			consultationChargesUp10Km: homeChargesUpto10km,
-// 			otherTreatmentName: AnotherTreatmentName,
-// 			otherTreatmentCharges: AnotherTreatmentPrice,
-// 		});
-// 		if (response.status >= 200 && response.status < 300) {
-// 			return response;
-// 		} else if (response.status >= 400 && response.status < 500) {
-// 			return response;
-// 		} else {
-// 			return new Error("Something went wrong");
-// 		}
-// 	} catch (error) {
-// 		return error.response;
-// 	}
-// };
 
 
 export const physioConnectProfileEdit = async (physioData) => {
@@ -271,21 +202,6 @@ export const physioConnectProfileEdit = async (physioData) => {
 		toast.error("Submit error: " + (error?.message || error));
 	}
 };
-
-// export const physioConnectProfileEdit = async (physioData) => {
-// 	try {
-// 		const response = await axios.put(`${BaseUrl}web/physio/physioConnectProfileEdit`, physioData);
-
-// 		if (response.status === 200) {
-// 			toast.success(response.data?.message || "Profile updated!");
-// 			return response.data; // optional, return data if needed
-// 		} else {
-// 			toast.error(response.data?.message || "Submission failed");
-// 		}
-// 	} catch (error) {
-// 		toast.error("Submit error: " + (error?.message || error));
-// 	}
-// };
 
 
 
@@ -430,40 +346,7 @@ export const physioConnectCouponApi = async (couponCode, physioConnectPhysioId) 
 	}
 };
 
-export const physioConnectBusinessDetailsApi = async (formData) => {
-	// console.log(formData);
-	try {
-		const response = await axios.post(`${BaseUrl}web/physio/addProfileDetails`, formData, {
-			headers: {
-				"Content-Type": "multipart/form-data",
-			},
-		});
-		if (response.status >= 200 && response.status < 300) {
-			return response;
-		} else if (response.status >= 400 && response.status < 500) {
-			return response;
-		} else {
-			return new Error("Something went wrong");
-		}
-	} catch (error) {
-		return error.response;
-	}
-};
 
-export const physioConnectPhysioDataApi = async (physioConnectPhysioId) => {
-	try {
-		const response = await axios.get(`${BaseUrl}web/physio/physioConnectId?physioId=${physioConnectPhysioId}`);
-		if (response.status >= 200 && response.status < 300) {
-			return response.data;
-		} else if (response.status >= 400 && response.status < 500) {
-			return response;
-		} else {
-			return new Error("Something went wrong");
-		}
-	} catch (error) {
-		return error.response;
-	}
-};
 
 export const physioConnectRazorPayOrderApi = async (
 	physioConnectPhysioId,
@@ -576,20 +459,6 @@ export const physioConnectFreePayment = async (physioConnectPhysioId, selectedEx
 	}
 };
 
-export const getPhysioDataPhysioConnectApi = async (physioConnectPhysioId) => {
-	try {
-		const response = await axios.get(`${BaseUrl}web/physio/physioConnectById?Id=${physioConnectPhysioId}`);
-		if (response.status >= 200 && response.status < 300) {
-			return response.data;
-		} else if (response.status >= 400 && response.status < 500) {
-			return response;
-		} else {
-			return new Error("Something went wrong");
-		}
-	} catch (error) {
-		return error.response;
-	}
-};
 export const getPhysioDataById = async (physioConnectPhysioId) => {
 	try {
 		const response = await axios.get(`${BaseUrl}web/physio/getPhysioDetailsById?Id=${physioConnectPhysioId}`);

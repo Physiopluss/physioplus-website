@@ -3,7 +3,7 @@ import { GoArrowLeft, } from "react-icons/go";
 import { Button, Input, } from "@material-tailwind/react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { getPhysioDataPhysioConnectApi, physioConnectBusinessApi, locationUsingPincode, getPhysioDataById } from "../../api/physioConnect";
+import {physioConnectBusinessApi, locationUsingPincode, getPhysioDataById } from "../../api/physioConnect";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
