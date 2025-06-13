@@ -44,7 +44,6 @@ const ListAllPhysios = lazy(() => import("./pages/Booking/ListAllPhysios"));
 const OrderDetail = lazy(() => import("./pages/Booking/OrderDetail"));
 const OrderHistory = lazy(() => import("./pages/Booking/OrderHistory"));
 const Professionalprofile = lazy(() => import("./pages/Professionalprofile"));
-const Editpersonalprofile = lazy(() => import("./pages/PhysioConnect/Editpersonalprofile"));
 const Businessprofile = lazy(() => import("./pages/Businessprofile"));
 const Reviewprofile = lazy(() => import("./pages/Reviewprofile"));
 
@@ -57,7 +56,6 @@ const PhysioConnect = lazy(() => import("./pages/PhysioConnect/PhysioConnect"));
 const PhysioConnectProfessionalForm = lazy(() => import("./pages/PhysioConnect/PhysioConnectProfessionalForm"));
 const PhysioConnectPersonalForm = lazy(() => import("./pages/PhysioConnect/PhysioConnectPersonalForm"));
 const PhysioConnectBusinessDetails = lazy(() => import("./pages/PhysioConnect/PhysioConnectBusinessDetails"));
-const PhysioConnectWorkExperience = lazy(() => import("./pages/PhysioConnect/PhysioConnectWorkExperience"));
 const PhysioConnectPayment = lazy(() => import("./pages/PhysioConnect/PhysioConnectPayment"));
 const PhysioConnectSignup = lazy(() => import("./pages/PhysioConnect/PhysioConnectSignup"));
 
@@ -194,7 +192,7 @@ const router = createBrowserRouter([
 				),
 			},
 
-				{
+			{
 				path: "/wallet",
 				element: (
 					<Suspense fallback={<Loading />}>
@@ -236,14 +234,7 @@ const router = createBrowserRouter([
 					</Suspense>
 				),
 			},
-			{
-				path: "/edit-personal",
-				element: (
-					<Suspense fallback={<Loading />}>
-						<Editpersonalprofile />
-					</Suspense>
-				),
-			},
+
 			{
 				path: "/order-history/:orderId",
 				element: (
@@ -373,14 +364,7 @@ const router = createBrowserRouter([
 					</Suspense>
 				),
 			},
-			{
-				path: "/physio-connect/work-experience",
-				element: (
-					<Suspense fallback={<Loading />}>
-						<PhysioConnectWorkExperience />
-					</Suspense>
-				),
-			},
+
 			{
 				path: "/physio-connect/payment",
 				element: (

@@ -295,7 +295,8 @@ const PhysioConnectPayment = () => {
 								<p>Total Amount to pay</p>
 								<p>
 									₹{" "}
-									{(
+									{Math.max(
+										0,
 										selectedPrice -
 										((couponResponse?.couponType === 0
 											? discountedPrice || 0
@@ -305,8 +306,6 @@ const PhysioConnectPayment = () => {
 								</p>
 							</div>
 						</div>
-
-
 					</form>
 
 

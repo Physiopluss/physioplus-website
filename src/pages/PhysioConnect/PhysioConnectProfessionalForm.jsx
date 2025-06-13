@@ -200,7 +200,7 @@ const PhysioConnectProfessionalForm = () => {
           if (res.status === 200) {
             toast.success(res.data?.message);
             setTimeout(() => {
-              navigate("/physio-connect/work-experience");
+              navigate("/physio-connect/business-details");
             }, 1000);
           } else {
             toast.error(res.data?.message);
