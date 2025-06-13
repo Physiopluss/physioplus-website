@@ -229,7 +229,7 @@ const AboutUs = () => {
 				<div className="mt-10 pt-10 pb-10 w-full bg-[#FFFDED]">
 					<div className=" mx-auto max-w-[75vw] ">
 						<Swiper
-							slidesPerView={4}
+							slidesPerView={2}
 							spaceBetween={10}
 							className="cursor-pointer bg-[#FFFDED]"
 							loop={true}
@@ -239,11 +239,11 @@ const AboutUs = () => {
 							}}
 							breakpoints={{
 								640: {
-									slidesPerView: 4,
+									slidesPerView: 2,
 									spaceBetween: 10,
 								},
 								768: {
-									slidesPerView: 4,
+									slidesPerView: 3,
 									spaceBetween: 10,
 								},
 								1024: {
@@ -259,13 +259,7 @@ const AboutUs = () => {
 									className="object-contain max-h-20 h-20 w-full"
 								/>
 							</SwiperSlide>
-							<SwiperSlide>
-								<img
-									src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/e9172514-a6cc-44cc-9292-79e840ead44f-removebg-preview.png"
-									alt=""
-									className="object-contain max-h-20 h-20 w-full"
-								/>
-							</SwiperSlide>
+							
 							<SwiperSlide>
 								<img
 									src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/image+3.png"
@@ -287,27 +281,9 @@ const AboutUs = () => {
 									className="object-contain max-h-20 h-20 w-full"
 								/>
 							</SwiperSlide>
-							<SwiperSlide>
-								<img
-									src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/fortis-hospitals-logo-A9EB82FFBA-seeklogo.com-removebg-preview.png"
-									alt=""
-									className="object-contain max-h-20 h-20 w-full"
-								/>
-							</SwiperSlide>
-							<SwiperSlide>
-								<img
-									src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/This_is_a_logo_for_Shalby_Hospitals-removebg-preview.png"
-									alt=""
-									className="object-contain max-h-20 h-20 w-full"
-								/>
-							</SwiperSlide>
-							<SwiperSlide>
-								<img
-									src="https://123456789video.s3.ap-south-1.amazonaws.com/Physioplus+Inc+Patient/LOGO-1-1-removebg-preview.png"
-									alt=""
-									className="object-contain max-h-20 h-20 w-full"
-								/>
-							</SwiperSlide>
+							
+							
+						
 						</Swiper>
 					</div>
 				</div>
