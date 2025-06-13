@@ -133,7 +133,6 @@ const Subscription = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  console.log(invoiceData);
   const invoice = {
 
     invoiceNumber: invoiceData.invoiceNumber,

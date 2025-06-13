@@ -56,7 +56,7 @@ export function OtpModal() {
 				? await physioConnectOtpVerify(phone, otp, fullName)
 				: await OtpVerify(phone, otp, type, fullName, gender, date, dob);
 
-			console.log("OTP response:", res);
+
 
 			if (res.status >= 200 && res.status < 300) {
 				const user = {

@@ -126,7 +126,7 @@ export default function Navbar() {
                   <MenuItem> Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}</MenuItem>
                 </Link>
                 <Link
-                  to={userType === "physio" ? "/my-account-physio" : "/order-history"}
+                  to={userType === "physio" ? "/all-consultation" : "/order-history"}
                   variant="small"
                   className="font-normal"
                 >
@@ -246,7 +246,7 @@ export default function Navbar() {
                   <div className="block lg:hidden -mt-2">
                     <Collapse open={isMobileMenuOpen}>
                       <Link
-                        to={userType === "physio" ? "/my-account-physio" : "/order-history"}
+                        to={userType === "physio" ? "/all-consultation" : "/order-history"}
                         variant="small"
                         className="font-normal"
                       >

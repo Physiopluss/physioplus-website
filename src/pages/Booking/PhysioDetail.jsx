@@ -594,7 +594,7 @@ const PhysioDetail = () => {
                     <ReviewCardTwo
 
                       id={review._id}
-                      name={`Patient ${review.patientId?.fullName}` || "Anonymous"}
+                      name={`${review.patientId?.fullName}` || "Anonymous"}
                       img={review.patientId?.profilePhoto || "/user.png"}
                       rating={review.rating}
                       review={review.comment}  // Using 'comment' from API

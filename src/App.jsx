@@ -43,7 +43,6 @@ const PhysioDetail = lazy(() => import("./pages/Booking/PhysioDetail"));
 const ListAllPhysios = lazy(() => import("./pages/Booking/ListAllPhysios"));
 const OrderDetail = lazy(() => import("./pages/Booking/OrderDetail"));
 const OrderHistory = lazy(() => import("./pages/Booking/OrderHistory"));
-const OrderHistoryPhysio = lazy(() => import("./pages/OrderHistoryPhysio"));
 const Professionalprofile = lazy(() => import("./pages/Professionalprofile"));
 const Editpersonalprofile = lazy(() => import("./pages/PhysioConnect/Editpersonalprofile"));
 const Businessprofile = lazy(() => import("./pages/Businessprofile"));

@@ -59,9 +59,6 @@ export default function SlotComponent({ physioData }) {
 		// Generate all possible time slots
 		while (startTime < endTime) {
 			const timeSlot = startTime.format("hh:mm A");
-
-
-			console.log("slots", slots);
 			// For today, only add future time slots
 			if (isToday) {
 				const slotTime = moment(selectedDate).set({
