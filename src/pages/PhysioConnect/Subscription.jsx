@@ -134,24 +134,20 @@ const Subscription = () => {
   }, []);
 
   const invoice = {
-
-    invoiceNumber: invoiceData.invoiceNumber,
-    createdAt: invoiceData.createdAt,
-    paymentMode: invoiceData.paymentMode,
+    invoiceNumber: invoiceData?.invoiceNumber,
+    createdAt: invoiceData?.createdAt,
+    paymentMode: invoiceData?.paymentMode,
     transactionId: invoiceData?.transactionId?._id,
-    type: invoiceData.type,
-    physioName: physioData.fullName,
-    physioAddress: invoiceData.physioAddress,
-    physioCity: physioData.city,
-    physioState: physioData.state,
-    amount: invoiceData.amount,
-    couponName: invoiceData.couponName,
-    couponType: invoiceData.couponType,
-    couponDiscount: invoiceData.couponDiscount,
-
+    type: invoiceData?.type,
+    physioName: physioData?.fullName,
+    physioAddress: invoiceData?.physioAddress,
+    physioCity: physioData?.city,
+    physioState: physioData?.state,
+    amount: invoiceData?.amount,
+    couponName: invoiceData?.couponName,
+    couponType: invoiceData?.couponType,
+    couponDiscount: invoiceData?.couponDiscount,
   };
-
-
 
 
   return (

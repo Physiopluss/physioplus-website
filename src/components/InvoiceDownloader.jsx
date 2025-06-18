@@ -34,12 +34,21 @@ const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename =
           {/* Clinic Info */}
           <div className="flex justify-between mb-6">
             <div>
-              <img src="/logo.png" alt="Physio+" className="h-10 w-auto" />
+              <p className="text-lg font-semibold text-green">PhysioPlus Healthcare</p>
+
               <p className="text-sm text-gray-600">109,1st Floor,Sankalp Tower,Khatipura Road,Jaipur</p>
-              <p className="text-sm text-gray-600">Email: info@physioplushealthcare.com</p>
-              <p className="text-sm text-gray-600">Phone: +91 8107333576</p>
+              <p>
+                Email:{" "}
+                <span className="text-blue-600 underline">
+                  support@physioplushealthcare.com
+                </span>
+              </p>
             </div>
             <div className="text-sm text-gray-700 space-y-1 text-right">
+              <p>
+                <strong>GST NO.: </strong>
+                08AANCP1150A1ZT
+              </p>
               <p><strong>Invoice #: </strong>{invoiceData.invoiceNumber}</p>
               <p><strong>Date: </strong>{new Date(invoiceData.createdAt).toLocaleDateString()}</p>
               <p><strong>Payment Mode: </strong>{invoiceData.paymentMode}</p>
@@ -57,13 +66,12 @@ const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename =
                   <h3 className="font-semibold mb-1">Billed To (Physio)</h3>
                   <p>{invoiceData.physioName}</p>
                   <p className="break-words whitespace-pre-line">{invoiceData.physioAddress}</p>
-                  <p>{invoiceData.physioCity}, {invoiceData.physioState}</p>
                 </div>
                 <div className="w-1/2 text-right">
                   <h3 className="font-semibold mb-1">Provided By</h3>
                   <p>PhysioPlus Healthcare</p>
                   <p>109,1st Floor,Sankalp Tower,Khatipura Road,Jaipur</p>
-                  <p>support@physioplushealthcare.com</p>
+
                 </div>
               </>
             ) : (
@@ -77,7 +85,7 @@ const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename =
                   <h3 className="font-semibold mb-1">Provided By (Physio)</h3>
                   <p>{invoiceData.physioName}</p>
                   <p className="break-words whitespace-pre-line">{invoiceData.physioAddress}</p>
-                  <p>{invoiceData.physioCity}, {invoiceData.physioState}</p>
+
                 </div>
               </>
             )}
@@ -167,7 +175,7 @@ const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename =
 
               {/* Total */}
               <div className="flex justify-between font-semibold border-t pt-2">
-                <span>Total Amount:</span>
+                <span>Total Amount (GST inclusive):</span>
                 <span>
                   ₹
                   {invoiceData.amount.toLocaleString('en-IN', {
@@ -183,8 +191,11 @@ const InvoiceDownloader = ({ isOpen, onClose, orderData, invoiceData, filename =
 
           {/* Footer */}
           <div className="mt-8 text-xs text-gray-500 text-center">
-            Thank you for choosing Physio+. For support, contact
-            <span className="text-green"> support@physioplushealthcare.com</span>
+            Thank you for choosing <span className="font-semibold text-green">Physio+</span>.{" "}
+            For support, email{" "}
+            <span className="text-blue-600 underline">
+              support@physioplushealthcare.com
+            </span>
           </div>
         </div>
 
