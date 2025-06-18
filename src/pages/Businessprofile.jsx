@@ -105,8 +105,8 @@ const Businessprofile = () => {
       homeState: "",
       homeCharges: "",
       homeDuration: "",
-      patientImage: [],
       homeWorkingDays: [],
+      // patientImage: [],
       // homecareImage: [],
       serviceType: [],
     },
@@ -293,13 +293,13 @@ const Businessprofile = () => {
           then: (schema) => schema.required("Home Duration is required"),
           otherwise: (schema) => schema.notRequired(),
         }),
-      patientImage: Yup.array()
-        .of(Yup.string().nullable())
-        .when("serviceType", {
-          is: (val) => val && val.includes("home"),
-          then: (schema) => schema.min(1, "patient image is required"),
-          otherwise: (schema) => schema.notRequired(),
-        }),
+      // patientImage: Yup.array()
+      //   .of(Yup.string().nullable())
+      //   .when("serviceType", {
+      //     is: (val) => val && val.includes("home"),
+      //     then: (schema) => schema.min(1, "patient image is required"),
+      //     otherwise: (schema) => schema.notRequired(),
+      //   }),
     }),
 
     //isko abhi api ke baad set krongi
@@ -342,7 +342,7 @@ const Businessprofile = () => {
           // homecareImage: values.homecareImage,
         },
 
-        patientImage: values.patientImage,
+        // patientImage: values.patientImage,
       });
 
 
@@ -408,7 +408,7 @@ const Businessprofile = () => {
         },
 
         // Patient Image
-        patientImage: physioData?.patientImage ?? [],
+        // patientImage: physioData?.patientImage ?? [],
       });
     }
   }, [physioData]);
@@ -967,7 +967,7 @@ const Businessprofile = () => {
 
 
                     {/* patients images */}
-                    <div className="flex flex-col gap-2 mt-4">
+                    {/* <div className="flex flex-col gap-2 mt-4">
                       <label htmlFor="" className="text-sm font-semibold">
                         Upload Patients Images
                       </label>
@@ -981,7 +981,7 @@ const Businessprofile = () => {
                         touched={formik.touched.patientImage}
                         disabled={!editMode}
                       />
-                    </div>
+                    </div> */}
 
 
                     {formik.values.serviceType.includes("home") && (

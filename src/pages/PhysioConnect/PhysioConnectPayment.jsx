@@ -72,44 +72,34 @@ const PhysioConnectPayment = () => {
 		fetchData();
 	}, [physioConnectPhysioId, selectedPrice]);
 
-	// getting total price after applying coupon
-
-
-	// useEffect(() => {
-	// 	discountedPrice != 0 && discountedPrice != null && discountedPrice != undefined
-	// 		? couponResponse.couponType == 0
-	// 			? discountedPrice > selectedPrice
-	// 				? setAmountToPay(0)
-	// 				: setAmountToPay(selectedPrice - discountedPrice)
-	// 			: (discountedPrice * selectedPrice) / 100 > selectedPrice
-	// 				? setAmountToPay(0)
-	// 				: setAmountToPay(selectedPrice - (discountedPrice * selectedPrice) / 100)
-	// 		: setAmountToPay(selectedPrice);
-	// }, [selectedPrice, discountedPrice, couponResponse]);
 
 	useEffect(() => {
 		if (!selectedPrice) return;
 
 		let totalDiscount = 0;
+		const priceAfterSwipe = selectedPrice - (swipeDiscount || 0);
+		let finalCouponDiscount = 0;
 
 		if (discountedPrice && couponResponse) {
 			if (couponResponse.couponType === 0) {
 				// ₹ flat discount
-				totalDiscount += discountedPrice;
+				finalCouponDiscount = discountedPrice;
 			} else {
-				// % discount
-				totalDiscount += (discountedPrice * selectedPrice) / 100;
+				// % discount on price *after* swipe discount
+				finalCouponDiscount = (discountedPrice * priceAfterSwipe) / 100;
 			}
 		}
 
-		// Add swipe discount
-		totalDiscount += swipeDiscount || 0;
+		totalDiscount = (swipeDiscount || 0) + finalCouponDiscount;
 
-		// Cap discount to not exceed price
-		if (totalDiscount > selectedPrice) totalDiscount = selectedPrice;
+		// Prevent over-discounting
+		if (totalDiscount > selectedPrice) {
+			totalDiscount = selectedPrice;
+		}
 
-		setAmountToPay(selectedPrice - totalDiscount);
+		setAmountToPay(Math.max(0, selectedPrice - totalDiscount));
 	}, [selectedPrice, discountedPrice, couponResponse, swipeDiscount]);
+
 
 	useEffect(() => {
 		const handleScroll = () => {
@@ -241,7 +231,7 @@ const PhysioConnectPayment = () => {
 											className="text-right text-green"
 											onClick={() => {
 												setShowCouponInput((prev) => !prev);
-												setCoupon(showCouponInput ? "test" : "");
+												setCoupon(showCouponInput ? "" : "");
 												setCouponResponse({});
 												setCouponApplied(null);
 												SetDiscountedPrice(null);
@@ -257,54 +247,57 @@ const PhysioConnectPayment = () => {
 							{(discountedPrice > 0 || swipeDiscount > 0) && (
 								<>
 									<hr className="border-gray-200" />
-									{discountedPrice > 0 && (
-										<div className="flex justify-between text-sm font-normal">
-											<p>Coupon Discount ({couponApplied})</p>
-											{couponResponse.couponType === 0 ? (
-												<p>₹ {discountedPrice.toLocaleString()}</p>
-											) : (
-												<p>{discountedPrice.toLocaleString()}%</p>
-											)}
-										</div>
-									)}
+
 									{swipeDiscount > 0 && (
 										<div className="flex justify-between text-sm font-normal">
 											<p>Special Discount</p>
 											<p>₹ {swipeDiscount.toLocaleString()}</p>
 										</div>
 									)}
+
+									{discountedPrice > 0 && (
+										<div className="flex justify-between text-sm font-normal">
+											<p>Coupon Discount ({couponApplied})</p>
+											<p>
+												₹{" "}
+												{couponResponse?.couponType === 0
+													? discountedPrice.toLocaleString()
+													: Math.round(((discountedPrice * (selectedPrice - swipeDiscount)) / 100)).toLocaleString()}
+											</p>
+										</div>
+									)}
 								</>
 							)}
 
 							<hr className="border-gray-200" />
-							<div className="flex justify-between text-sm font-semibold text-green">
-								<p>Total Discount</p>
-								<p>
-									₹{" "}
-									{(
-										(couponResponse?.couponType === 0
-											? discountedPrice || 0
-											: Math.round((discountedPrice * selectedPrice) / 100) || 0) +
-										(swipeDiscount || 0)
-									).toLocaleString()}
-								</p>
-							</div>
+							{(() => {
+								const swipe = swipeDiscount || 0;
+								const baseForCoupon = selectedPrice - swipe;
+								const couponDiscount =
+									couponResponse?.couponType === 0
+										? discountedPrice || 0
+										: Math.round(((discountedPrice || 0) * baseForCoupon) / 100);
 
-							{amoutToPay !== 0 && <hr className="border-black" />}
-							<div className="flex justify-between text-md font-semibold">
-								<p>Total Amount to pay</p>
-								<p>
-									₹{" "}
-									{Math.max(
-										0,
-										selectedPrice -
-										((couponResponse?.couponType === 0
-											? discountedPrice || 0
-											: Math.round((discountedPrice * selectedPrice) / 100) || 0) +
-											(swipeDiscount || 0))
-									).toLocaleString()}
-								</p>
-							</div>
+								const totalDiscount = swipe + couponDiscount;
+								const finalAmount = Math.max(0, selectedPrice - totalDiscount);
+
+								return (
+									<>
+										<hr className="border-gray-200" />
+										<div className="flex justify-between text-sm font-semibold text-green">
+											<p>Total Discount</p>
+											<p>₹ {totalDiscount.toLocaleString()}</p>
+										</div>
+
+										{amoutToPay !== 0 && <hr className="border-black" />}
+										<div className="flex justify-between text-md font-semibold">
+											<p>Total Amount to pay</p>
+											<p>₹ {finalAmount.toLocaleString()}</p>
+										</div>
+									</>
+								);
+							})()}
+
 						</div>
 					</form>
 
@@ -529,46 +522,62 @@ const PhysioConnectPayment = () => {
 							</>
 						)}
 
-						{((discountedPrice > 0 || swipeDiscount > 0)) && (
+						{(discountedPrice > 0 || swipeDiscount > 0) && (
 							<>
 								<hr className="border-gray-200" />
-								{discountedPrice > 0 && (
-									<div className="flex justify-between text-sm font-normal">
-										<p>Coupon Discount</p>
-										{couponResponse.couponType === 0 ? (
-											<p>₹ {discountedPrice.toLocaleString()}</p>
-										) : (
-											<p>{discountedPrice.toLocaleString()} %</p>
-										)}
-									</div>
-								)}
+
 								{swipeDiscount > 0 && (
 									<div className="flex justify-between text-sm font-normal">
-										<p>Swiped Discount</p>
+										<p>Special Discount</p>
 										<p>₹ {swipeDiscount.toLocaleString()}</p>
+									</div>
+								)}
+
+								{discountedPrice > 0 && (
+									<div className="flex justify-between text-sm font-normal">
+										<p>Coupon Discount ({couponApplied})</p>
+										<p>
+											₹{" "}
+											{couponResponse?.couponType === 0
+												? discountedPrice.toLocaleString()
+												: Math.round(
+													((discountedPrice || 0) * (selectedPrice - (swipeDiscount || 0))) / 100
+												).toLocaleString()}
+										</p>
 									</div>
 								)}
 							</>
 						)}
 
 						<hr className="border-gray-200" />
-						<div className="flex justify-between text-sm font-semibold text-green">
-							<p>Total Discount</p>
-							<p>
-								₹{" "}
-								{
-									((couponResponse?.couponType === 0
-										? discountedPrice
-										: (Math.round((discountedPrice * selectedPrice) / 100)) || 0)
-										+ (swipeDiscount || 0)).toLocaleString()
-								}
-							</p> </div>
 
-						{amoutToPay !== 0 && <hr className="border-black" />}
-						<div className="flex justify-between text-md font-semibold">
-							<p>Total Amount to pay</p>
-							<p> ₹ {amoutToPay ? amoutToPay.toLocaleString() : "0"}</p>
-						</div>
+						{(() => {
+							const swipe = swipeDiscount || 0;
+							const baseForCoupon = selectedPrice - swipe;
+							const couponDiscount =
+								couponResponse?.couponType === 0
+									? discountedPrice || 0
+									: Math.round(((discountedPrice || 0) * baseForCoupon) / 100);
+
+							const totalDiscount = swipe + couponDiscount;
+							const finalAmount = Math.max(0, selectedPrice - totalDiscount);
+
+							return (
+								<>
+									<div className="flex justify-between text-sm font-semibold text-green">
+										<p>Total Discount</p>
+										<p>₹ {totalDiscount.toLocaleString()}</p>
+									</div>
+
+									{finalAmount !== 0 && <hr className="border-black" />}
+									<div className="flex justify-between text-md font-semibold">
+										<p>Total Amount to pay</p>
+										<p>₹ {finalAmount.toLocaleString()}</p>
+									</div>
+								</>
+							);
+						})()}
+
 					</div>
 
 
