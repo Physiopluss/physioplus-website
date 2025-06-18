@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { GoDash } from "react-icons/go";
 import { getPresignedUrl, uploadFileToS3 } from "../api/physioConnect";
 import { usePhysio } from "../context/PhysioContext";
+import toast from "react-hot-toast";
 
 const steps = [{
   label: "Personal Details",
@@ -38,10 +39,10 @@ const StepIndicatorprofile = ({ currentStep, showProfilePic = true }) => {
 
       setPreview(fileUrl);
 
-      alert("Profile image updated successfully!");
+      toast.success("Profile image updated successfully!");
     } catch (error) {
       console.error("Error uploading image or updating profile:", error);
-      alert("Failed to upload image or update profile.");
+      toast.error("Failed to upload image or update profile.");
     }
   };
 

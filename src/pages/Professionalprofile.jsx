@@ -16,6 +16,7 @@ import { physioConnectDegreeApi, physioConnectSpecializationsApi } from '../api/
 import SingleFileUpload from "../components/SingleFileUpload";
 
 import { useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 
 
 const Professionalprofile = () => {
@@ -137,8 +138,12 @@ const Professionalprofile = () => {
       iapMember: 0,
       iapNumber: "",
       iapImage: null,
+      profileImage: ""
     },
     validationSchema: Yup.object().shape({
+
+
+
       iapMember: Yup.number().required("IAP member is required"),
       iapNumber: Yup.string().when('iapMember', {
         is: 1,
@@ -150,6 +155,7 @@ const Professionalprofile = () => {
         then: (schema) => schema.required("IAP image is required"),
         otherwise: (schema) => schema.notRequired(),
       }),
+
 
 
       // Validation for image
@@ -200,24 +206,26 @@ const Professionalprofile = () => {
         .min(0, "Experience cannot be negative"),
     }),
     onSubmit: (values) => {
+      if (!values.profileImage || values.profileImage.trim() === "") {
+        toast.error("Profile image is required");
+        return; // ❌ Don't proceed with submit
+      }
 
-
+      // ✅ Proceed only if profileImage exists
       updatePhysioData({
-
         bptDegree: {
-          degreeId: values.bptDegree.degreeId,  // ✅ extract string
-          image: values.bptDegree.image         // ✅ extract image
+          degreeId: values.bptDegree.degreeId,
+          image: values.bptDegree.image,
         },
         mptDegree: {
           degreeId: values.mptDegree.degreeId,
-          image: values.mptDegree.image
+          image: values.mptDegree.image,
         },
         achievement: values.achievement,
         specialization: values.specialization,
         subspecializationId: values.subspecializationId,
         serviceType: values.serviceType,
         workExperience: Number(values.experience),
-
         iapMember: Number(values.iapMember),
         iapNumber: values.iapNumber,
         iapImage: values.iapImage,
@@ -225,6 +233,7 @@ const Professionalprofile = () => {
 
       navigate("/business", { state: { editMode } });
     },
+
 
   });
 
@@ -251,6 +260,7 @@ const Professionalprofile = () => {
       const iapMember = Number(physioData.iapMember) || 0;
       const iapNumber = String(physioData.iapNumber || "");
       const iapImage = physioData.iapImage || null;
+      const profileImage = physioData.profileImage || null;
 
       // 🆕 Handle bptDegree and mptDegree separately
       const bptDegree = {
@@ -269,6 +279,7 @@ const Professionalprofile = () => {
           : [{ title: "", achievementImage: null }];
 
       formik.setValues({
+        profileImage,
         specialization,
         subspecializationId,
         serviceType,
