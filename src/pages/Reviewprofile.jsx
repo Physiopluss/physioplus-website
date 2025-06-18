@@ -135,7 +135,7 @@ const Reviewprofile = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  const zipCode = physioData?.home?.zipCode;
+
 
   return (
     <>
@@ -172,13 +172,31 @@ const Reviewprofile = () => {
             <div className="absolute top-4 right-4 hidden md:flex items-center gap-1 text-sm text-gray-600">
               <ImLocation className="w-4 h-4 text-green" />
               <span>
-                {physioData.city
-                  ? physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)
-                  : "N/A"}
+                {/* Prefer clinic city and zipCode */}
+                {physioData?.city || physioData?.clinic?.zipCode ? (
+                  <>
+                    {physioData.city
+                      ? physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)
+                      : ""}
+                    {physioData?.clinic?.zipCode && physioData.clinic.zipCode !== 0 && (
+                      <> - {physioData.clinic.zipCode}</>
+                    )}
+                  </>
+                ) : (
+                  // Fallback to home city and zip
+                  <>
+                    {physioData?.home?.homeCity
+                      ? physioData.home.homeCity.charAt(0).toUpperCase() +
+                      physioData.home.homeCity.slice(1)
+                      : ""}
+                    {physioData?.home?.zipCode && physioData.home.zipCode !== 0 && (
+                      <> - {physioData.home.zipCode}</>
+                    )}
+                  </>
+                )}
               </span>
-              {zipCode && zipCode !== 0 && <span>- {zipCode}</span>}
-
             </div>
+
 
 
             {/* Image and Name Section */}

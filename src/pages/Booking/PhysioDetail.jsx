@@ -130,11 +130,30 @@ const PhysioDetail = () => {
           {/* Distance Section - Top Right */}
           <div className="absolute top-4 right-4 hidden md:flex items-center gap-1 text-sm text-gray-600">
             <ImLocation className="w-4 h-4 text-green" />
-            <span>{physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)}</span>
-
-            {physioData.home.zipCode !== 0 && physioData.home.zipCode !== null && (
-              <span>- {physioData.home.zipCode}</span>
-            )}
+            <span>
+              {/* Prefer clinic city and zipCode */}
+              {physioData?.city || physioData?.clinic?.zipCode ? (
+                <>
+                  {physioData.city
+                    ? physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)
+                    : ""}
+                  {physioData?.clinic?.zipCode && physioData.clinic.zipCode !== 0 && (
+                    <> - {physioData.clinic.zipCode}</>
+                  )}
+                </>
+              ) : (
+                // Fallback to home city and zip
+                <>
+                  {physioData?.home?.homeCity
+                    ? physioData.home.homeCity.charAt(0).toUpperCase() +
+                    physioData.home.homeCity.slice(1)
+                    : ""}
+                  {physioData?.home?.zipCode && physioData.home.zipCode !== 0 && (
+                    <> - {physioData.home.zipCode}</>
+                  )}
+                </>
+              )}
+            </span>
 
           </div>
 
@@ -147,8 +166,10 @@ const PhysioDetail = () => {
                 {!imageLoaded && <Skeleton className="w-28 h-28 rounded-lg" />}
                 <img
                   loading="lazy"
-                  className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer ${!imageLoaded ? "hidden" : "block"
-                    }`}
+                  className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer border-2 ${physioData?.subscriptionId?.planId?.planType === 2
+                    ? "shadow-lg shadow-[#e7d234]"
+                    : " shadow-lg shadow-green"
+                    } ${!imageLoaded ? "hidden" : "block"}`}
                   src={physioData.profileImage ? physioData.profileImage : "/mockPhysioMale.png"}
                   alt={physioData.fullName}
                   onLoad={handleImageLoad}
@@ -178,7 +199,10 @@ const PhysioDetail = () => {
                 </div>
               )}
 
-              <div className="absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5">
+              <div className={`absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap rounded-2xl text-sm w-fit flex items-center gap-1.5 ${physioData?.subscriptionId?.planId?.planType === 2
+                ? "bg-yellow-100 text-yellow-900"
+                : "bg-green  text-white"
+                }`}>
                 <FaShoppingBag className="w-3 h-3" />
                 {physioData.workExperience ? physioData.workExperience : 1}+ Years
               </div>
@@ -208,28 +232,24 @@ const PhysioDetail = () => {
                   </p>
                 </div>
                 {/* Rating and Reviews */}
-                <div className="text-sm flex items-center gap-2.5 lg:flex-col lg:items-start">
-                  <div className="py-1 px-4 border-white border text-nowrap bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
-                    <FaStar className="w-3 h-3" />
-                    {physioData.rating ? physioData.rating : "Recently Added"}
+                <div className="text-xs flex items-center gap-2.5 lg:flex-col lg:items-start">
+                  <div className="text-sm flex items-center gap-2.5 " >
+                    {physioData?.subscriptionId?.planId?.planType === 2 && (
+                      <button
+                        type="button"
+                        className="text-sm py-1 px-4 w-fit text-nowrap rounded-full font-semibold bg-yellow-100 text-yellow-900  cursor-default"
+                      >
+                        Premium
+                      </button>
+                    )}
+                    <div className="py-1 px-4 border-white border  bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
+
+                      <FaStar className="w-3 h-3" />
+                      {physioData.rating ? physioData.rating : "Recently Added"}
+                    </div>
                   </div>
-                  {/* {physioData.city == null ? null : (
-        <div className="flex items-start gap-1">
-          <div>
-            <ImLocation className="w-4 h-4 pt-0.5 text-green" />
-          </div>
-          <div className="text-sm">
-            {physioData.city}{" "}
-            {physioData.home.zipCode != 0 &&
-              physioData.home.zipCode != null &&
-              "- " + physioData?.home?.zipCode}
-          </div>
-		  <div className="flex flex-row gap-2">
-												<FaCircle className="h-1.5 w-2 mt-2"/>
-												  {physioData.clinic.address}
-												</div>
-        </div>
-      )} */}
+
+
                   {physioData?.serviceType?.includes("clinic") ? (
                     physioData.clinic && (
                       <div className="flex items-start gap-1">
@@ -273,6 +293,22 @@ const PhysioDetail = () => {
                   ) : (
                     <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-xs">General Pain</span>
                   )}
+                </div>
+
+                <div className="text-sm flex items-center gap-2.5 " >
+                  {physioData?.subscriptionId?.planId?.planType === 2 && (
+                    <button
+                      type="button"
+                      className="text-sm py-1 px-4 w-fit text-nowrap rounded-full font-semibold bg-yellow-100 text-yellow-900  cursor-default"
+                    >
+                      Premium
+                    </button>
+                  )}
+                  <div className="py-1 px-4 border-white border  bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
+
+                    <FaStar className="w-3 h-3" />
+                    {physioData.rating ? physioData.rating : "Recently Added"}
+                  </div>
                 </div>
                 {/* Clinic Info */}
                 <div className="hidden md:block">
@@ -348,20 +384,7 @@ const PhysioDetail = () => {
 
 
 
-            {/* <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full">
-              {physioData?.degree?.degreeId?.length !== 0 ? (
-                physioData?.degree?.degreeId?.slice(0, 3)?.map((p, i) => (
-                  <span
-                    className="text-xs sm:text-sm rounded-xl bg-[#F1F9F4] border border-gray-200 text-center py-1 px-2 gap-2 text-nowrap w-fit sm:w-full "
-                    key={i}
-                  >
-                    {p.name}
-                  </span>
-                ))
-              ) : (
-                <span className="rounded-full py-2 px-4 bg-[#E6F4EC] text-nowrap w-fit">General Pain</span>
-              )}
-            </div> */}
+
           </div>
         </div>
 

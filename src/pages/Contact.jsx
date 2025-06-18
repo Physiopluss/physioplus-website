@@ -6,6 +6,8 @@ import { useEffect } from "react";
 import HomeTitleComponent from "../components/HomeTitleComponent";
 import HorizontalCard from "../components/HorizontalCard";
 import ReactGA from "react-ga4";
+import { GrLocation } from "react-icons/gr";
+import { FiMail , FiPhoneCall} from "react-icons/fi";
 
 const Contact = () => {
 	// google analytics

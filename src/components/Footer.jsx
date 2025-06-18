@@ -1,6 +1,5 @@
 import { Button } from "@material-tailwind/react";
 import { FaLinkedin, FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
-import { MdLocationOn, MdMail, MdPhoneInTalk } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 
 const Footer = () => {
@@ -101,32 +100,7 @@ const Footer = () => {
 							</li>
 						</ul>
 					</div>
-					{/* Support */}
-					{/* <div className="col-span-2 md:col-span-1 flex flex-col w-full gap-6">
-					<Link
-						to="/"
-						className="text-xl font-semibold"
-					>
-						Support
-					</Link>
-					<ul className="text-base font-normal flex flex-col gap-2">
-						<li>
-							<Link to="/about">About Us</Link>
-						</li>
-						<li>
-							<Link to="/contact">Contact Us</Link>
-						</li>
-						<li>
-							<Link to="/refund-policy">Refund Policy</Link>
-						</li>
-						<li>
-							<Link to="/privacy">Privacy Policy</Link>
-						</li>
-						<li>
-							<Link to="/terms&condition">Terms & Conditions</Link>
-						</li>
-					</ul>
-				</div> */}
+
 					{/* Links */}
 					<div className="col-span-2 md:col-span-1 flex flex-col w-full gap-6">
 						<div className="text-xl font-semibold">Links</div>
