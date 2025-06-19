@@ -22,10 +22,12 @@ import { BiChevronDown } from "react-icons/bi";
 
 
 import { FaUser, FaUserMd } from "react-icons/fa"; // for patient and physio icons
+import LoginGuide from "../pages/LoginGuide";
 
 
 
 export default function Navbar() {
+
   const user = localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
   const decoded = user && jwtDecode(user?.userToken);
   const patientName = decoded?.patient?.fullName;
@@ -45,6 +47,7 @@ export default function Navbar() {
 
   return (
     <>
+      <LoginGuide openLoginMenu={() => setIsMenuOpen(true)} />
       <header className="hidden bg-[#F1F9F4] py-4 px-6 lg:flex justify-between items-center">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
@@ -61,7 +64,7 @@ export default function Navbar() {
             <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
               <MenuHandler>
                 <Link
-                  className="text-sm text-black cursor-pointer"
+                  className="text-sm text-black cursor-pointer btn-open-login"
                   to="#"
                   onClick={(e) => {
                     e.preventDefault();
@@ -71,11 +74,11 @@ export default function Navbar() {
                   Login
                 </Link>
               </MenuHandler>
-              <MenuList className="p-1 bg-white shadow-lg rounded-lg">
+              <MenuList className="p-1 bg-white shadow-lg rounded-lg login-options">
                 <Link
                   to="/login"
                   variant="small"
-                  className="font-normal"
+                  className="font-normal  btn-patient-login"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setIsNavOpen(false);
@@ -92,7 +95,7 @@ export default function Navbar() {
                 <Link
                   to="/login-physio"
                   variant="small"
-                  className="font-normal"
+                  className="font-normal btn-physio-login"
                   onClick={() => {
                     setIsMenuOpen(false);
                     setIsNavOpen(false);
@@ -180,10 +183,11 @@ export default function Navbar() {
             color="blue-gray"
             variant="text"
             onClick={toggleIsNavOpen}
-            className="ml-auto mr-4 lg:hidden"
+            className="ml-auto mr-4 lg:hidden btn-open-mobile-menu"
           >
             {isNavOpen ? <IoMdClose className="h-6 w-6" /> : <IoMdMenu className="h-6 w-6" />}
           </IconButton>
+
           {userType !== "physio" && (
             <Button
               onClick={() => navigate("/physios")}
@@ -280,9 +284,9 @@ export default function Navbar() {
                     <Typography
                       variant="small"
                       color="gray"
-                      className="font-medium text-black mb-2 cursor-pointer"
+                      className="font-medium text-black mb-2 cursor-pointer btn-open-mobile-login"
                     >
-                      <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
+                      <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300 ">
                         Login
                       </MenuItem>
                     </Typography>
@@ -295,6 +299,7 @@ export default function Navbar() {
                         setIsNavOpen(false);
                         localStorage.setItem("userType", "patient");
                       }}
+                      className="btn-patient-login"
                     >
                       <MenuItem className="flex items-center gap-2 hover:text-green">
                         <FaUser className="w-4 h-4 " />
@@ -310,6 +315,7 @@ export default function Navbar() {
                         setIsNavOpen(false);
                         localStorage.setItem("userType", "physio");
                       }}
+                      className="btn-physio-login"
                     >
                       <MenuItem className="flex items-center gap-2 hover:text-green">
                         <FaUserMd className="w-4 h-4 " />

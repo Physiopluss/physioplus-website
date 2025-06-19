@@ -52,7 +52,7 @@ const OrderDetails = () => {
                 {/* Breadcrumbs */}
                 <Breadcrumbs separator=">" className="my-2 md:mx-6 lg:mx-12 text-black bg-transparent">
                     <Link to="/profile" className="text-black  font-semibold hover:text-green">My Account</Link>
-                    <Link to="/profile" className="text-black  font-semibold hover:text-green">My Bookings</Link>
+                    <Link to="/order-history" className="text-black  font-semibold hover:text-green">My Bookings</Link>
                     <Link to="/order-history"> <span className="text-black hover:text-green font-bold">{orderData?.physioId?.fullName}</span></Link> {/* Active breadcrumb */}
                 </Breadcrumbs>
 
