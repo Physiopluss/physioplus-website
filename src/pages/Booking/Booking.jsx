@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-
+import LocationPicker from "../../components/LocationPicker";
 
 import {
   Input,
@@ -17,26 +17,23 @@ import { emptyBooking } from "../../slices/bookingSlice";
 import { useFormik } from "formik";
 import moment from "moment";
 import * as Yup from "yup";
-import {
-  appointmentDataToRazorpay,
-  cashAppointment,
-  couponApi,
-} from "../../api/booking";
+import { appointmentDataToRazorpay, couponApi } from "../../api/booking";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
 import ReactGA from "react-ga4";
-import { jwtDecode } from "jwt-decode";
+
 import Modal from "../../components/Modal";
 import axios from "axios";
 import { singlePatient } from "../../api/patient";
 const Booking = () => {
+  const [showMap, setShowMap] = useState(false);
+  const [customAddress, setCustomAddress] = useState(null); // stores picked address from map
   const [paymentType, setPaymentType] = useState("online");
   const [couponName, setCouponName] = useState("FIRST50");
   const [couponResponse, setCouponResponse] = useState();
   const [amountToPay, setAmountToPay] = useState();
   const [loading, setLoading] = useState(false);
-
 
   const { slug } = useParams();
   const dispatch = useDispatch();
@@ -57,10 +54,8 @@ const Booking = () => {
   // get single physio all data
   const { data, error, isLoading } = useFetchSinglePhysioDataQuery(slug);
   const allData = data?.data;
-  const physioName = data?.data.fullName
+  const physioName = data?.data.fullName;
   const physioId = data?.data?._id;
-
-
 
   // store physio all data in redux
   dispatch(() => dispatch(setPhysioDetail({ physioId, allData })));
@@ -73,6 +68,7 @@ const Booking = () => {
   const physioData = useSelector((state) => state.physioDetail.physioData);
   const userToken = useSelector((state) => state?.auth?.user?.userToken);
   const patientId = useSelector((state) => state?.auth?.user?.userId);
+  const [patient, setPatient] = useState({});
   // const date = useSelector((state) => state?.booking.selectedDate);
   const time = useSelector((state) => state.booking.selectedSlot);
   const timeInString = moment(time).format("hh:mm A");
@@ -83,6 +79,7 @@ const Booking = () => {
     navigate("/login");
   }
 
+  window.scrollTo({ top: 0, behavior: "smooth" });
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))?.userId;
 
@@ -93,6 +90,8 @@ const Booking = () => {
         if (res.status >= 200 && res.status < 300) {
           const patient = res.data?.data;
 
+          setPatient(patient);
+          console.log(patient, "patient data");
           if (!patient) return;
           console.log(patient);
 
@@ -100,13 +99,16 @@ const Booking = () => {
             patientName: patient.fullName || "",
             age: patient.dob ? new Date(patient.dob).getFullYear() : "",
             gender: patient.gender ?? "",
-            appointmentAddress: patient.appointmentAddress || "",
+            appointmentAddress:
+              patient?.patientAddresses?.[patient.patientAddresses.length - 1]
+                ?.appointmentAddress || "",
+
             phone:
               patient.phone?.length === 13
                 ? patient.phone.slice(3, 13)
                 : patient.phone?.length === 10
-                  ? patient.phone
-                  : "",
+                ? patient.phone
+                : "",
             painNotes: "",
           });
         } else {
@@ -118,8 +120,6 @@ const Booking = () => {
         toast.error("Something went wrong while fetching patient info.");
       });
   }, []);
-
-
 
   // google analytics
   useEffect(() => {
@@ -138,8 +138,8 @@ const Booking = () => {
             ? setAmountToPay(0)
             : setAmountToPay(amount - couponResponse?.data?.discount)
           : setAmountToPay(
-            amount - (couponResponse?.data?.discount * amount) / 100
-          )
+              amount - (couponResponse?.data?.discount * amount) / 100
+            )
         : setAmountToPay(amount);
     } else {
       setAmountToPay(amount);
@@ -216,7 +216,7 @@ const Booking = () => {
                       physioName,
                       Date: fullDateString,
 
-                      timeInString
+                      timeInString,
                     },
                   });
                 }, 1000);
@@ -226,7 +226,7 @@ const Booking = () => {
               });
           }
         } catch (err) {
-          console.log("error:", err)
+          console.log("error:", err);
           return new Error(err);
         }
       }
@@ -260,6 +260,7 @@ const Booking = () => {
 
     fetchLocation();
   }, [formik.values.pincode]);
+
   return isLoading ? (
     <Loading />
   ) : error ? (
@@ -287,7 +288,7 @@ const Booking = () => {
           className="flex flex-col gap-2 flex-1 bg-white  border rounded-lg mb-8 md:mb-0"
         >
           <div className="gap-4 justify-around flex flex-col md:flex-row m-0 p-0  -mt-12 ">
-            <div className="flex flex-col gap-2 flex-1 bg-white p-8 border rounded-lg shadow-md" >
+            <div className="flex flex-col gap-2 flex-1 bg-white p-8 border rounded-lg shadow-md">
               <p className="text-lg font-bold">Enter Patient Information</p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 <div className="">
@@ -334,7 +335,6 @@ const Booking = () => {
                     </span>
                   )}
                 </div>
-
 
                 <div>
                   <label htmlFor="phone" className="text-sm">
@@ -386,25 +386,74 @@ const Booking = () => {
                   )}
                 </div>
 
-                {serviceTypeString === "home" && (
-                  <div>
-                    <label htmlFor="appointmentAddress" className="text-sm">
-                      Address
-                    </label>
-                    <Input
-                      size="md"
-                      name="appointmentAddress"
-                      value={formik.values.appointmentAddress} // ✅ Correct field
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      placeholder="Enter your address"
-                      className="border border-[#A9ABB2] !border-t-[#A9ABB2]"
-                    />
-                    {formik.touched.appointmentAddress && formik.errors.appointmentAddress && (
-                      <p className="text-xs text-red-500">{formik.errors.appointmentAddress}</p>
-                    )}
-                  </div>
-                )}
+                {serviceTypeString === "home" &&
+                  patient?.patientAddresses?.length >= 0 && (
+                    <div>
+                      <label
+                        htmlFor="appointmentAddress"
+                        className="text-sm font-medium"
+                      >
+                        Address
+                      </label>
+
+                      <select
+                        name="appointmentAddress"
+                        value={formik.values.appointmentAddress}
+                        onChange={(e) => {
+                          if (e.target.value === "__pick_from_map__") {
+                            setShowMap(true); // open the map
+                          } else {
+                            formik.setFieldValue(
+                              "appointmentAddress",
+                              e.target.value
+                            );
+                          }
+                        }}
+                        onBlur={formik.handleBlur}
+                        className="w-full mt-1 border border-[#A9ABB2] px-3 py-2 rounded text-sm"
+                      >
+                        {patient?.patientAddresses.map((addr, index) => {
+                          const addressOnly =
+                            addr.appointmentAddress.split("\n")[0];
+                          return (
+                            <option
+                              key={addr._id}
+                              value={addr.appointmentAddress}
+                            >
+                              Address {index + 1}: {addressOnly}
+                            </option>
+                          );
+                        })}
+                        {customAddress && (
+                          <option
+                            value={customAddress}
+                          >{`🟢 Custom Address :- ${customAddress}`}</option>
+                        )}
+                        <option value="__pick_from_map__">
+                          📍 Pick new address from map
+                        </option>
+                      </select>
+
+                      {formik.touched.appointmentAddress &&
+                        formik.errors.appointmentAddress && (
+                          <p className="text-xs text-red-500">
+                            {formik.errors.appointmentAddress}
+                          </p>
+                        )}
+                      {showMap && (
+                        <LocationPicker
+                          onSelect={(newAddress) => {
+                            setCustomAddress(newAddress);
+                            formik.setFieldValue(
+                              "appointmentAddress",
+                              newAddress
+                            );
+                          }}
+                          onClose={() => setShowMap(false)}
+                        />
+                      )}
+                    </div>
+                  )}
 
                 <div>
                   <label htmlFor="pincode" className="text-sm">
@@ -425,7 +474,6 @@ const Booking = () => {
                     </span>
                   )}
                 </div>
-
 
                 <div>
                   <label htmlFor="state" className="text-sm">
@@ -488,7 +536,8 @@ const Booking = () => {
                 </p>
                 <hr className="my-2" />
                 <p className="flex justify-between">
-                  <span className="text-nowrap">Consultation Fee</span> ₹ {amount}
+                  <span className="text-nowrap">Consultation Fee</span> ₹{" "}
+                  {amount}
                 </p>
                 <div className="relative flex w-full my-2">
                   <Input
@@ -525,11 +574,13 @@ const Booking = () => {
                 </div>
                 <div className={`${couponResponse ? "block" : "hidden"} `}>
                   {couponResponse &&
-                    couponResponse.status >= 200 &&
-                    couponResponse.status < 300 ? (
+                  couponResponse.status >= 200 &&
+                  couponResponse.status < 300 ? (
                     <div className="flex justify-between mb-2 capitalize">
                       <span>Discount</span>{" "}
-                      <span className="text-green">- ₹ {amount - amountToPay}</span>
+                      <span className="text-green">
+                        - ₹ {amount - amountToPay}
+                      </span>
                     </div>
                   ) : (
                     <div className="text-red-600 mb-2 capitalize">
@@ -542,7 +593,9 @@ const Booking = () => {
               <hr className="border-black my-2" />
               <div className="flex justify-between items-start">
                 <div className="flex flex-col">
-                  <p className="text-medium font-semibold">Total Amount to pay</p>
+                  <p className="text-medium font-semibold">
+                    Total Amount to pay
+                  </p>
                   <p className="text-sm">included taxes</p>
                 </div>
                 <p className="font-semibold">₹ {amountToPay}</p>
@@ -551,13 +604,16 @@ const Booking = () => {
               <hr className="my-2" />
               <div className="text-wrap text-sm mt-2">
                 <div className="flex flex-col gap-2 justify-center items-center">
-                  <p className="text-lg font-bold">Recover Faster Step By Step</p>
+                  <p className="text-lg font-bold">
+                    Recover Faster Step By Step
+                  </p>
                 </div>
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4 text-sm text-center max-w-md mx-auto">
                 <p className="mt-2 text-blue-700">
-                  Use <span className="font-semibold text-blue-900">FIRST50</span>{" "}
+                  Use{" "}
+                  <span className="font-semibold text-blue-900">FIRST50</span>{" "}
                   to get
                   <span className="font-bold text-green-600"> 50% off</span>
                 </p>
@@ -569,7 +625,6 @@ const Booking = () => {
           </div>
 
           <hr className="my-4" />
-
 
           <div className="flex flex-col gap-2 p-2 shadow-sm rounded-md">
             <p className="text-lg font-bold ">Payment Options</p>
@@ -612,8 +667,6 @@ const Booking = () => {
             </button>
           </div>
         </form>
-
-
       </div>
 
       {/* Render the Modal */}
