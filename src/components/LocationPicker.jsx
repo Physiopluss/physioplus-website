@@ -1,131 +1,105 @@
-import {
-  useMapEvents,
-  MapContainer,
-  Marker,
-  TileLayer,
-  useMap,
-} from "react-leaflet";
-import { useState, useRef } from "react";
-import L from "leaflet";
+import { useState, useRef, useCallback } from "react";
 import PropTypes from "prop-types";
-import { GoogleMap, LoadScript, Autocomplete } from "@react-google-maps/api";
+import { GoogleMap, Autocomplete, Marker } from "@react-google-maps/api";
 import {
   getFormattedAddressFromLatLng,
   getLatLngFromAddress,
-} from "../api/google"; // Fixed import
+} from "../api/google";
+
+const mapContainerStyle = {
+  width: "100%",
+  height: "400px",
+};
+
+const defaultCenter = {
+  lat: 26.9124,
+  lng: 75.7873,
+};
 
 const LocationPicker = ({ onSelect, onClose }) => {
-  const [position, setPosition] = useState(null);
+  const [mapRef, setMapRef] = useState(null);
+  const [markerPosition, setMarkerPosition] = useState(null);
   const [autocomplete, setAutocomplete] = useState(null);
   const inputRef = useRef(null);
 
-  const apiKey = import.meta.env.VITE_GOOGLE_KEY;
-
-  const LocationMarker = () => {
-    const map = useMap();
-
-    useMapEvents({
-      click(e) {
-        setPosition(e.latlng);
-      },
-    });
-
-    if (position) {
-      map.flyTo(position, 15);
-    }
-
-    return position ? (
-      <Marker
-        position={position}
-        icon={L.icon({
-          iconUrl:
-            "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-        })}
-      />
-    ) : null;
-  };
+  const onMapClick = useCallback((e) => {
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
+    setMarkerPosition({ lat, lng });
+  }, []);
 
   const onPlaceChanged = () => {
-    if (autocomplete !== null) {
+    if (autocomplete) {
       const place = autocomplete.getPlace();
       const location = place.geometry?.location;
       if (location) {
-        setPosition({
-          lat: location.lat(),
-          lng: location.lng(),
-        });
+        const lat = location.lat();
+        const lng = location.lng();
+        setMarkerPosition({ lat, lng });
+        mapRef?.panTo({ lat, lng });
       }
-    } else {
-      alert("Autocomplete is not loaded yet!");
     }
   };
 
   const handleConfirm = async () => {
-    if (!position) return;
+    if (!markerPosition) return;
 
     const formattedAddress = await getFormattedAddressFromLatLng(
-      position.lat,
-      position.lng
+      markerPosition.lat,
+      markerPosition.lng
     );
 
-    const fullAddress = `${formattedAddress} (Lat: ${position.lat.toFixed(
+    const fullAddress = `${formattedAddress} (Lat: ${markerPosition.lat.toFixed(
       6
-    )}, Lng: ${position.lng.toFixed(6)})`;
+    )}, Lng: ${markerPosition.lng.toFixed(6)})`;
 
     onSelect(fullAddress);
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-auto p-4 rounded shadow-lg flex flex-col gap-4">
         <h2 className="text-xl font-semibold">Select Location</h2>
 
-        {/* Load Google Autocomplete */}
-        <LoadScript googleMapsApiKey={apiKey} libraries={["places"]}>
-          <Autocomplete
-            onLoad={(autoC) => setAutocomplete(autoC)}
-            onPlaceChanged={onPlaceChanged}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              placeholder="Enter address"
-              className="w-full px-3 py-2 border rounded"
-              onKeyDown={async (e) => {
-                if (e.key === "Enter" && !autocomplete?.getPlace()) {
-                  e.preventDefault();
-                  try {
-                    const coords = await getLatLngFromAddress(
-                      inputRef.current.value
-                    );
-                    if (coords) setPosition(coords);
-                  } catch (error) {
-                    alert("Could not fetch location from text");
-                  }
-                }
-              }}
-            />
-          </Autocomplete>
-        </LoadScript>
-
-        {/* Map */}
-        <MapContainer
-          key={position ? `${position.lat}-${position.lng}` : "default"}
-          center={position || [26.9124, 75.7873]}
-          zoom={13}
-          className="h-96 rounded"
+        <Autocomplete
+          onLoad={(ac) => setAutocomplete(ac)}
+          onPlaceChanged={onPlaceChanged}
         >
-          <TileLayer
-            attribution="&copy; OpenStreetMap"
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Enter address"
+            className="w-full px-3 py-2 border rounded"
+            onKeyDown={async (e) => {
+              if (e.key === "Enter" && inputRef.current?.value) {
+                e.preventDefault();
+                try {
+                  const coords = await getLatLngFromAddress(
+                    inputRef.current.value
+                  );
+                  if (coords) {
+                    setMarkerPosition(coords);
+                    mapRef?.panTo(coords);
+                  }
+                } catch {
+                  alert("Could not find location");
+                }
+              }
+            }}
           />
-          <LocationMarker />
-        </MapContainer>
+        </Autocomplete>
 
-        {/* Actions */}
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={markerPosition || defaultCenter}
+          zoom={14}
+          onClick={onMapClick}
+          onLoad={(map) => setMapRef(map)}
+        >
+          {markerPosition && <Marker position={markerPosition} />}
+        </GoogleMap>
+
         <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 border rounded">
             Cancel

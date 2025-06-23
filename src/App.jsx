@@ -5,6 +5,9 @@ import { setUser } from "./slices/authSlice";
 import ReactGA from "react-ga4";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import "leaflet/dist/leaflet.css";
+import { LoadScript } from "@react-google-maps/api";
+const apiKey = import.meta.env.VITE_GOOGLE_KEY;
+
 // main or ui
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -407,7 +410,9 @@ const App = () => {
   return (
     <HelmetProvider context={helmetContext}>
       <NoInternet>
-        <RouterProvider router={router} />
+        <LoadScript googleMapsApiKey={apiKey} libraries={["places"]}>
+          <RouterProvider router={router} />
+        </LoadScript>
       </NoInternet>
     </HelmetProvider>
   );
