@@ -20,15 +20,12 @@ import { jwtDecode } from "jwt-decode";
 import { MdOutlineMailOutline, MdOutlinePhoneInTalk } from "react-icons/md";
 import { BiChevronDown } from "react-icons/bi";
 
-
 import { FaUser, FaUserMd } from "react-icons/fa"; // for patient and physio icons
 import LoginGuide from "../pages/LoginGuide";
 
-
-
 export default function Navbar() {
-
-  const user = localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
+  const user =
+    localStorage.getItem("user") && JSON.parse(localStorage.getItem("user"));
   const decoded = user && jwtDecode(user?.userToken);
   const patientName = decoded?.patient?.fullName;
   const physioName = decoded?.physio?.fullName;
@@ -56,56 +53,33 @@ export default function Navbar() {
           </div>
           <div className="flex items-center space-x-2">
             <MdOutlineMailOutline className="w-4 h-4 text-black" />
-            <span className="text-sm text-black">info@physioplushealthcare.com</span>
+            <span className="text-sm text-black">
+              info@physioplushealthcare.com
+            </span>
           </div>
         </div>
         <div className="flex items-center space-x-6">
           {!isUser ? (
-            <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
+            <Menu
+              open={isMenuOpen}
+              handler={setIsMenuOpen}
+              placement="bottom-end"
+            >
               <MenuHandler>
                 <Link
-                  className="text-sm text-black cursor-pointer btn-open-login"
-                  to="#"
+                  className="text-sm text-black cursor-pointer guide-desktop-login-btn"
+                  to="/login"
                   onClick={(e) => {
                     e.preventDefault();
                     setIsMenuOpen(!isMenuOpen);
-                  }}
-                >
-                  Login
-                </Link>
-              </MenuHandler>
-              <MenuList className="p-1 bg-white shadow-lg rounded-lg login-options">
-                <Link
-                  to="/login"
-                  variant="small"
-                  className="font-normal  btn-patient-login"
-                  onClick={() => {
                     setIsMenuOpen(false);
                     setIsNavOpen(false);
                     localStorage.setItem("userType", "patient");
                   }}
                 >
-
-                  <MenuItem className="flex items-center gap-2 hover:text-green">
-                    <FaUser className="w-4 h-4" /> Login as Patient
-                  </MenuItem>
+                  Login
                 </Link>
-                <hr className="my-1 border-gray-200" />
-
-                <Link
-                  to="/login-physio"
-                  variant="small"
-                  className="font-normal btn-physio-login"
-                  onClick={() => {
-                    setIsMenuOpen(false);
-                    setIsNavOpen(false);
-                    localStorage.setItem("userType", "physio");
-                  }}
-                >
-                  <MenuItem className="flex items-center gap-2 hover:text-green">
-                    <FaUserMd className="w-4 h-4" /> Login as Physio
-                  </MenuItem></Link>
-              </MenuList>
+              </MenuHandler>
             </Menu>
           ) : (
             <Menu
@@ -116,20 +90,16 @@ export default function Navbar() {
             >
               <MenuHandler>
                 <div className="cursor-pointer text-sm text-green">
-                  Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
+                  Hi, {patientName ?? "User"}
                 </div>
               </MenuHandler>
 
               <MenuList className="p-1">
-                <Link
-                  to={userType === "physio" ? "/my-account-physio" : "/profile"}
-                  variant="small"
-                  className="font-normal"
-                >
-                  <MenuItem> Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}</MenuItem>
+                <Link to={"/profile"} variant="small" className="font-normal">
+                  <MenuItem> Hi, {patientName ?? "User"}</MenuItem>
                 </Link>
                 <Link
-                  to={userType === "physio" ? "/all-consultation" : "/order-history"}
+                  to={"/order-history"}
                   variant="small"
                   className="font-normal"
                 >
@@ -152,7 +122,11 @@ export default function Navbar() {
                     navigate("../");
                   }}
                 >
-                  <Typography as="span" variant="small" className="font-normal text-red-600 hover:text-red-900">
+                  <Typography
+                    as="span"
+                    variant="small"
+                    className="font-normal text-red-600 hover:text-red-900"
+                  >
                     Sign Out
                   </Typography>
                 </MenuItem>
@@ -183,21 +157,22 @@ export default function Navbar() {
             color="blue-gray"
             variant="text"
             onClick={toggleIsNavOpen}
-            className="ml-auto mr-4 lg:hidden btn-open-mobile-menu"
+            className="ml-auto mr-4 lg:hidden guide-mobile-menu-btn"
           >
-            {isNavOpen ? <IoMdClose className="h-6 w-6" /> : <IoMdMenu className="h-6 w-6" />}
+            {isNavOpen ? (
+              <IoMdClose className="h-6 w-6" />
+            ) : (
+              <IoMdMenu className="h-6 w-6" />
+            )}
           </IconButton>
 
-          {userType !== "physio" && (
-            <Button
-              onClick={() => navigate("/physios")}
-              className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
-            >
-              Book an appointment
-            </Button>
-          )}
+          <Button
+            onClick={() => navigate("/physios")}
+            className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
+          >
+            Book an appointment
+          </Button>
         </div>
-
 
         <Collapse open={isNavOpen} className="overflow-y-auto">
           {isNavOpen && (
@@ -222,27 +197,30 @@ export default function Navbar() {
               {isUser ? (
                 <>
                   <div>
-                    <Typography as="div" variant="small" className="font-medium border-b border-gray-300">
+                    <Typography
+                      as="div"
+                      variant="small"
+                      className="font-medium border-b border-gray-300"
+                    >
                       <ListItem
                         className="focus:!bg-transparent flex items-center justify-between gap-2 py-2 pr-4 font-medium text-black"
                         selected={isMobileMenuOpen}
                         onClick={() => setIsMobileMenuOpen((cur) => !cur)}
                       >
                         <Link
-                          to={userType === "physio" ? "/profile-physio" : "/profile"}
+                          to={"/profile"}
                           variant="small"
                           className="font-normal"
                         >
-
                           <div className="cursor-pointer text-sm text-green">
-                            Hi, {userType === "physio" ? physioName ?? "Physio" : patientName ?? "User"}
+                            Hi, {patientName ?? "User"}
                           </div>
-
                         </Link>
                         <BiChevronDown
                           strokeWidth={2.5}
-                          className={`block h-3 w-3 transition-transform lg:hidden ${isMobileMenuOpen ? "rotate-180" : ""
-                            }`}
+                          className={`block h-3 w-3 transition-transform lg:hidden ${
+                            isMobileMenuOpen ? "rotate-180" : ""
+                          }`}
                         />
                       </ListItem>
                     </Typography>
@@ -250,7 +228,7 @@ export default function Navbar() {
                   <div className="block lg:hidden -mt-2">
                     <Collapse open={isMobileMenuOpen}>
                       <Link
-                        to={userType === "physio" ? "/all-consultation" : "/order-history"}
+                        to={"/order-history"}
                         variant="small"
                         className="font-normal"
                       >
@@ -279,71 +257,44 @@ export default function Navbar() {
                   </div>
                 </>
               ) : (
-                <Menu placement="bottom-end">
-                  <MenuHandler>
-                    <Typography
-                      variant="small"
-                      color="gray"
-                      className="font-medium text-black mb-2 cursor-pointer btn-open-mobile-login"
-                    >
-                      <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300 ">
-                        Login
-                      </MenuItem>
-                    </Typography>
-                  </MenuHandler>
-
-                  <MenuList className="p-1 bg-white shadow-lg rounded-lg w-56">
-                    <Link
-                      to="/login"
-                      onClick={() => {
-                        setIsNavOpen(false);
-                        localStorage.setItem("userType", "patient");
-                      }}
-                      className="btn-patient-login"
-                    >
-                      <MenuItem className="flex items-center gap-2 hover:text-green">
-                        <FaUser className="w-4 h-4 " />
-                        Login as Patient
-                      </MenuItem>
-                    </Link>
-
-                    <hr className="my-1 border-gray-200" />
-
-                    <Link
-                      to="/login-physio"
-                      onClick={() => {
-                        setIsNavOpen(false);
-                        localStorage.setItem("userType", "physio");
-                      }}
-                      className="btn-physio-login"
-                    >
-                      <MenuItem className="flex items-center gap-2 hover:text-green">
-                        <FaUserMd className="w-4 h-4 " />
-                        Login as Physio
-                      </MenuItem>
-                    </Link>
-                  </MenuList>
-                </Menu>
+                <Link
+                  to="/login"
+                  onClick={() => {
+                    setIsNavOpen(false);
+                    localStorage.setItem("userType", "patient");
+                  }}
+                  className="guide-mobile-login-btn"
+                >
+                  <div className="px-4 py-2 text-sm font-medium text-black border-b border-gray-300 hover:bg-gray-100">
+                    Login
+                  </div>
+                </Link>
               )}
               <Link to={"/contact"} onClick={() => setIsNavOpen(false)}>
-                <Typography variant="small" color="gray" className="font-medium text-black mb-2">
-                  <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">Support</MenuItem>
+                <Typography
+                  variant="small"
+                  color="gray"
+                  className="font-medium text-black mb-2"
+                >
+                  <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
+                    Support
+                  </MenuItem>
                 </Typography>
               </Link>
-              {userType !== "physio" && (
-                <Button
-                  className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200"
-                >
-                  Book an appointment
-                </Button>
-              )}
+
+              <Button className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200">
+                Book an appointment
+              </Button>
+
               <div className="cursor-pointer mt-2 flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
                 <MdOutlinePhoneInTalk className="w-4 h-4 text-black" />
                 <span className="text-sm text-black">+91 8107333576</span>
               </div>
               <div className="cursor-pointer flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
                 <MdOutlineMailOutline className="w-4 h-4 text-black" />
-                <span className="text-sm text-black">info@physioplushealthcare.com</span>
+                <span className="text-sm text-black">
+                  info@physioplushealthcare.com
+                </span>
               </div>
             </ul>
           )}

@@ -10,15 +10,12 @@ import { setLogOut } from "../../slices/authSlice";
 import { Breadcrumbs } from "@material-tailwind/react";
 import { FiSearch } from "react-icons/fi";
 
-
 const OrderHistory = () => {
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-
-
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,19 +36,20 @@ const OrderHistory = () => {
       .finally(() => setLoading(false));
   }, [userId, userToken]);
 
-
   orders != null && (reversedOrders = [...orders]?.reverse());
-
-
 
   const filteredOrders = reversedOrders?.filter((order) => {
     // Status filtering
     const matchesStatus =
-      statusFilter === "All" ? true :
-        statusFilter === "Completed" ? order?.appointmentCompleted === true :
-          statusFilter === "Upcoming" ? order?.appointmentCompleted === false && order?.status !== "Canceled" :
-            statusFilter === "Canceled" ? order?.status === "Canceled" :
-              true; // default case
+      statusFilter === "All"
+        ? true
+        : statusFilter === "Completed"
+        ? order?.appointmentCompleted === true
+        : statusFilter === "Upcoming"
+        ? order?.appointmentCompleted === false && order?.status !== "Canceled"
+        : statusFilter === "Canceled"
+        ? order?.status === "Canceled"
+        : true; // default case
 
     // Search filtering
     const matchesSearch = order?.patientId?.fullName
@@ -61,27 +59,37 @@ const OrderHistory = () => {
     return matchesStatus && matchesSearch;
   });
 
-
-
   // google analytics
   useEffect(() => {
-    ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Order History" });
+    ReactGA.send({
+      hitType: "pageview",
+      page: window.location.pathname,
+      title: "Order History",
+    });
   }, []);
 
   return (
-
     <div className="font-Urbanist  bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]   ">
-
-
       <div className="flex flex-col md:flex-row  w-full  justify-start md:justify-between  h-40    items-start md:items-center mb-4">
-
         {/* Breadcrumbs */}
-        <Breadcrumbs separator=">" className="my-2 md:mx-6 lg:mx-12 text-black bg-transparent">
-          <Link to="/profile" className="text-black  font-semibold hover:text-green">My Account</Link>
-          <Link to="/order-history"> <span className="text-black hover:text-green font-bold">My Bookings</span></Link> {/* Active breadcrumb */}
+        <Breadcrumbs
+          separator=">"
+          className="my-2 md:mx-6 lg:mx-12 text-black bg-transparent"
+        >
+          <Link
+            to="/profile"
+            className="text-black  font-semibold hover:text-green"
+          >
+            My Account
+          </Link>
+          <Link to="/order-history">
+            {" "}
+            <span className="text-black hover:text-green font-bold">
+              My Bookings
+            </span>
+          </Link>{" "}
+          {/* Active breadcrumb */}
         </Breadcrumbs>
-
-
 
         {/* Search box container */}
         <div className="flex items-center border-2  bg-white border-green rounded-md overflow-hidden my-2 mx-4 md:mx-8 lg:mx-16">
@@ -104,17 +112,69 @@ const OrderHistory = () => {
             <FiSearch className="text-white w-5 h-5" />
           </button>
         </div>
-
       </div>
 
-
       <div className="mx-4 md:mx-8 lg:mx-16 -mt-12 bg-white pb-8 rounded-xl">
+        <div className="flex flex-col md:flex-row justify-between gap-4 p-4 h-auto  bg-white shadow-sm rounded-lg">
+          {/* Consultation */}
+          <div className="flex items-center bg-[#08845f] gap-4 p-4 rounded-lg border hover:shadow-md transition cursor-pointer w-full md:w-1/2">
+            {/* Icon */}
+            <div className="bg-[#d9ffe3] text-green p-2 rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h4l2 2h6a2 2 0 012 2v10a2 2 0 01-2 2z"
+                />
+              </svg>
+            </div>
+            {/* Text */}
+            <div>
+              <h2 className="text-lg font-semibold text-white">Consultation</h2>
+              <p className="text-sm  text-white">
+                Export medical consultations
+              </p>
+            </div>
+          </div>
+
+          {/* Treatment */}
+          <div className="flex bg-[#18c1a7] items-center gap-4 p-4 rounded-lg border hover:shadow-md transition cursor-pointer w-full md:w-1/2">
+            {/* Icon */}
+            <div className="bg-blue-100 text-white p-2 rounded-full">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 17v-2a4 4 0 118 0v2m-4-6v.01M12 6.25a4.25 4.25 0 110 8.5 4.25 4.25 0 010-8.5z"
+                />
+              </svg>
+            </div>
+            {/* Text */}
+            <div>
+              <h2 className="text-lg font-semibold text-white">Treatment</h2>
+              <p className="text-sm text-white">Export medical treatments</p>
+            </div>
+          </div>
+        </div>
+
         {/* Tabs and Filter Row */}
         <div className="flex justify-between items-center h-14 px-4 pt-4">
-          {/* Tabs */}
+          {/* filter Tabs */}
           <div className="flex gap-4 text-sm md:text-base font-medium">
-
-
             <button
               onClick={() => setStatusFilter("Upcoming")}
               className="text-gray-600 hover:text-green-600 pb-1"
@@ -130,7 +190,11 @@ const OrderHistory = () => {
               className="text-gray-600 hover:text-green-600 pb-1"
             >
               <div className="flex items-center gap-2">
-                <img src="/images/successful 1.png" alt="" className="h-5 w-5" />
+                <img
+                  src="/images/successful 1.png"
+                  alt=""
+                  className="h-5 w-5"
+                />
                 Completed
               </div>
             </button>
@@ -144,9 +208,7 @@ const OrderHistory = () => {
                 Canceled
               </div>
             </button>
-
           </div>
-
 
           {/* Filter Button */}
           <div>
@@ -163,7 +225,7 @@ const OrderHistory = () => {
         <div className="flex-1 p-4 bg-white  ">
           {loading ? (
             <Loading />
-          ) : (filteredOrders?.length > 0 ? (
+          ) : filteredOrders?.length > 0 ? (
             filteredOrders.map((order) => (
               <div key={order?._id} className="mb-4">
                 <OrderCard orderData={order} />
@@ -171,7 +233,7 @@ const OrderHistory = () => {
             ))
           ) : (
             <p className="text-center text-gray-500">No orders found.</p>
-          ))}
+          )}
         </div>
       </div>
     </div>

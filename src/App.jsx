@@ -16,15 +16,12 @@ import ErrorComp from "./components/ErrorComp";
 import Cta from "./components/Cta";
 import NoInternet from "./components/NoInternet";
 import OrderDetails from "./pages/Booking/OrderDetails";
-import Subscription from "./pages/PhysioConnect/Subscription";
-import Wallet from "./pages/PhysioConnect/Wallet";
-import ConsultationDetails from "./pages/PhysioConnect/ConsultationDetails";
-import AllConsultation from "./pages/PhysioConnect/AllConsultation";
+
 import PhysioRefundPolicy from "./pages/PhysioRefundPolicy";
 
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
-const Loginphysio = lazy(() => import("./pages/Auth/Loginphysio"));
+
 const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 
 // pages
@@ -32,8 +29,7 @@ const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Profile = lazy(() => import("./pages/Profile"));
-const Profilephysio = lazy(() => import("./pages/Profilephysio"));
-const MyAccountPhysio = lazy(() => import("./pages/MyAccountPhysio"));
+
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Refund = lazy(() => import("./pages/Refund"));
@@ -45,9 +41,6 @@ const PhysioDetail = lazy(() => import("./pages/Booking/PhysioDetail"));
 const ListAllPhysios = lazy(() => import("./pages/Booking/ListAllPhysios"));
 const OrderDetail = lazy(() => import("./pages/Booking/OrderDetail"));
 const OrderHistory = lazy(() => import("./pages/Booking/OrderHistory"));
-const Professionalprofile = lazy(() => import("./pages/Professionalprofile"));
-const Businessprofile = lazy(() => import("./pages/Businessprofile"));
-const Reviewprofile = lazy(() => import("./pages/Reviewprofile"));
 
 // blogs
 const Blog = lazy(() => import("./pages/Blog/Blog"));
@@ -115,14 +108,7 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: "/login-physio",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Loginphysio />
-          </Suspense>
-        ),
-      },
+
       {
         path: "/signup",
         element: (
@@ -187,65 +173,6 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: "/all-consultation",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <AllConsultation />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/consultation-details",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <ConsultationDetails />
-          </Suspense>
-        ),
-      },
-
-      {
-        path: "/wallet",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Wallet />
-          </Suspense>
-        ),
-      },
-
-      {
-        path: "/subscription",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Subscription />
-          </Suspense>
-        ),
-      },
-
-      {
-        path: "/professional",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Professionalprofile />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/business",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Businessprofile />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/review-profile",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Reviewprofile />
-          </Suspense>
-        ),
-      },
 
       {
         path: "/order-history/:orderId",
@@ -260,22 +187,6 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <Profile />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/profile-physio",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <Profilephysio />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/my-account-physio",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <MyAccountPhysio />
           </Suspense>
         ),
       },
