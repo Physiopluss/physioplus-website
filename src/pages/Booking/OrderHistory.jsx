@@ -1,4 +1,5 @@
 import OrderCard from "../../components/OrderCard";
+import TreatmentCard from "../../components/TreatmentCard";
 import { useDispatch, useSelector } from "react-redux";
 import { allOrders } from "../../api/booking";
 import { useEffect, useState } from "react";
@@ -6,7 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 import ReactGA from "react-ga4";
 import toast from "react-hot-toast";
 import Loading from "../../components/Loading";
-import { setLogOut } from "../../slices/authSlice";
 import { Breadcrumbs } from "@material-tailwind/react";
 import { FiSearch } from "react-icons/fi";
 
@@ -14,52 +14,95 @@ const OrderHistory = () => {
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilter, setStatusFilter] = useState("Upcoming");
   const [searchQuery, setSearchQuery] = useState("");
+  const [appointmentStatusFilter, setAppointmentStatusFilter] =
+    useState("Appointment");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  if (!userId) {
-    navigate("login");
-  }
-
-  let reversedOrders;
   useEffect(() => {
-    allOrders(userId, userToken)
-      .then((data) => {
-        setLoading;
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
 
-        setOrders(data.data);
-      })
-      .catch((err) => toast.error(err))
+    setLoading(true);
+    allOrders(userId, userToken)
+      .then((data) => setOrders(data.data))
+      .catch((err) => toast.error(err.message || "Failed to fetch orders"))
       .finally(() => setLoading(false));
   }, [userId, userToken]);
 
-  orders != null && (reversedOrders = [...orders]?.reverse());
+  const reversedOrders = [...(orders || [])].reverse();
 
-  const filteredOrders = reversedOrders?.filter((order) => {
-    // Status filtering
-    const matchesStatus =
-      statusFilter === "All"
-        ? true
-        : statusFilter === "Completed"
+  // Type Filtering (Consultation / Treatment)
+  const filteredByType = reversedOrders.filter((order) =>
+    appointmentStatusFilter === "Appointment"
+      ? order?.appointmentStatus === 0
+      : order?.appointmentStatus === 1
+  );
+
+  // Status Filtering (Upcoming / Completed / Canceled)
+  const filteredByStatus = filteredByType.filter((order) => {
+    if (appointmentStatusFilter === "Appointment") {
+      return statusFilter === "Completed"
         ? order?.appointmentCompleted === true
         : statusFilter === "Upcoming"
         ? order?.appointmentCompleted === false && order?.status !== "Canceled"
         : statusFilter === "Canceled"
         ? order?.status === "Canceled"
-        : true; // default case
-
-    // Search filtering
-    const matchesSearch = order?.patientId?.fullName
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase());
-
-    return matchesStatus && matchesSearch;
+        : true;
+    } else {
+      return statusFilter === "Completed"
+        ? order?.isTreatmentScheduled?.isTreatmentCompleted === true
+        : statusFilter === "Upcoming"
+        ? order?.isTreatmentScheduled?.isTreatmentCompleted === false &&
+          order?.status !== "Canceled"
+        : statusFilter === "Canceled"
+        ? order?.status === "Canceled"
+        : true;
+    }
   });
 
-  // google analytics
+  // Search Filtering (only if searchQuery exists)
+  const filteredOrders = searchQuery
+    ? filteredByStatus.filter((order) =>
+        order?.physioId?.fullName
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      )
+    : filteredByStatus;
+
+  // Counts for tabs
+  const consultationOrders = reversedOrders.filter(
+    (o) => o?.appointmentStatus === 0
+  );
+  const treatmentOrders = reversedOrders.filter(
+    (o) => o?.appointmentStatus === 1
+  );
+
+  const consultationCounts = {
+    Upcoming: consultationOrders.filter(
+      (o) => !o.appointmentCompleted && o.status !== "Canceled"
+    ).length,
+    Completed: consultationOrders.filter((o) => o.appointmentCompleted).length,
+    Canceled: consultationOrders.filter((o) => o.status === "Canceled").length,
+  };
+
+  const treatmentCounts = {
+    Upcoming: treatmentOrders.filter(
+      (o) =>
+        !o?.isTreatmentScheduled?.isTreatmentCompleted &&
+        o.status !== "Canceled"
+    ).length,
+    Completed: treatmentOrders.filter(
+      (o) => o?.isTreatmentScheduled?.isTreatmentCompleted
+    ).length,
+    Canceled: treatmentOrders.filter((o) => o.status === "Canceled").length,
+  };
+
   useEffect(() => {
     ReactGA.send({
       hitType: "pageview",
@@ -69,36 +112,24 @@ const OrderHistory = () => {
   }, []);
 
   return (
-    <div className="font-Urbanist  bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]   ">
-      <div className="flex flex-col md:flex-row  w-full  justify-start md:justify-between  h-40    items-start md:items-center mb-4">
-        {/* Breadcrumbs */}
-        <Breadcrumbs
-          separator=">"
-          className="my-2 md:mx-6 lg:mx-12 text-black bg-transparent"
-        >
+    <div className="font-Urbanist bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+        <Breadcrumbs separator=">" className="text-black bg-transparent">
           <Link
             to="/profile"
-            className="text-black  font-semibold hover:text-green"
+            className="text-black font-semibold hover:text-green"
           >
             My Account
           </Link>
-          <Link to="/order-history">
-            {" "}
-            <span className="text-black hover:text-green font-bold">
-              My Bookings
-            </span>
-          </Link>{" "}
-          {/* Active breadcrumb */}
+          <span className="text-black font-bold">My Bookings</span>
         </Breadcrumbs>
 
-        {/* Search box container */}
-        <div className="flex items-center border-2  bg-white border-green rounded-md overflow-hidden my-2 mx-4 md:mx-8 lg:mx-16">
-          {/* Green circle icon */}
+        {/* Search */}
+        <div className="flex items-center border-2 bg-white border-green rounded-md overflow-hidden mt-2 md:mt-0">
           <div className="bg-green-500 p-2 flex items-center justify-center">
             <FiSearch className="text-black w-4 h-4" />
           </div>
-
-          {/* Input field */}
           <input
             type="text"
             placeholder="Search with physio name"
@@ -106,19 +137,25 @@ const OrderHistory = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="px-4 py-2 focus:outline-none"
           />
-
-          {/* Submit Button */}
-          <button className="bg-green p-3 flex items-center justify-center">
-            <FiSearch className="text-white w-5 h-5" />
-          </button>
         </div>
       </div>
 
-      <div className="mx-4 md:mx-8 lg:mx-16 -mt-12 bg-white pb-8 rounded-xl">
-        <div className="flex flex-col md:flex-row justify-between gap-4 p-4 h-auto  bg-white shadow-sm rounded-lg">
+      {/* Card Section */}
+      <div className="bg-white rounded-xl shadow-sm">
+        {/* Tabs */}
+        <div className="flex flex-col md:flex-row justify-between gap-4 p-4">
           {/* Consultation */}
-          <div className="flex items-center bg-[#08845f] gap-4 p-4 rounded-lg border hover:shadow-md transition cursor-pointer w-full md:w-1/2">
-            {/* Icon */}
+          <div
+            onClick={() => {
+              setAppointmentStatusFilter("Appointment");
+              setStatusFilter("Upcoming");
+            }}
+            className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer w-full md:w-1/2 ${
+              appointmentStatusFilter === "Appointment"
+                ? "bg-[#08845f]"
+                : "bg-gray-400"
+            }`}
+          >
             <div className="bg-[#d9ffe3] text-green p-2 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -135,18 +172,26 @@ const OrderHistory = () => {
                 />
               </svg>
             </div>
-            {/* Text */}
             <div>
-              <h2 className="text-lg font-semibold text-white">Consultation</h2>
-              <p className="text-sm  text-white">
-                Export medical consultations
-              </p>
+              <h2 className="text-lg font-semibold text-white">
+                Consultation ({consultationOrders.length})
+              </h2>
+              <p className="text-sm text-white">Export medical consultations</p>
             </div>
           </div>
 
           {/* Treatment */}
-          <div className="flex bg-[#18c1a7] items-center gap-4 p-4 rounded-lg border hover:shadow-md transition cursor-pointer w-full md:w-1/2">
-            {/* Icon */}
+          <div
+            onClick={() => {
+              setAppointmentStatusFilter("Treatment");
+              setStatusFilter("Upcoming");
+            }}
+            className={`flex items-center gap-4 p-4 rounded-lg border cursor-pointer w-full md:w-1/2 ${
+              appointmentStatusFilter === "Treatment"
+                ? "bg-[#18c1a7]"
+                : "bg-gray-400"
+            }`}
+          >
             <div className="bg-blue-100 text-white p-2 rounded-full">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -163,72 +208,63 @@ const OrderHistory = () => {
                 />
               </svg>
             </div>
-            {/* Text */}
             <div>
-              <h2 className="text-lg font-semibold text-white">Treatment</h2>
+              <h2 className="text-lg font-semibold text-white">
+                Treatment ({treatmentOrders.length})
+              </h2>
               <p className="text-sm text-white">Export medical treatments</p>
             </div>
           </div>
         </div>
 
-        {/* Tabs and Filter Row */}
-        <div className="flex justify-between items-center h-14 px-4 pt-4">
-          {/* filter Tabs */}
-          <div className="flex gap-4 text-sm md:text-base font-medium">
+        {/* Status Filters */}
+        <div className="flex gap-4 px-4 pt-4 text-sm md:text-base font-medium">
+          {["Upcoming", "Completed", "Canceled"].map((status) => (
             <button
-              onClick={() => setStatusFilter("Upcoming")}
-              className="text-gray-600 hover:text-green-600 pb-1"
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`flex items-center gap-2 px-3 py-1 rounded-md ${
+                statusFilter === status
+                  ? status === "Canceled"
+                    ? "bg-red-100 text-red-800"
+                    : "bg-green-100 text-green-800"
+                  : "bg-gray-100 text-gray-800"
+              }`}
             >
-              <div className="flex items-center gap-2">
-                <img src="/images/upcoming 1.png" alt="" className="h-5 w-5" />
-                Upcoming
-              </div>
+              <img
+                src={
+                  status === "Upcoming"
+                    ? "/images/upcoming 1.png"
+                    : status === "Completed"
+                    ? "/images/successful 1.png"
+                    : "/images/cancelled 1.png"
+                }
+                alt=""
+                className="h-5 w-5"
+              />
+              {status} (
+              {appointmentStatusFilter === "Appointment"
+                ? consultationCounts[status]
+                : treatmentCounts[status]}
+              )
             </button>
-
-            <button
-              onClick={() => setStatusFilter("Completed")}
-              className="text-gray-600 hover:text-green-600 pb-1"
-            >
-              <div className="flex items-center gap-2">
-                <img
-                  src="/images/successful 1.png"
-                  alt=""
-                  className="h-5 w-5"
-                />
-                Completed
-              </div>
-            </button>
-
-            <button
-              onClick={() => setStatusFilter("Canceled")}
-              className="text-gray-600 hover:text-green-600 pb-1"
-            >
-              <div className="flex items-center gap-2">
-                <img src="/images/cancelled 1.png" alt="" className="h-5 w-5" />
-                Canceled
-              </div>
-            </button>
-          </div>
-
-          {/* Filter Button */}
-          <div>
-            <button className=" text-black font-semibold px-4 py-1  text-sm md:text-base">
-              Filter
-            </button>
-          </div>
+          ))}
         </div>
 
         <hr className="my-4" />
 
-        {/* Rest of your content */}
-        {/* Main Content */}
-        <div className="flex-1 p-4 bg-white  ">
+        {/* Orders */}
+        <div className="p-4">
           {loading ? (
             <Loading />
-          ) : filteredOrders?.length > 0 ? (
+          ) : filteredOrders.length > 0 ? (
             filteredOrders.map((order) => (
               <div key={order?._id} className="mb-4">
-                <OrderCard orderData={order} />
+                {order?.appointmentStatus === 1 ? (
+                  <TreatmentCard orderData={order} />
+                ) : (
+                  <OrderCard orderData={order} />
+                )}
               </div>
             ))
           ) : (
