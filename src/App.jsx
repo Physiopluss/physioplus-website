@@ -18,6 +18,7 @@ import NoInternet from "./components/NoInternet";
 import OrderDetails from "./pages/Booking/OrderDetails";
 
 import PhysioRefundPolicy from "./pages/PhysioRefundPolicy";
+import TreatmentDetails from "./pages/Booking/TreatmentDetails";
 
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
@@ -170,6 +171,14 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <OrderDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/treatment-details",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <TreatmentDetails />
           </Suspense>
         ),
       },
