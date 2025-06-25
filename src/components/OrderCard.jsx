@@ -34,7 +34,7 @@ const OrderCard = ({ orderData }) => {
   };
 
   const handleViewDetails = () => {
-    navigate("/order-details", { state: { orderData } });
+    navigate("/order-details", { state: { appointmentId: orderData?._id } });
   };
   // const handleReview = () => {
   // 	navigate('/write-review', { state: { orderData } });
