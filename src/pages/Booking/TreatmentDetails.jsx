@@ -7,17 +7,23 @@ import { RiFileDownloadLine } from "react-icons/ri";
 import moment from "moment";
 import toast from "react-hot-toast";
 import InvoiceDownloader from "../../components/InvoiceDownloader";
-import { makeTreatmentPaymentToRazorpay, singleOrder } from "../../api/booking";
+import {
+  makeTreatmentPaymentToRazorpay,
+  singleOrder,
+  treatmentTransactions,
+} from "../../api/booking";
+import TransactionModal from "../../components/TransactionModal";
 
 const TreatmentDetails = () => {
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
+  const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
+  const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { state } = useLocation();
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState([]);
   const orderId = state?.treatmentId;
-  console.log("orderId", orderId);
-  console.log(orderData);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -43,6 +49,18 @@ const TreatmentDetails = () => {
       ? orderData?.physioId?.clinic?.charges
       : orderData?.physioId?.online?.charges;
 
+  const handleViewHistory = async () => {
+    try {
+      const result = await treatmentTransactions(orderId, userToken);
+      const txns = result?.data || []; // make sure to use the right field from your backend
+      setTransactions(txns);
+      setIsTransactionModalOpen(true);
+    } catch (err) {
+      console.error("❌ Failed to fetch transactions:", err);
+    }
+  };
+
+  console.log("Transactions:", transactions);
   const handleTreatmentPayment = async ({ sessionId = null }) => {
     if (!orderData || !userToken || !userId) {
       toast.error("Missing user or order details.");
@@ -481,7 +499,10 @@ const TreatmentDetails = () => {
             <span className="font-bold">70% Cashback</span>
           </div>
           <div className="flex gap-4">
-            <button className="w-full py-2 border border-green text-green rounded-lg font-semibold hover:bg-green hover:text-white transition">
+            <button
+              onClick={handleViewHistory}
+              className="w-full py-2 border border-green text-green rounded-lg font-semibold hover:bg-green hover:text-white transition"
+            >
               View History
             </button>
             <button
@@ -491,6 +512,13 @@ const TreatmentDetails = () => {
               Pay at once
             </button>
           </div>
+
+          <TransactionModal
+            orderData={orderData}
+            isOpen={isTransactionModalOpen}
+            onClose={() => setIsTransactionModalOpen(false)}
+            transactions={transactions}
+          />
         </div>
       </div>
     </div>

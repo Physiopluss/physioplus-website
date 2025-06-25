@@ -388,32 +388,34 @@ export const singleOrder = async (OrderId, userToken) => {
 };
 
 
+export const treatmentTransactions = async (OrderId, userToken) => {
+	
+	console.log("OrderId:", OrderId);
+	try {
+		const response = await instance.get(`web/appointment/transactionsByAppointmentId`, {
+			headers: { "Content-Type": "application/json", Authorization: `Bearer ${userToken}` },
+			params: {
+				appointmentId: OrderId,
+			},
+		});
+		if (response.status >= 200 && response.status < 300) {
+			return response.data;
+		} else if (response.status >= 400 && response.status < 500) {
+			return response;
+		}
+	} catch (error) {
+		if (error.response) {
+			return JSON.stringify(error.response);
+		} else {
+			return JSON.stringify(error.message);
+		}
+	}
+};
+
+
 // api/booking.js
 
-export const makeTreatmentPayment = async ({
-  orderId,
-  sessionDate, // optional
-  userToken,
-}) => {
-  try {
-    const response = await instance.post(
-      `web/appointment/makePayment`,
-      {
-        orderId,
-        sessionDate, // Send this only for single session
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data;
-  } catch (err) {
-    throw err?.response?.data || err;
-  }
-};
+
 
 
 export const couponApi = async (couponName, patientId, userToken) => {
