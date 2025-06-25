@@ -1,29 +1,65 @@
-import OrderCard from "../../components/OrderCard";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReactGA from "react-ga4";
-import Loading from "../../components/Loading";
 
 import { Breadcrumbs } from "@material-tailwind/react";
 import moment from "moment";
 
 import { RiFileDownloadLine } from "react-icons/ri";
 import InvoiceDownloader from "../../components/InvoiceDownloader";
+import { requestTreatment, singleOrder } from "../../api/booking";
+import toast from "react-hot-toast";
 
 const OrderDetails = () => {
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [orderData, setOrderData] = useState([]);
   const { state } = useLocation();
-  const orderData = state?.orderData;
+  const orderId = state?.appointmentId;
+
+  console.log("Order ", orderData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  if (!userId) {
-    navigate("login");
-  }
+  useEffect(() => {
+    if (!userId) {
+      navigate("/login");
+      return;
+    }
+
+    setLoading(true);
+    singleOrder(orderId, userToken)
+      .then((data) => setOrderData(data.data))
+      .catch((err) => toast.error(err.message || "Failed to fetch orders"))
+      .finally(() => setLoading(false));
+  }, [userId, userToken]);
+
+  const handleSubmitTreatmentRequest = async () => {
+    try {
+      setLoading(true);
+      console.log("Submitting treatment request...");
+
+      const res = await requestTreatment(
+        orderData?._id,
+        orderData?.patientId?._id,
+        orderData?.physioId?._id,
+        userToken
+      );
+
+      toast.success("Treatment request submitted successfully!");
+      console.log("Treatment request response:", res);
+    } catch (err) {
+      console.error("Error in request:", err);
+      toast.error(
+        "Failed to request treatment.",
+        err.message || "Something went wrong."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fix casing and use optional chaining properly
   const displayAmount =
@@ -113,9 +149,9 @@ const OrderDetails = () => {
                     {orderData?.physioId?.fullName}
                   </h2>
                   <p className="text-sm font-semibold text-gray-500">
-                    {orderData?.serviceType === 0
+                    {orderData?.serviceType === "home"
                       ? "Home"
-                      : orderData?.serviceType === 1
+                      : orderData?.serviceType === "clinic"
                       ? "Clinic"
                       : "Online"}{" "}
                     Visit
@@ -310,6 +346,20 @@ const OrderDetails = () => {
                   : "Invoice_unknown.pdf"
               }
             />
+
+            <button
+              onClick={handleSubmitTreatmentRequest}
+              disabled={orderData?.isTreatmentRequested === true}
+              className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${
+                orderData?.isTreatmentRequested
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-yellow-500 hover:bg-yellow-600 text-white"
+              }`}
+            >
+              {orderData?.isTreatmentRequested
+                ? "Treatment Already Requested"
+                : "Request for Treatment"}
+            </button>
           </div>
         </div>
       </div>
