@@ -143,7 +143,9 @@ const InvoiceDownloader = ({
                     ? "PhysioPlus Subscription Plan"
                     : "Physio Consultation"}
                 </td>
-                <td className="px-4 py-2">{invoiceData.type === "treatment" ? invoiceData.treatment?.length : 1}</td>
+                <td className="px-4 py-2">{invoiceData.type === "treatment" ? 
+                invoiceData.treatment?.map((t) => t?.paidForDates?.length).reduce((a, b) => a + b, 0)
+                : 1}</td>
                 <td className="px-4 py-2">
                   {invoiceData.appointmentAmount}
                 </td>

@@ -460,31 +460,29 @@ export const treatmentTransactions = async (OrderId, userToken) => {
 	}
 };
 
-export const checkCashback = async (patientId) => {
+export const checkCashback = async (appointmentId) => {
 	try {
-		const response = await instance.get(`web/appointment/getCashBack`, {
-			params: {
-				patientId,
-			},
+		const response = await instance.get('web/appointment/getCashBack', {
+			params: { appointmentId },
 		});
-		return response.data.data;
+		return { success: true, data: response.data.data };
 	} catch (error) {
-		if (error.response) {
-			return JSON.stringify(error.response);
-		} else {
-			return JSON.stringify(error.message);
-		}
+		return {
+			success: false,
+			error: error.response?.data,
+			status: error.response?.status,
+		};
 	}
 };
 
 
 export const updateCashback = async (cashBackId, userUpiId) => {
 	try {
-		const response = await instance.get(`web/appointment/updateCashBack`, {
-			params: {
-				cashBackId, userUpiId
-			},
-		});
+		const response = await instance.put(
+			`web/appointment/updateCashBack`,
+			null,	// no request body
+			{ params: { cashBackId, userUpiId } }
+		);
 		return response.data;
 	} catch (error) {
 		if (error.response) {
@@ -494,7 +492,6 @@ export const updateCashback = async (cashBackId, userUpiId) => {
 		}
 	}
 };
-
 
 export const couponApi = async (couponName, patientId, userToken) => {
 	try {

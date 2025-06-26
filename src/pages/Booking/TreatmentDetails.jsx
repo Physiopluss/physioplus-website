@@ -77,9 +77,13 @@ const TreatmentDetails = () => {
   const handleCheckCashback = async () => {
     try {
       setIsCheckingCashback(true);
-      const patientId = orderData?.patientId;
-      const cashback = await checkCashback(patientId, userToken);
-      console.log("Cashback:", cashback);
+      const appointmentId = orderData?._id;
+      const cashback = await checkCashback(appointmentId);
+      console.log("Cashback:", cashback.data);
+
+      if (!cashback.data) {
+        return toast.error(cashback?.message || 'No cashback available for redemption');
+      }
 
       // cashback = {
       //   "_id": "685d13ff237dc29c48700155",
@@ -96,16 +100,13 @@ const TreatmentDetails = () => {
       //   "__v": 0
       // }
 
-      if (cashback) {
-        if (cashback?.status !== "pending") {
-          toast.success('Cashback is already being processed or completed!');
-          return;
-        }
-        setCashbackData(cashback);
-        setIsCashbackModalOpen(true);
-      } else {
-        toast.error(cashback?.message || 'No cashback available for redemption');
+      if (cashback.data?.status !== "pending") {
+        toast.success('Cashback is already being processed or completed!');
+        return;
       }
+
+      setCashbackData(cashback.data);
+      setIsCashbackModalOpen(true);
     } catch (err) {
       console.error("❌ Failed to check cashback:", err);
       toast.error(err?.message || 'Failed to check cashback availability');
@@ -578,13 +579,21 @@ const TreatmentDetails = () => {
               View History
             </button>
 
-            {isAllDaysPaid && (
+            {isAllDaysPaid ? (
               <button
                 onClick={handleCheckCashback}
                 disabled={isCheckingCashback}
                 className="w-full py-2 bg-green text-white rounded-lg font-semibold hover:bg-green-dark transition"
               >
                 {isCheckingCashback ? "Checking..." : "Get Cashback"}
+              </button>
+            ) : (
+              // Pay at once button
+              <button
+                className="w-full py-2 bg-green text-white rounded-lg font-semibold hover:bg-green-dark transition"
+                onClick={() => handleTreatmentPayment({ sessionId: null })}
+              >
+                Pay at once
               </button>
             )}
           </div>
@@ -600,8 +609,22 @@ const TreatmentDetails = () => {
       <CashbackModal
         isOpen={isCashbackModalOpen}
         onClose={() => setIsCashbackModalOpen(false)}
-        onRedeem={handleRedeemCashback}
+        onRedeem={async (upiId) => {
+          try {
+            await handleRedeemCashback(upiId);
+            // Show success state in the modal
+            setCashbackData(prev => ({
+              ...prev,
+              status: 'process',
+              userUpiId: upiId
+            }));
+          } catch (error) {
+            // Error is already handled in handleRedeemCashback
+            console.error("Error redeeming cashback:", error);
+          }
+        }}
         loading={isRedeeming}
+        cashbackData={cashbackData}
       />
     </div>
   );
