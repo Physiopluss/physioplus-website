@@ -30,7 +30,7 @@ const TransactionModal = ({ orderData, isOpen, onClose, transactions }) => {
                   <th className="px-4 py-2 border">Amount</th>
                   <th className="px-4 py-2 border">Mode</th>
                   <th className="px-4 py-2 border">Status</th>
-                  <th className="px-4 py-2 border">Invoice</th>
+                  {/* <th className="px-4 py-2 border">Invoice</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -39,41 +39,41 @@ const TransactionModal = ({ orderData, isOpen, onClose, transactions }) => {
                     <td className="px-4 py-2 border">
                       {txn.createdAt
                         ? new Date(txn.createdAt).toLocaleString("en-IN", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                          })
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                        })
                         : txn.updatedAt
-                        ? new Date(txn.updatedAt).toLocaleString("en-IN", {
+                          ? new Date(txn.updatedAt).toLocaleString("en-IN", {
                             dateStyle: "medium",
                             timeStyle: "short",
                           })
-                        : "-"}
+                          : "-"}
                     </td>
                     <td className="px-4 py-2 border">₹{txn.amount}</td>
                     <td className="px-4 py-2 border">{txn.paymentMode}</td>
                     <td className="px-4 py-2 border capitalize">
                       {txn.paymentStatus}
                     </td>
-                    <td className="px-4 py-2 border">
+                    {/* <td className="px-4 py-2 border">
                       <button
                         className="text-blue-600 underline hover:text-blue-800"
                         onClick={() => setIsModalOpen(true)}
-                        disabled={!txn.invoice}
+                        disabled={!txn?.invoice}
                       >
                         Download
                       </button>
-                    </td>
-                    <InvoiceDownloader
+                    </td> */}
+                    {/* <InvoiceDownloader
                       isOpen={isModalOpen}
                       onClose={() => setIsModalOpen(false)}
                       orderData={orderData}
-                      invoiceData={txn.invoice}
+                      invoiceData={txn?.invoice}
                       filename={
-                        orderData.invoice
-                          ? `Invoice_${txn.invoice.invoiceNumber}.pdf`
+                        orderData?.invoice
+                          ? `Invoice_${txn?.invoice?.invoiceNumber}.pdf`
                           : "Invoice_unknown.pdf"
                       }
-                    />
+                    /> */}
                   </tr>
                 ))}
               </tbody>
