@@ -7,10 +7,13 @@ import { RiFileDownloadLine } from "react-icons/ri";
 import moment from "moment";
 import toast from "react-hot-toast";
 import InvoiceDownloader from "../../components/InvoiceDownloader";
+import CashbackModal from "../../components/CashbackModal";
 import {
   makeTreatmentPaymentToRazorpay,
   singleOrder,
   treatmentTransactions,
+  checkCashback,
+  updateCashback,
 } from "../../api/booking";
 import TransactionModal from "../../components/TransactionModal";
 
@@ -19,13 +22,24 @@ const TreatmentDetails = () => {
   const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
   const [transactions, setTransactions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCashbackModalOpen, setIsCashbackModalOpen] = useState(false);
+  const [isCheckingCashback, setIsCheckingCashback] = useState(false);
+  const [isRedeeming, setIsRedeeming] = useState(false);
+  const [cashbackData, setCashbackData] = useState(null);
   const { state } = useLocation();
   const [loading, setLoading] = useState(false);
   const [orderData, setOrderData] = useState([]);
+  const [isAllDaysPaid, setIsAllDaysPaid] = useState(false);
   const orderId = state?.treatmentId;
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Check If Payment is Done for All Treatment Days
+  useEffect(() => {
+    const isAllPaid = orderData?.isTreatmentScheduled?.treatmentDate?.every((s) => s?.isPaid);
+    setIsAllDaysPaid(isAllPaid);
+  }, [orderData])
 
   useEffect(() => {
     if (!userId) {
@@ -46,8 +60,8 @@ const TreatmentDetails = () => {
     orderData?.serviceType === 0
       ? orderData?.physioId?.home?.charges
       : orderData?.serviceType === 1
-      ? orderData?.physioId?.clinic?.charges
-      : orderData?.physioId?.online?.charges;
+        ? orderData?.physioId?.clinic?.charges
+        : orderData?.physioId?.online?.charges;
 
   const handleViewHistory = async () => {
     try {
@@ -60,7 +74,67 @@ const TreatmentDetails = () => {
     }
   };
 
-  console.log("Transactions:", transactions);
+  const handleCheckCashback = async () => {
+    try {
+      setIsCheckingCashback(true);
+      const patientId = orderData?.patientId;
+      const cashback = await checkCashback(patientId, userToken);
+      console.log("Cashback:", cashback);
+
+      // cashback = {
+      //   "_id": "685d13ff237dc29c48700155",
+      //   "userId": "685d0dd0237dc29c486fdbf1",
+      //   "transactionId": "685d13ff237dc29c48700148",
+      //   "rewardAmount": 0.6,
+      //   "userUpiId": null,
+      //   "appointmentId": "685d1138aaaa585fb2ee7cec",
+      //   "rewardPercentage": "5%",
+      //   "status": "pending",
+      //   "expiresAt": "2025-06-28T09:33:51.942Z",
+      //   "createdAt": "2025-06-26T09:33:51.943Z",
+      //   "updatedAt": "2025-06-26T09:33:51.943Z",
+      //   "__v": 0
+      // }
+
+      if (cashback) {
+        if (cashback?.status !== "pending") {
+          toast.success('Cashback is already being processed or completed!');
+          return;
+        }
+        setCashbackData(cashback);
+        setIsCashbackModalOpen(true);
+      } else {
+        toast.error(cashback?.message || 'No cashback available for redemption');
+      }
+    } catch (err) {
+      console.error("❌ Failed to check cashback:", err);
+      toast.error(err?.message || 'Failed to check cashback availability');
+    } finally {
+      setIsCheckingCashback(false);
+    }
+  };
+
+  const handleRedeemCashback = async (upiId) => {
+    if (!cashbackData?._id || !upiId) return;
+
+    try {
+      setIsRedeeming(true);
+      const result = await updateCashback(cashbackData._id, upiId);
+
+      if (result && result.success) {
+        toast.success('Cashback redemption request submitted successfully!');
+        setIsCashbackModalOpen(false);
+      } else {
+        throw new Error(result?.message || 'Failed to process cashback redemption');
+      }
+    } catch (err) {
+      console.error("❌ Failed to redeem cashback:", err);
+      toast.error(err?.message || 'Failed to process cashback redemption');
+    } finally {
+      setIsRedeeming(false);
+    }
+  };
+
   const handleTreatmentPayment = async ({ sessionId = null }) => {
     if (!orderData || !userToken || !userId) {
       toast.error("Missing user or order details.");
@@ -160,8 +234,8 @@ const TreatmentDetails = () => {
                     {orderData?.serviceType === "home"
                       ? "Home"
                       : orderData?.serviceType === "clinic"
-                      ? "Clinic"
-                      : "Online"}{" "}
+                        ? "Clinic"
+                        : "Online"}{" "}
                     Visit
                   </p>
 
@@ -253,7 +327,7 @@ const TreatmentDetails = () => {
                 {/* Therapy/Service */}
                 {orderData?.painNotes && (
                   <span className="text-sm text-gray-600 font-semibold px-4 line-clamp-2">
-                    {orderData?.painNotes}"
+                    {orderData?.painNotes}
                   </span>
                 )}
               </div>
@@ -295,11 +369,11 @@ const TreatmentDetails = () => {
                     ? orderData?.couponId.couponType === 0
                       ? `- ₹ ${orderData?.couponId.discount}`
                       : orderData?.couponId.couponType === 1 && displayAmount
-                      ? `- ₹ ${(
+                        ? `- ₹ ${(
                           (displayAmount * orderData?.couponId.discount) /
                           100
                         ).toFixed(2)}`
-                      : "No Discount"
+                        : "No Discount"
                     : "No Discount"}
                 </p>
 
@@ -337,7 +411,7 @@ const TreatmentDetails = () => {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              disabled={!orderData.invoice}
+              disabled={!orderData.invoice || orderData.invoice.type != "treatment"}
               className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RiFileDownloadLine className="w-5 h-5" />
@@ -376,16 +450,16 @@ const TreatmentDetails = () => {
               {orderData?.gender === 0
                 ? "Female"
                 : orderData?.gender === 1
-                ? "Male"
-                : "Other"}
+                  ? "Male"
+                  : "Other"}
             </p>
             <p>
               <strong>Service Type:</strong>{" "}
               {orderData?.serviceType === 0
                 ? "Home Visit"
                 : orderData?.serviceType === 1
-                ? "Clinic Visit"
-                : "Online Visit"}
+                  ? "Clinic Visit"
+                  : "Online Visit"}
             </p>
             <p>
               <strong>Consultation Amount:</strong> ₹ {orderData?.amount}
@@ -393,9 +467,8 @@ const TreatmentDetails = () => {
             <p>
               <strong>Payment:</strong> {orderData?.paymentmode || "Online"} -{" "}
               <span
-                className={`font-semibold ${
-                  orderData?.paymentStatus === 1 ? "text-green" : "text-red-500"
-                }`}
+                className={`font-semibold ${orderData?.paymentStatus === 1 ? "text-green" : "text-red-500"
+                  }`}
               >
                 {orderData?.paymentStatus === 1 ? "Paid" : "Unpaid"}
               </span>
@@ -432,8 +505,8 @@ const TreatmentDetails = () => {
               {orderData?.serviceType === 0
                 ? "Home Visit"
                 : orderData?.serviceType === 1
-                ? "Clinic Visit"
-                : "Online Visit"}
+                  ? "Clinic Visit"
+                  : "Online Visit"}
             </p>
             <p>
               <strong>Treatment Days:</strong>{" "}
@@ -443,12 +516,12 @@ const TreatmentDetails = () => {
               <strong>Treatment Duration:</strong>{" "}
               {treatmentInfo?.treatmentDate?.length > 0
                 ? `${moment(treatmentInfo.treatmentDate[0].date).format(
-                    "D MMM"
-                  )} - ${moment(
-                    treatmentInfo.treatmentDate[
-                      treatmentInfo.treatmentDate.length - 1
-                    ].date
-                  ).format("D MMM")}`
+                  "D MMM"
+                )} - ${moment(
+                  treatmentInfo.treatmentDate[
+                    treatmentInfo.treatmentDate.length - 1
+                  ].date
+                ).format("D MMM")}`
                 : "-"}
             </p>
             <p>
@@ -466,9 +539,8 @@ const TreatmentDetails = () => {
               >
                 <span>{moment(session.date).format("D MMM")}</span>
                 <span
-                  className={`font-semibold flex items-center gap-2 ${
-                    session?.isPaid ? "text-green" : "text-red-500"
-                  }`}
+                  className={`font-semibold flex items-center gap-2 ${session?.isPaid ? "text-green" : "text-red-500"
+                    }`}
                 >
                   ₹ {(treatmentInfo?.amount || 0).toLocaleString("en-IN")}
                   {session?.isPaid ? (
@@ -505,12 +577,16 @@ const TreatmentDetails = () => {
             >
               View History
             </button>
-            <button
-              className="w-full py-2 bg-green text-white rounded-lg font-semibold hover:bg-green-dark transition"
-              onClick={() => handleTreatmentPayment({ sessionId: null })}
-            >
-              Pay at once
-            </button>
+
+            {isAllDaysPaid && (
+              <button
+                onClick={handleCheckCashback}
+                disabled={isCheckingCashback}
+                className="w-full py-2 bg-green text-white rounded-lg font-semibold hover:bg-green-dark transition"
+              >
+                {isCheckingCashback ? "Checking..." : "Get Cashback"}
+              </button>
+            )}
           </div>
 
           <TransactionModal
@@ -521,6 +597,12 @@ const TreatmentDetails = () => {
           />
         </div>
       </div>
+      <CashbackModal
+        isOpen={isCashbackModalOpen}
+        onClose={() => setIsCashbackModalOpen(false)}
+        onRedeem={handleRedeemCashback}
+        loading={isRedeeming}
+      />
     </div>
   );
 };

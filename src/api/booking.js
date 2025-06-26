@@ -386,25 +386,25 @@ export const allOrders = async (patientId, userToken) => {
 };
 
 export const requestTreatment = async (orderId, patientId, physioId, userToken) => {
-  try {
-    const response =  await instance.post(
-      `web/appointment/sendNotificationForTreatment`, // adjust to your real endpoint
-      {
-        appointmentId:orderId,
-        patientId,
-        physioId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
+	try {
+		const response = await instance.post(
+			`web/appointment/sendNotificationForTreatment`, // adjust to your real endpoint
+			{
+				appointmentId: orderId,
+				patientId,
+				physioId,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
 
-    return response.data;
-  } catch (error) {
-    throw error?.response?.data?.message || "Something went wrong";
-  }
+		return response.data;
+	} catch (error) {
+		throw error?.response?.data?.message || "Something went wrong";
+	}
 };
 
 
@@ -412,7 +412,7 @@ export const requestTreatment = async (orderId, patientId, physioId, userToken) 
 
 
 export const singleOrder = async (OrderId, userToken) => {
-	
+
 	console.log("OrderId:", OrderId);
 	try {
 		const response = await instance.get(`web/appointment/appointmentById`, {
@@ -437,7 +437,7 @@ export const singleOrder = async (OrderId, userToken) => {
 
 
 export const treatmentTransactions = async (OrderId, userToken) => {
-	
+
 	console.log("OrderId:", OrderId);
 	try {
 		const response = await instance.get(`web/appointment/transactionsByAppointmentId`, {
@@ -460,10 +460,40 @@ export const treatmentTransactions = async (OrderId, userToken) => {
 	}
 };
 
+export const checkCashback = async (patientId) => {
+	try {
+		const response = await instance.get(`web/appointment/getCashBack`, {
+			params: {
+				patientId,
+			},
+		});
+		return response.data.data;
+	} catch (error) {
+		if (error.response) {
+			return JSON.stringify(error.response);
+		} else {
+			return JSON.stringify(error.message);
+		}
+	}
+};
 
-// api/booking.js
 
-
+export const updateCashback = async (cashBackId, userUpiId) => {
+	try {
+		const response = await instance.get(`web/appointment/updateCashBack`, {
+			params: {
+				cashBackId, userUpiId
+			},
+		});
+		return response.data;
+	} catch (error) {
+		if (error.response) {
+			return JSON.stringify(error.response);
+		} else {
+			return JSON.stringify(error.message);
+		}
+	}
+};
 
 
 export const couponApi = async (couponName, patientId, userToken) => {
@@ -496,114 +526,114 @@ export const couponApi = async (couponName, patientId, userToken) => {
 
 
 export const makeTreatmentPaymentToRazorpay = async ({
-  userToken,
-  appointmentsId,
-  dateIdArray,
-  isRazorpay,
-  patientId,
-  appointmentAmount,
-  amount,
-  couponId,
+	userToken,
+	appointmentsId,
+	dateIdArray,
+	isRazorpay,
+	patientId,
+	appointmentAmount,
+	amount,
+	couponId,
 }) => {
-  console.log("✅ makeTreatmentPaymentToRazorpay called");
+	console.log("✅ makeTreatmentPaymentToRazorpay called");
 
-  if (!userToken) throw new Error("userToken is null or undefined");
-  if (!patientId) throw new Error("patientId is null or undefined");
-  if (!amount) throw new Error("amount is null or undefined");
+	if (!userToken) throw new Error("userToken is null or undefined");
+	if (!patientId) throw new Error("patientId is null or undefined");
+	if (!amount) throw new Error("amount is null or undefined");
 
-  try {
-    const response = await instance.post(
-      `web/appointment/addTreatmentMultiDayPayment`,
-      {
-        appointmentsId,
-        dateIdArray,
-        isRazorpay,
-        patientId,
-        appointmentAmount,
-        amount,
-        couponId,
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${userToken}`,
-        },
-      }
-    );
+	try {
+		const response = await instance.post(
+			`web/appointment/addTreatmentMultiDayPayment`,
+			{
+				appointmentsId,
+				dateIdArray,
+				isRazorpay,
+				patientId,
+				appointmentAmount,
+				amount,
+				couponId,
+			},
+			{
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${userToken}`,
+				},
+			}
+		);
 
-    console.log("🧾 Full Backend Response:", response?.data);
+		console.log("🧾 Full Backend Response:", response?.data);
 
-    const data = response?.data?.razorpay; // ✅ updated to use razorpay
+		const data = response?.data?.razorpay; // ✅ updated to use razorpay
 
-    if (!data || !data.id || !data.amount) {
-      console.error("❌ Invalid Razorpay order structure:", data);
-      throw new Error("Invalid Razorpay data received");
-    }
+		if (!data || !data.id || !data.amount) {
+			console.error("❌ Invalid Razorpay order structure:", data);
+			throw new Error("Invalid Razorpay data received");
+		}
 
-    console.log("✅ Valid Razorpay Order:", data);
-    const result = await treatmentPaymentVerify({ data, userToken });
-    return result;
-  } catch (error) {
-    console.error("❌ Error in makeTreatmentPaymentToRazorpay:", error);
-    throw error;
-  }
+		console.log("✅ Valid Razorpay Order:", data);
+		const result = await treatmentPaymentVerify({ data, userToken });
+		return result;
+	} catch (error) {
+		console.error("❌ Error in makeTreatmentPaymentToRazorpay:", error);
+		throw error;
+	}
 };
 
 export const treatmentPaymentVerify = async ({ data, userToken }) => {
-  return new Promise((resolve, reject) => {
-    if (!window.Razorpay) {
-      console.error("❌ Razorpay is not loaded");
-      return reject(new Error("Razorpay is not available."));
-    }
+	return new Promise((resolve, reject) => {
+		if (!window.Razorpay) {
+			console.error("❌ Razorpay is not loaded");
+			return reject(new Error("Razorpay is not available."));
+		}
 
-    const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY, // your Razorpay key
-      amount: data.amount,
-      currency: data.currency,
-      name: "Physioplus Healthcare",
-      description: `Booking of physio with ID ${data.notes?.physioId || ""}`,
-      order_id: data.id,
-      prefill: {
-        name: data.notes?.patientName || "",
-        contact: data.notes?.phone || "",
-      },
-      handler: async (response) => {
-        try {
-          const verifyRes = await instance.post(
-            `web/appointment/verifyTreatmentMultiDayPayment`,
-            {
-              orderId: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            },
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userToken}`,
-              },
-            }
-          );
+		const options = {
+			key: import.meta.env.VITE_RAZORPAY_KEY, // your Razorpay key
+			amount: data.amount,
+			currency: data.currency,
+			name: "Physioplus Healthcare",
+			description: `Booking of physio with ID ${data.notes?.physioId || ""}`,
+			order_id: data.id,
+			prefill: {
+				name: data.notes?.patientName || "",
+				contact: data.notes?.phone || "",
+			},
+			handler: async (response) => {
+				try {
+					const verifyRes = await instance.post(
+						`web/appointment/verifyTreatmentMultiDayPayment`,
+						{
+							orderId: response.razorpay_order_id,
+							razorpay_payment_id: response.razorpay_payment_id,
+							razorpay_signature: response.razorpay_signature,
+						},
+						{
+							headers: {
+								"Content-Type": "application/json",
+								Authorization: `Bearer ${userToken}`,
+							},
+						}
+					);
 
-          if (verifyRes.status >= 200 && verifyRes.status < 300) {
-            console.log("✅ Payment verified:", verifyRes.data);
-            resolve(verifyRes.data);
-          } else {
-            console.error("❌ Payment verification failed:", verifyRes);
-            reject(
-              new Error(`Payment verification failed: ${verifyRes.data?.message}`)
-            );
-          }
-        } catch (err) {
-          console.error("❌ Razorpay handler error:", err);
-          reject(new Error("Payment verification failed."));
-        }
-      },
-      theme: {
-        color: "#039342",
-      },
-    };
+					if (verifyRes.status >= 200 && verifyRes.status < 300) {
+						console.log("✅ Payment verified:", verifyRes.data);
+						resolve(verifyRes.data);
+					} else {
+						console.error("❌ Payment verification failed:", verifyRes);
+						reject(
+							new Error(`Payment verification failed: ${verifyRes.data?.message}`)
+						);
+					}
+				} catch (err) {
+					console.error("❌ Razorpay handler error:", err);
+					reject(new Error("Payment verification failed."));
+				}
+			},
+			theme: {
+				color: "#039342",
+			},
+		};
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  });
+		const rzp = new window.Razorpay(options);
+		rzp.open();
+	});
 };
