@@ -143,14 +143,12 @@ const InvoiceDownloader = ({
                     ? "PhysioPlus Subscription Plan"
                     : "Physio Consultation"}
                 </td>
-                <td className="px-4 py-2">1</td>
+                <td className="px-4 py-2">{invoiceData.type === "treatment" ? invoiceData.treatment?.length : 1}</td>
                 <td className="px-4 py-2">
-                  {invoiceData.type === "subscription"
-                    ? invoiceData.amount
-                    : invoiceData.appointmentAmount}
+                  {invoiceData.appointmentAmount}
                 </td>
                 <td className="px-4 py-2 text-right">
-                  {invoiceData.type === "subscription"
+                  {invoiceData.type === "treatment"
                     ? invoiceData.amount
                     : invoiceData.appointmentAmount}
                 </td>
@@ -218,7 +216,7 @@ const InvoiceDownloader = ({
 
               {/* Total */}
               <div className="flex justify-between font-semibold border-t pt-2">
-                <span>Total Amount (GST inclusive):</span>
+                <span>Total Amount:</span>
                 <span>
                   ₹
                   {invoiceData.amount.toLocaleString("en-IN", {
