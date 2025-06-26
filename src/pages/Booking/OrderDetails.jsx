@@ -43,7 +43,7 @@ const OrderDetails = () => {
 
       const res = await requestTreatment(
         orderData?._id,
-        orderData?.patientId?._id,
+        orderData?.patientId,
         orderData?.physioId?._id,
         userToken
       );
@@ -66,8 +66,8 @@ const OrderDetails = () => {
     orderData?.serviceType === 0
       ? orderData?.physioId?.home?.charges
       : orderData?.serviceType === 1
-      ? orderData?.physioId?.clinic?.charges
-      : orderData?.physioId?.online?.charges;
+        ? orderData?.physioId?.clinic?.charges
+        : orderData?.physioId?.online?.charges;
 
   // google analytics
   useEffect(() => {
@@ -114,11 +114,10 @@ const OrderDetails = () => {
           {/* Tabs */}
           <div className="flex gap-4 text-sm md:text-base font-medium">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                orderData?.appointmentCompleted
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${orderData?.appointmentCompleted
                   ? "bg-[#e9f8f0] text-green"
                   : "bg-[#f7ffcf] text-yellow-700"
-              }`}
+                }`}
             >
               {orderData?.appointmentCompleted
                 ? "Consultation Completed"
@@ -152,8 +151,8 @@ const OrderDetails = () => {
                     {orderData?.serviceType === "home"
                       ? "Home"
                       : orderData?.serviceType === "clinic"
-                      ? "Clinic"
-                      : "Online"}{" "}
+                        ? "Clinic"
+                        : "Online"}{" "}
                     Visit
                   </p>
 
@@ -287,11 +286,11 @@ const OrderDetails = () => {
                     ? orderData?.couponId.couponType === 0
                       ? `- ₹ ${orderData?.couponId.discount}`
                       : orderData?.couponId.couponType === 1 && displayAmount
-                      ? `- ₹ ${(
+                        ? `- ₹ ${(
                           (displayAmount * orderData?.couponId.discount) /
                           100
                         ).toFixed(2)}`
-                      : "No Discount"
+                        : "No Discount"
                     : "No Discount"}
                 </p>
 
@@ -350,11 +349,10 @@ const OrderDetails = () => {
             <button
               onClick={handleSubmitTreatmentRequest}
               disabled={orderData?.isTreatmentRequested === true}
-              className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${
-                orderData?.isTreatmentRequested
+              className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${orderData?.isTreatmentRequested
                   ? "bg-gray-400 text-white cursor-not-allowed"
                   : "bg-yellow-500 hover:bg-yellow-600 text-white"
-              }`}
+                }`}
             >
               {orderData?.isTreatmentRequested
                 ? "Treatment Already Requested"

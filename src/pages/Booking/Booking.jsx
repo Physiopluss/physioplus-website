@@ -79,6 +79,12 @@ const Booking = () => {
     navigate("/login");
   }
 
+  useEffect(() => {
+    if (patient?.patientAddresses?.length === 0) {
+      setShowMap(true);
+    }
+  }, [patient]);
+
   window.scrollTo({ top: 0, behavior: "smooth" });
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))?.userId;
@@ -107,8 +113,8 @@ const Booking = () => {
               patient.phone?.length === 13
                 ? patient.phone.slice(3, 13)
                 : patient.phone?.length === 10
-                ? patient.phone
-                : "",
+                  ? patient.phone
+                  : "",
             painNotes: "",
           });
         } else {
@@ -138,8 +144,8 @@ const Booking = () => {
             ? setAmountToPay(0)
             : setAmountToPay(amount - couponResponse?.data?.discount)
           : setAmountToPay(
-              amount - (couponResponse?.data?.discount * amount) / 100
-            )
+            amount - (couponResponse?.data?.discount * amount) / 100
+          )
         : setAmountToPay(amount);
     } else {
       setAmountToPay(amount);
@@ -185,6 +191,9 @@ const Booking = () => {
       else if (!selectedDate) toast.error("Date is not selected");
       else if (!time) toast.error("Time slot is not selected");
       else {
+
+        // console.log(values.appointmentAddress)
+        // return
         try {
           if (paymentType == "online") {
             appointmentDataToRazorpay({
@@ -235,7 +244,7 @@ const Booking = () => {
   // Function to fetch state and city from pincode
   useEffect(() => {
     const fetchLocation = async () => {
-      if (formik.values.pincode.length === 6) {
+      if (formik.values.pincode?.length === 6) {
         setLoading(true);
         try {
           const response = await axios.get(
@@ -574,8 +583,8 @@ const Booking = () => {
                 </div>
                 <div className={`${couponResponse ? "block" : "hidden"} `}>
                   {couponResponse &&
-                  couponResponse.status >= 200 &&
-                  couponResponse.status < 300 ? (
+                    couponResponse.status >= 200 &&
+                    couponResponse.status < 300 ? (
                     <div className="flex justify-between mb-2 capitalize">
                       <span>Discount</span>{" "}
                       <span className="text-green">

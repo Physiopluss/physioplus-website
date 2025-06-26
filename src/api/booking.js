@@ -120,115 +120,162 @@ export const cashAppointment = async ({
 	}
 };
 
-// export const appointmentDataToRazorpay = async ({
-//   userToken,
-//   patientId,
-//   physioId,
-//   date,
-//   time,
-//   patientName,
-//   age,
-//   appointmentAddress,
-//   gender,
-//   phone,
-//   serviceTypeString,
-//   timeInString,
-//   painNotes,
-//   couponId,
-// }) => {
-//   // 🛡️ Validation checks
-//   if (!userToken) throw new Error("userToken is null or undefined");
-//   if (!patientId) throw new Error("patientId is null or undefined");
-//   if (!physioId) throw new Error("physioId is null or undefined");
-//   if (!date) throw new Error("date is null or undefined");
-//   if (!time) throw new Error("time is null or undefined");
-//   if (!gender) throw new Error("gender is required");
-//   if (!patientName) throw new Error("patientName is required");
-//   if (!age) throw new Error("age is required");
-//   if (!phone) throw new Error("phone is required");
-//   if (!serviceTypeString) throw new Error("serviceType is required");
-//   if (!timeInString) throw new Error("timeInString is required");
-//   if (serviceTypeString === "home" && !appointmentAddress) {
-//     throw new Error("address is required for home service");
-//   }
 
-//   try {
-//     const response = await instance.post(
-//       `web/appointment/appointment-payment`,
-//       {
-//         patientId,
-//         physioId,
-//         date,
-//         time,
-//         patientName,
-//         age,
-//         gender,
-//         phone,
-//         appointmentAddress,
-//         serviceType: serviceTypeString,
-//         timeInString,
-//         painNotes,
-//         couponId,
-//       },
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${userToken}`,
-//         },
-//       }
-//     );
+export const appointmentDataToRazorpay = async ({
+	userToken,
+	patientId,
+	physioId,
+	date,
+	time,
+	patientName,
+	age,
+	appointmentAddress,
+	gender,
+	phone,
+	amount,
+	serviceTypeString,
+	timeInString,
+	painNotes,
+	couponId,
+}) => {
+	if (!userToken) {
+		throw new Error("userToken is null or undefined");
+	}
 
-//     if (response.status >= 200 && response.status < 300) {
-//       const data = response.data.data;
+	if (!patientId) {
+		throw new Error("patientId is null or undefined");
+	}
 
-//       // ✅ Open Razorpay directly (no verify step)
-//       return new Promise((resolve, reject) => {
-//         const options = {
-//           key: import.meta.env.VITE_RAZORPAY_KEY,
-//           amount: data.amount,
-//           currency: data.currency || "INR",
-//           name: "Physioplus Healthcare",
-//           description: `Booking of physio with id ${data.notes.physioId}`,
-//           order_id: data.id,
-//           prefill: {
-//             name: data.notes.patientName,
-//             contact: data.notes.phone,
-//           },
-//           handler: (response) => {
-//             console.log("✅ Payment Successful:", response);
-//             resolve(response); // Resolving directly without verification
-//           },
-//           modal: {
-//             ondismiss: () => {
-//               reject("Payment cancelled by user");
-//             },
-//           },
-//           theme: {
-//             color: "#039342",
-//           },
-//         };
+	if (!physioId) {
+		throw new Error("physioId is null or undefined");
+	}
 
-//         if (window.Razorpay) {
-//           const rzp1 = new window.Razorpay(options);
-//           rzp1.open();
-//         } else {
-//           reject("Razorpay is not loaded or not available.");
-//         }
-//       });
-//     } else {
-//       if (response.data.message === "Appointment already booked") {
-//         throw new Error("Time Slot already booked");
-//       } else {
-//         throw new Error(response.data.message || "Error in appointment payment request");
-//       }
-//     }
-//   } catch (error) {
-//     return Promise.reject(error?.message || "Something went wrong");
-//   }
-// };
+	if (gender === null || gender === undefined) {
+		throw new Error("gender is null or undefined");
+	}
+
+	if (!date) {
+		throw new Error("date is null or undefined");
+	}
+
+	if (!time) {
+		throw new Error("time is null or undefined");
+	}
+
+	// ✅ Only validate address if serviceType is 'home'
+	if (serviceTypeString === "home" && !appointmentAddress) {
+		throw new Error("address is required for home service");
+	}
+
+	if (!patientName) {
+		throw new Error("patientName is null or undefined");
+	}
+
+	if (!age) {
+		throw new Error("age is null or undefined");
+	}
+
+	if (!phone) {
+		throw new Error("phone is null or undefined");
+	}
+
+	if (!amount) {
+		throw new Error("amount is null or undefined");
+	}
+
+	if (!serviceTypeString) {
+		throw new Error("serviceType is null or undefined");
+	}
+
+	if (!timeInString) {
+		throw new Error("timeInString is null or undefined");
+	}
+
+	try {
+		const response = await instance.post(
+			`web/appointment/addAppointment`,
+			{
+				patientId,
+				physioId,
+				date,
+				time,
+				patientName,
+				age,
+				gender,
+				phone,
+				amount,
+				appointmentAddress,
+				serviceType: serviceTypeString == "home" ? 0 : 1,
+				timeInString,
+				painNotes,
+				couponId,
+			},
+			{ headers: { "Content-Type": "application/json", Authorization: `Bearer ${userToken}` } }
+		);
+		if (response.status >= 200 && response.status < 300) {
+			const data = response.data.data;
+			const paymentResult = await myPaymentVerify({ data, userToken });
+			return paymentResult;
+		} else {
+			if (response.data.message === "Appointment already booked") {
+				return new Error("Time Slot already booked");
+			} else {
+				return new Error(response.data.message);
+			}
+		}
+	} catch (error) {
+		return Promise.reject(error);
+	}
+};
 
 
-
+export const myPaymentVerify = async ({ data, userToken }) => {
+	return new Promise((resolve, reject) => {
+		const options = {
+			key: import.meta.env.VITE_RAZORPAY_KEY,
+			amount: data.amount,
+			currency: data.currency,
+			name: "Physioplus Healthcare",
+			description: `Booking of physio with id ${data.notes.physioId}`,
+			order_id: data.id,
+			prefill: {
+				name: data.notes.patientName,
+				contact: data.notes.phone,
+			},
+			handler: async (response) => {
+				const data = await instance.post(
+					`web/appointment/verifyPayment`,
+					{
+						orderId: response.razorpay_order_id,
+						razorpay_payment_id: response.razorpay_payment_id,
+						razorpay_signature: response.razorpay_signature,
+					},
+					{
+						headers: {
+							"content-type": "application/json",
+							Authorization: `Bearer ${userToken}`,
+						},
+					}
+				);
+				if (data.status >= 200 && data.status < 300) {
+					resolve(data.data);
+				} else {
+					reject(new Error(`Payment verification failed with status ${data.status}`));
+				}
+			},
+			theme: {
+				color: "#039342",
+			},
+		};
+		// Check if Razorpay is available
+		if (window.Razorpay) {
+			const rzp1 = new window.Razorpay(options);
+			rzp1.open();
+		} else {
+			reject(new Error("Razorpay is not loaded or not available."));
+		}
+	});
+};
 
 
 export const physioConnectRazorPayOrderApi = async (
@@ -260,6 +307,7 @@ export const physioConnectRazorPayOrderApi = async (
 		return Promise.reject(error);
 	}
 };
+
 
 export const paymentVerify = async ({ data, mobileNumber }) => {
 	return new Promise((resolve, reject) => {
