@@ -115,8 +115,8 @@ const OrderDetails = () => {
           <div className="flex gap-4 text-sm md:text-base font-medium">
             <span
               className={`px-3 py-1 rounded-full text-xs font-semibold ${orderData?.appointmentCompleted
-                  ? "bg-[#e9f8f0] text-green"
-                  : "bg-[#f7ffcf] text-yellow-700"
+                ? "bg-[#e9f8f0] text-green"
+                : "bg-[#f7ffcf] text-yellow-700"
                 }`}
             >
               {orderData?.appointmentCompleted
@@ -244,12 +244,24 @@ const OrderDetails = () => {
                 {/* Therapy/Service */}
                 {orderData?.painNotes && (
                   <span className="text-sm text-gray-600 font-semibold px-4 line-clamp-2">
-                    {orderData?.painNotes}"
+                    {orderData?.painNotes}
                   </span>
                 )}
               </div>
             </div>
+
+            {/* Cashback Call-to-Action */}
+            <div className="my-7 p-4 bg-[#f5fef9]">
+              <div className="text-xl text-green font-medium mb-2 text-center">
+                Request Treatment and Get a Chance to Earn{" "}
+                <span className="font-bold">70% Cashback</span>
+              </div>
+              <div className="text-center text-2xl text-green font-bold animate-pulse">
+                →
+              </div>
+            </div>
           </div>
+
           <div className="flex flex-col md:flex-col items-start justify-between gap-2 bg-white w-full md:w-1/4 ">
             {/* payment summery */}
             <div className="w-full mt-4 border border-gray-200 rounded-lg py-4 shadow-sm bg-white">
@@ -350,8 +362,8 @@ const OrderDetails = () => {
               onClick={handleSubmitTreatmentRequest}
               disabled={orderData?.isTreatmentRequested === true}
               className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${orderData?.isTreatmentRequested
-                  ? "bg-gray-400 text-white cursor-not-allowed"
-                  : "bg-yellow-500 hover:bg-yellow-600 text-white"
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-yellow-500 hover:bg-yellow-600 text-white"
                 }`}
             >
               {orderData?.isTreatmentRequested
