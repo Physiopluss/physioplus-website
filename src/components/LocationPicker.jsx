@@ -6,9 +6,8 @@ import { getFormattedAddressFromLatLng, getLatLngFromAddress, getCurrentPosition
 
 const mapContainerStyle = {
   width: "100%",
-  height: "300px",
+  height: "40vh",
   borderRadius: "0.5rem",
-  marginTop: "1rem",
 };
 
 const defaultCenter = {
@@ -129,7 +128,7 @@ const LocationPicker = ({ onSelect, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white w-full max-w-2xl max-h-[90vh] overflow-auto rounded-xl shadow-xl flex flex-col">
+      <div className="bg-white w-full max-w-4xl max-h-[90vh] overflow-auto rounded-xl shadow-xl flex flex-col">
         {/* Header */}
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-800">Select Location</h2>
@@ -159,7 +158,7 @@ const LocationPicker = ({ onSelect, onClose }) => {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Search for an address"
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green focus:border-transparent transition-all"
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </Autocomplete>
@@ -167,7 +166,7 @@ const LocationPicker = ({ onSelect, onClose }) => {
             <button
               onClick={handleSearch}
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 bg-green text-white rounded-lg hover:bg-green focus:outline-none focus:ring-1 focus:ring-offset-2 focus:ring-green disabled:opacity-50 transition-colors"
             >
               {isLoading ? 'Searching...' : 'Search'}
             </button>
@@ -176,7 +175,7 @@ const LocationPicker = ({ onSelect, onClose }) => {
           <button
             onClick={handleCurrentLocation}
             disabled={isLoading}
-            className="mt-3 flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors"
+            className="mt-3 flex items-center text-sm text-green-600 hover:text-green-800 transition-colors"
           >
             <FaCrosshairs className="mr-1" /> Use my current location
           </button>
@@ -251,7 +250,7 @@ const LocationPicker = ({ onSelect, onClose }) => {
             <button
               onClick={handleConfirm}
               disabled={!markerPosition || isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors flex items-center"
+              className="px-4 py-2 bg-green text-white rounded-lg hover:bg-green focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green disabled:opacity-50 transition-colors flex items-center"
             >
               <FaCheck className="mr-2" />
               Confirm Location

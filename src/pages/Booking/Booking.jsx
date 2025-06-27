@@ -487,10 +487,9 @@ const Booking = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="pincode" className="text-sm block mb-1">
-                      Pincode
+                      Pincode <span className="text-red-500">*</span>
                     </label>
                     <Input
-                      required
                       size="md"
                       name="pincode"
                       onChange={formik.handleChange}
