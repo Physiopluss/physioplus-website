@@ -28,7 +28,7 @@ import axios from "axios";
 import { singlePatient } from "../../api/patient";
 const Booking = () => {
   const [showMap, setShowMap] = useState(false);
-  const [customAddress, setCustomAddress] = useState(null); // stores picked address from map
+  const [customLocation, setCustomLocation] = useState(null); // stores picked location details from map
   const [paymentType, setPaymentType] = useState("online");
   const [couponName, setCouponName] = useState("FIRST50");
   const [couponResponse, setCouponResponse] = useState();
@@ -163,6 +163,7 @@ const Booking = () => {
       city: "",
       pincode: "",
       appointmentAddress: "",
+      fullAddress: "",
     },
     validationSchema: Yup.object().shape({
       patientName: Yup.string()
@@ -191,12 +192,9 @@ const Booking = () => {
       else if (!selectedDate) toast.error("Date is not selected");
       else if (!time) toast.error("Time slot is not selected");
       else {
-
-        // console.log(values.appointmentAddress)
-        // return
         try {
           if (paymentType == "online") {
-            appointmentDataToRazorpay({
+            const appointmentData = {
               userToken,
               patientId,
               physioId,
@@ -211,11 +209,16 @@ const Booking = () => {
               serviceTypeString,
               timeInString,
               painNotes: values.painNotes,
+              pincode: values.pincode,
+              city: values.city,
+              state: values.state,
               couponId:
                 couponResponse?.status >= 200 && couponResponse?.status < 300
                   ? couponResponse.data._id
                   : undefined,
-            })
+            };
+
+            appointmentDataToRazorpay(appointmentData)
               .then(() => {
                 toast.success("Appointment has been created");
                 dispatch(emptyBooking());
@@ -230,13 +233,14 @@ const Booking = () => {
                   });
                 }, 1000);
               })
-              .catch(() => {
-                toast.error("Something went wrong");
+              .catch((error) => {
+                console.error("Appointment creation failed:", error);
+                toast.error("Failed to create appointment. Please try again.");
               });
           }
         } catch (err) {
-          console.log("error:", err);
-          return new Error(err);
+          console.error("Error in form submission:", err);
+          toast.error("An unexpected error occurred. Please try again.");
         }
       }
     },
@@ -397,10 +401,10 @@ const Booking = () => {
 
                 {serviceTypeString === "home" &&
                   patient?.patientAddresses?.length >= 0 && (
-                    <div>
+                    <div className="space-y-2">
                       <label
                         htmlFor="appointmentAddress"
-                        className="text-sm font-medium"
+                        className="text-sm font-medium block"
                       >
                         Address
                       </label>
@@ -410,38 +414,66 @@ const Booking = () => {
                         value={formik.values.appointmentAddress}
                         onChange={(e) => {
                           if (e.target.value === "__pick_from_map__") {
-                            setShowMap(true); // open the map
+                            setShowMap(true);
                           } else {
-                            formik.setFieldValue(
-                              "appointmentAddress",
-                              e.target.value
+                            const selectedAddress = patient?.patientAddresses?.find(
+                              (addr) => addr.appointmentAddress === e.target.value
                             );
+                            
+                            if (selectedAddress) {
+                              formik.setValues({
+                                ...formik.values,
+                                appointmentAddress: selectedAddress.appointmentAddress,
+                                pincode: selectedAddress.pincode || "",
+                                city: selectedAddress.city || "",
+                                state: selectedAddress.state || "",
+                              });
+                            } else if (customLocation) {
+                              formik.setFieldValue(
+                                "appointmentAddress",
+                                customLocation.fullAddress
+                              );
+                            }
                           }
                         }}
                         onBlur={formik.handleBlur}
                         className="w-full mt-1 border border-[#A9ABB2] px-3 py-2 rounded text-sm"
                       >
-                        {patient?.patientAddresses.map((addr, index) => {
-                          const addressOnly =
-                            addr.appointmentAddress.split("\n")[0];
-                          return (
-                            <option
-                              key={addr._id}
-                              value={addr.appointmentAddress}
-                            >
-                              Address {index + 1}: {addressOnly}
-                            </option>
-                          );
-                        })}
-                        {customAddress && (
+                        <option value="">Select an address</option>
+                        {patient?.patientAddresses?.map((addr, index) => (
                           <option
-                            value={customAddress}
-                          >{`🟢 Custom Address :- ${customAddress}`}</option>
+                            key={addr._id}
+                            value={addr.appointmentAddress}
+                          >
+                            Address {index + 1}: {addr.appointmentAddress.split("\n")[0]}
+                          </option>
+                        ))}
+                        {customLocation && (
+                          <option value={customLocation.fullAddress}>
+                            🟢 Custom Address: {customLocation.formattedAddress}
+                          </option>
                         )}
                         <option value="__pick_from_map__">
                           📍 Pick new address from map
                         </option>
                       </select>
+
+                      {showMap && (
+                        <LocationPicker
+                          onSelect={(locationData) => {
+                            setCustomLocation(locationData);
+                            formik.setValues({
+                              ...formik.values,
+                              appointmentAddress: locationData.fullAddress,
+                              pincode: locationData.pincode || "",
+                              city: locationData.city || "",
+                              state: locationData.state || "",
+                            });
+                            setShowMap(false);
+                          }}
+                          onClose={() => setShowMap(false)}
+                        />
+                      )}
 
                       {formik.touched.appointmentAddress &&
                         formik.errors.appointmentAddress && (
@@ -449,66 +481,75 @@ const Booking = () => {
                             {formik.errors.appointmentAddress}
                           </p>
                         )}
-                      {showMap && (
-                        <LocationPicker
-                          onSelect={(newAddress) => {
-                            setCustomAddress(newAddress);
-                            formik.setFieldValue(
-                              "appointmentAddress",
-                              newAddress
-                            );
-                          }}
-                          onClose={() => setShowMap(false)}
-                        />
-                      )}
                     </div>
                   )}
 
-                <div>
-                  <label htmlFor="pincode" className="text-sm">
-                    Pincode
-                  </label>
-                  <Input
-                    required
-                    size="md"
-                    name="pincode"
-                    onChange={formik.handleChange}
-                    value={formik.values.pincode}
-                    placeholder="Enter Your Pincode"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
-                  />
-                  {formik.errors.pincode && formik.touched.pincode && (
-                    <span className="text-red-500 text-sm">
-                      {formik.errors.pincode}
-                    </span>
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="pincode" className="text-sm block mb-1">
+                      Pincode
+                    </label>
+                    <Input
+                      required
+                      size="md"
+                      name="pincode"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.pincode}
+                      placeholder="Enter Pincode"
+                      className="border border-[#A9ABB2] !border-t-[#A9ABB2] focus:!border-t-black"
+                      disabled={loading}
+                    />
+                    {formik.errors.pincode && formik.touched.pincode && (
+                      <span className="text-red-500 text-xs">
+                        {formik.errors.pincode}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="city" className="text-sm block mb-1">
+                      City
+                    </label>
+                    <Input
+                      size="md"
+                      name="city"
+                      value={formik.values.city}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      placeholder="City"
+                      className="border border-[#A9ABB2] !border-t-[#A9ABB2]"
+                      disabled={loading}
+                    />
+                    {formik.errors.city && formik.touched.city && (
+                      <span className="text-red-500 text-xs">
+                        {formik.errors.city}
+                      </span>
+                    )}
+                  </div>
+
+                  <div>
+                    <label htmlFor="state" className="text-sm block mb-1">
+                      State
+                    </label>
+                    <Input
+                      size="md"
+                      name="state"
+                      value={formik.values.state}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      placeholder="State"
+                      className="border border-[#A9ABB2] !border-t-[#A9ABB2]"
+                      disabled={loading}
+                    />
+                    {formik.errors.state && formik.touched.state && (
+                      <span className="text-red-500 text-xs">
+                        {formik.errors.state}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="state" className="text-sm">
-                    State
-                  </label>
-                  <Input
-                    size="md"
-                    name="state"
-                    value={formik.values.state}
-                    placeholder="Enter Your State"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2]  "
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="city" className="text-sm">
-                    City
-                  </label>
-                  <Input
-                    size="md"
-                    name="city"
-                    value={formik.values.city}
-                    placeholder="Enter Your City"
-                    className="border border-[#A9ABB2] !border-t-[#A9ABB2] "
-                  />
-                </div>
                 <div className="col-span-1 lg:col-span-2">
                   <label htmlFor="painNotes" className="text-sm">
                     Describe your pain
