@@ -229,6 +229,7 @@ const Booking = () => {
 
                       timeInString,
                     },
+                    replace: true,
                   });
                 }, 1000);
               })
