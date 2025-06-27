@@ -85,7 +85,6 @@ const Booking = () => {
     }
   }, [patient]);
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))?.userId;
 
