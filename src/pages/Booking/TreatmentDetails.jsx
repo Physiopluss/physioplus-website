@@ -334,7 +334,7 @@ const TreatmentDetails = () => {
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-col items-start justify-between gap-2 bg-white w-full md:w-1/4 ">
+          <div className="flex flex-col md:flex-col items-center justify-between gap-2 bg-white w-full md:w-1/4 ">
             {/* payment summery */}
             <div className="w-full mt-4 border border-gray-200 rounded-lg py-4 shadow-sm bg-white">
               {/* Section Title */}
@@ -418,6 +418,7 @@ const TreatmentDetails = () => {
               <RiFileDownloadLine className="w-5 h-5" />
               Download Invoice
             </button>
+            <p className="text-xs text-gray-600 mt-2">* Available after treatment completion</p>
             <InvoiceDownloader
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
