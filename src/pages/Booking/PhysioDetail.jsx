@@ -137,7 +137,7 @@ const PhysioDetail = () => {
                   {physioData.city
                     ? physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)
                     : ""}
-                  {physioData?.clinic?.zipCode && physioData.clinic.zipCode !== 0 && (
+                  {physioData.clinic?.zipCode !== 0 && (
                     <> - {physioData.clinic.zipCode}</>
                   )}
                 </>
@@ -148,7 +148,7 @@ const PhysioDetail = () => {
                     ? physioData.home.homeCity.charAt(0).toUpperCase() +
                     physioData.home.homeCity.slice(1)
                     : ""}
-                  {physioData?.home?.zipCode && physioData.home.zipCode !== 0 && (
+                  {physioData?.home?.zipCode !== 0 && (
                     <> - {physioData.home.zipCode}</>
                   )}
                 </>
