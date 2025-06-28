@@ -92,8 +92,10 @@ const ConsulationCard = ({ orderData }) => {
                             >
                                 Download Invoice
                             </button>
+                            
 
                             <InvoiceDownloader
+                            
                                 isOpen={isModalOpen}
                                 onClose={() => setIsModalOpen(false)}
                                 orderData={orderData}

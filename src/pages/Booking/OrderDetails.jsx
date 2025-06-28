@@ -338,11 +338,10 @@ const OrderDetails = () => {
                 </p>
               </div>
             </div>
-            <p className="text-xs text-gray-600 mt-2">* Available after appointment completion</p>
             <button
               onClick={() => setIsModalOpen(true)}
               disabled={!orderData.invoice}
-              className="w-full rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <RiFileDownloadLine className="w-5 h-5" />
               Download Invoice

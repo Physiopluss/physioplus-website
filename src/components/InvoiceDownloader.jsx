@@ -140,18 +140,17 @@ const InvoiceDownloader = ({
                   {invoiceData.type === "treatment"
                     ? "Physiotherapy Treatment Sessions"
                     : invoiceData.type === "subscription"
-                    ? "PhysioPlus Subscription Plan"
-                    : "Physio Consultation"}
+                      ? "PhysioPlus Subscription Plan"
+                      : "Physio Consultation"}
                 </td>
-                <td className="px-4 py-2">{invoiceData.type === "treatment" ? 
-                invoiceData.treatment?.map((t) => t?.paidForDates?.length).reduce((a, b) => a + b, 0)
-                : 1}</td>
+                <td className="px-4 py-2">{invoiceData.type === "treatment" ?
+                  invoiceData.treatment : 1}</td>
                 <td className="px-4 py-2">
                   {invoiceData.appointmentAmount}
                 </td>
                 <td className="px-4 py-2 text-right">
                   {invoiceData.type === "treatment"
-                    ? invoiceData.amount
+                    ? invoiceData.totalTreatmentAmount
                     : invoiceData.appointmentAmount}
                 </td>
               </tr>
@@ -163,7 +162,7 @@ const InvoiceDownloader = ({
             <div className="w-full max-w-xs space-y-2 text-sm">
               {/* Subtotal */}
               <div className="flex justify-between">
-                <span>Subtotal:</span>
+                {/* <span>Subtotal:</span>
                 <span>
                   ₹
                   {(invoiceData.type === "subscription"
@@ -173,45 +172,56 @@ const InvoiceDownloader = ({
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 2,
                   })}
-                </span>
+                </span> */}
               </div>
-
               {/* Coupon Discount */}
-              {invoiceData?.type === "appointment" && orderData?.couponId && (
+              {invoiceData?.type === "appointment" && invoiceData?._id && (
                 <div className="flex justify-between text-green-700">
                   <span>
                     Coupon Discount (
-                    {orderData.couponId.couponName || "Applied"}):
+                    {invoiceData.couponName || "Applied"}):
                   </span>
                   <span className="text-green">
-                    {orderData.couponId.couponType === 0
+                    {invoiceData.couponType === 0
                       ? // Flat discount
-                        `- ₹ ${orderData.couponId.discount.toLocaleString(
+                      `- ₹ ${invoiceData.discount.toLocaleString(
+                        "en-IN",
+                        {
+                          minimumFractionDigits:
+                            invoiceData.discount % 1 === 0 ? 0 : 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}`
+                      : // Percentage discount
+                      (() => {
+                        const baseAmount = invoiceData.appointmentAmount;
+
+                        if (!baseAmount) return "No Discount";
+
+                        const percentageDiscount =
+                          (baseAmount * invoiceData.discount) / 100;
+
+                        return `- ₹ ${percentageDiscount.toLocaleString(
                           "en-IN",
                           {
                             minimumFractionDigits:
-                              orderData.couponId.discount % 1 === 0 ? 0 : 2,
+                              percentageDiscount % 1 === 0 ? 0 : 2,
                             maximumFractionDigits: 2,
                           }
-                        )}`
-                      : // Percentage discount
-                        (() => {
-                          const baseAmount = invoiceData.appointmentAmount;
+                        )}`;
+                      })()}
+                  </span>
+                </div>
+              )}
 
-                          if (!baseAmount) return "No Discount";
-
-                          const percentageDiscount =
-                            (baseAmount * orderData.couponId.discount) / 100;
-
-                          return `- ₹ ${percentageDiscount.toLocaleString(
-                            "en-IN",
-                            {
-                              minimumFractionDigits:
-                                percentageDiscount % 1 === 0 ? 0 : 2,
-                              maximumFractionDigits: 2,
-                            }
-                          )}`;
-                        })()}
+              {invoiceData?.type === "treatment" && invoiceData?._id && (
+                <div className="flex justify-between text-green-700">
+                  <span>
+                    Coupon Discount (
+                    {"Applied"}):
+                  </span>
+                  <span className="text-green">
+                    {`- ${invoiceData.totalTreatmentAmount - invoiceData.amount}`}
                   </span>
                 </div>
               )}
