@@ -1,6 +1,6 @@
 import OrderCard from "../../components/OrderCard";
 import TreatmentCard from "../../components/TreatmentCard";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { allOrders } from "../../api/booking";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -11,16 +11,14 @@ import { Breadcrumbs } from "@material-tailwind/react";
 import { FiSearch } from "react-icons/fi";
 
 const OrderHistory = () => {
+  const navigate = useNavigate();
+
   const { userId, userToken } = useSelector((e) => e.auth.user || {});
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("Upcoming");
   const [searchQuery, setSearchQuery] = useState("");
-  const [appointmentStatusFilter, setAppointmentStatusFilter] =
-    useState("Appointment");
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [appointmentStatusFilter, setAppointmentStatusFilter] = useState("Appointment");
 
   useEffect(() => {
     if (!userId) {
@@ -40,7 +38,7 @@ const OrderHistory = () => {
   // Type Filtering (Consultation / Treatment)
   const filteredByType = reversedOrders.filter((order) =>
     appointmentStatusFilter === "Appointment"
-      ? order?.appointmentStatus === 0
+      ? order?.appointmentStatus === 0 || order?.appointmentStatus === 1
       : order?.appointmentStatus === 1
   );
 
@@ -77,7 +75,7 @@ const OrderHistory = () => {
 
   // Counts for tabs
   const consultationOrders = reversedOrders.filter(
-    (o) => o?.appointmentStatus === 0
+    (o) => o?.appointmentStatus === 0 || o?.appointmentStatus === 1
   );
   const treatmentOrders = reversedOrders.filter(
     (o) => o?.appointmentStatus === 1
