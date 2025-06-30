@@ -155,6 +155,7 @@ const TreatmentDetails = () => {
 
     if (!dateIdArray?.length) {
       toast.success("All sessions are already paid.");
+
       return;
     }
 
@@ -174,6 +175,7 @@ const TreatmentDetails = () => {
 
       if (result.success === true && result.status === 200) {
         toast.success("Payment successful!");
+        window.location.reload(); // Reload to fetch updated data
       } else {
         toast.error("Payment might have failed.");
       }

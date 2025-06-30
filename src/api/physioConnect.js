@@ -347,6 +347,67 @@ export const physioConnectCouponApi = async (couponCode, physioConnectPhysioId) 
 };
 
 
+// export const physioConnectRazorPayOrderApi = async (
+//   physioConnectPhysioId,
+//   mobileNumber,
+//   couponAppliedId
+// ) => {
+//   try {
+//     const response = await axios.post(
+//       `${BaseUrl}web/physio/subscription-payment`,
+//       {
+//         physioId: physioConnectPhysioId,
+//         couponId: couponAppliedId,
+//       },
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     if (response.status >= 200 && response.status < 300) {
+//       const data = response.data.data;
+
+//       return new Promise((resolve, reject) => {
+//         const options = {
+//           key: import.meta.env.VITE_RAZORPAY_KEY,
+//           amount: data.amount,
+//           currency: data.currency || "INR",
+//           name: "Physioplus Healthcare",
+//           description: "Subscription Payment",
+//           order_id: data.id,
+//           prefill: {
+//             contact: mobileNumber,
+//           },
+//           handler: function (response) {
+//             console.log("✅ Payment Success", response);
+//             resolve(response); // Only resolve on success
+//           },
+//           theme: {
+//             color: "#039342",
+//           },
+//           modal: {
+//             ondismiss: () => {
+//               reject("Payment cancelled by user");
+//             },
+//           },
+//         };
+
+//         if (window.Razorpay) {
+//           const rzp = new window.Razorpay(options);
+//           rzp.open();
+//         } else {
+//           reject("Razorpay SDK not loaded");
+//         }
+//       });
+//     } else {
+//       throw new Error(response.data.message || "Failed to create Razorpay order");
+//     }
+//   } catch (error) {
+//     return Promise.reject(error?.message || "Unexpected error occurred");
+//   }
+// };
 
 export const physioConnectRazorPayOrderApi = async (
 	physioConnectPhysioId,

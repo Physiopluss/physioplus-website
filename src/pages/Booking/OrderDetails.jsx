@@ -48,6 +48,7 @@ const OrderDetails = () => {
       );
 
       toast.success("Treatment request submitted successfully!");
+      window.location.reload(); // Reload to fetch updated data
       console.log("Treatment request response:", res);
     } catch (err) {
       console.error("Error in request:", err);
