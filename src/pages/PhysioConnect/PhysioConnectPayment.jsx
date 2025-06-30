@@ -128,7 +128,7 @@ const PhysioConnectPayment = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 bg-white px-2 py-4 justify-center mx-4 md:mx-8 lg:mx-16">
+      <div className="flex flex-col md:flex-row gap-4 bg-white  py-4 justify-center  md:px-8 lg:px-16">
         {/* Left side - Card */}
         <div className="flex-1 flex justify-center">
           <StepIndicator currentStep={4} />
@@ -309,12 +309,9 @@ const PhysioConnectPayment = () => {
           </form>
 
           <div
-            className={`h-fit flex flex-col gap-0 bg-white px-6 py-6 border rounded-lg shadow-md 
-		w-full fixed bottom-0 left-0 
-		md:static md:mt-14 md:w-full 
-		z-20 transition-transform duration-300 
-		${showPayment ? "translate-y-0" : "translate-y-full"} 
-		md:translate-y-0`}
+            className={`h-fit flex flex-col gap-0 bg-white px-6 py-6 border rounded-lg shadow-md w-full fixed bottom-0 left-0 md:static md:mt-14 md:w-full z-20 transition-transform duration-300 ${
+              showPayment ? "translate-y-0" : "translate-y-full"
+            } md:translate-y-0`}
           >
             {/* Payment Method Header */}
             <div className="text-lg font-semibold">Payment Method</div>
@@ -366,7 +363,6 @@ const PhysioConnectPayment = () => {
                 onClick={() => {
                   physioConnectRazorPayOrderApi(
                     physioConnectPhysioId,
-                    amoutToPay,
                     mobileNumber,
                     couponAppliedId
                   )
@@ -498,28 +494,27 @@ const PhysioConnectPayment = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-1 w-full font-sans font-semibold">
-                    <SwipeableButton
-                      style={{
-                        width: "100%",
-                        maxWidth: "320px",
-                        margin: "0 auto",
-                      }}
-                      onSuccess={() => {
-                        setSwipeDiscount(1000);
-                      }}
-                      text="Best Offer for You"
-                      text_unlocked="You Saved ₹1000 !!!"
-                      sliderTextColor="#fff"
-                      sliderIconColor="#fff"
-                      sliderColor="green"
-                      background_color="#eee"
-                      borderRadius={30}
-                      circle
-                      autoWidth
-                      disabled={false}
-                      name="coupon-btn"
-                    />
+                  <div className="w-full flex justify-center">
+                    <div className="w-full max-w-xs font-sans font-semibold">
+                      <SwipeableButton
+                        text="Best Offer for You"
+                        text_unlocked="" // Leave blank to avoid cutting
+                        content_unlocked={
+                          <div className="w-full text-center text-[13px] sm:text-base px-2 whitespace-normal">
+                            You Saved ₹1000 !!!
+                          </div>
+                        }
+                        onSuccess={() => setSwipeDiscount(1000)}
+                        sliderTextColor="#fff"
+                        sliderIconColor="#fff"
+                        sliderColor="green"
+                        background_color="#eee"
+                        borderRadius={30}
+                        autoWidth={false} // Set false to avoid miscalculated width
+                        disabled={false}
+                        name="coupon-btn"
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -707,11 +702,10 @@ const PhysioConnectPayment = () => {
 
             {/* Pay Now Button */}
             <Button
-              className="w-full text-white text-md font-medium py-2 rounded-full bg-green hover:bg-green-700"
+              className="w-full text-white text-md font-medium py-2 mb-1 rounded-full bg-green hover:bg-green-700"
               onClick={() => {
                 physioConnectRazorPayOrderApi(
                   physioConnectPhysioId,
-                  amoutToPay,
                   mobileNumber,
                   couponAppliedId
                 )
