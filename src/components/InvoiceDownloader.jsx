@@ -9,6 +9,7 @@ const InvoiceDownloader = ({
 }) => {
   const invoiceRef = useRef();
 
+
   const handleDownload = () => {
     if (!invoiceRef.current) return;
 
@@ -26,6 +27,19 @@ const InvoiceDownloader = ({
 
   // ✅ Restrict access to treatment and appointment only
   if (!isOpen || invoiceData?.type === "subscription") return null;
+
+  const renderAddress = (address) => {
+    if (!address) return "-";
+    if (typeof address === "string") return address;
+    return JSON.stringify(address); // fallback if it's an object
+  };
+
+  const treatmentQty =
+    typeof invoiceData?.treatment === "number"
+      ? invoiceData.treatment
+      : Array.isArray(invoiceData?.treatment)
+        ? invoiceData.treatment.length
+        : 1;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-auto px-2 py-4">
@@ -197,8 +211,10 @@ const InvoiceDownloader = ({
           {/* Footer */}
           <div className="mt-8 text-xs text-gray-500 text-center">
             Thank you for choosing{" "}
-            <span className="font-semibold text-green">Physio+</span>. For
-            support, email{" "}
+            <span className="font-semibold text-green">Physio+</span>. For support,
+            email{" "}
+            <span className="font-semibold text-green">Physio+</span>. For support,
+            email{" "}
             <span className="text-blue-600 underline">
               support@physioplushealthcare.com
             </span>
