@@ -445,7 +445,7 @@ const Booking = () => {
                             key={addr._id}
                             value={addr.appointmentAddress}
                           >
-                            Address {index + 1}: {addr.appointmentAddress.split("\n")[0]}
+                            Address {index + 1}: {addr.appointmentAddress?.split("\n")[0]}
                           </option>
                         ))}
                         {customLocation && (
