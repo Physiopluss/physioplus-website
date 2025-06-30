@@ -363,6 +363,7 @@ const PhysioConnectPayment = () => {
                 onClick={() => {
                   physioConnectRazorPayOrderApi(
                     physioConnectPhysioId,
+                    amoutToPay,
                     mobileNumber,
                     couponAppliedId
                   )
@@ -706,6 +707,7 @@ const PhysioConnectPayment = () => {
               onClick={() => {
                 physioConnectRazorPayOrderApi(
                   physioConnectPhysioId,
+                  amoutToPay,
                   mobileNumber,
                   couponAppliedId
                 )

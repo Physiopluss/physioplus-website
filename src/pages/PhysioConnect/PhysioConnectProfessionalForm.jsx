@@ -1,23 +1,14 @@
 import ReactGA from "react-ga4";
 import { GoArrowLeft } from "react-icons/go";
 
-import {
-  Button,
-
-  Checkbox,
-
-  Input,
-
-} from "@material-tailwind/react";
+import { Button, Checkbox, Input } from "@material-tailwind/react";
 
 import { useEffect, useRef, useState } from "react";
 import {
-
   getPhysioDataById,
   physioConnectDegreeApi,
   physioConnectProfessionalApi,
   physioConnectSpecializationsApi,
-
 } from "../../api/physioConnect";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +19,6 @@ import { setPhysioConnectPhysioId } from "../../slices/physioConnect";
 import StepIndicator from "../../components/StepIndicator";
 
 const PhysioConnectProfessionalForm = () => {
-
   const [allDegree, setAllDegree] = useState([]);
   const [allSpecialization, setAllSpecialization] = useState([]);
   const [oldPhysioData, setOldPhysioData] = useState(); //if filling form after first time
@@ -44,23 +34,25 @@ const PhysioConnectProfessionalForm = () => {
   const dropdownSpRef = useRef(null);
   const dropdownMptRef = useRef(null);
 
-
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setDegreeOpen(false);
       }
 
-      if (dropdownMptRef.current && !dropdownMptRef.current.contains(event.target)) {
+      if (
+        dropdownMptRef.current &&
+        !dropdownMptRef.current.contains(event.target)
+      ) {
         setMptDegreeOpen(false);
       }
 
-      if (dropdownSpRef.current && !dropdownSpRef.current.contains(event.target)) {
+      if (
+        dropdownSpRef.current &&
+        !dropdownSpRef.current.contains(event.target)
+      ) {
         setOpen(false);
       }
-
-
     };
 
     if (open || degreeOpen || mptDegreeOpen) {
@@ -81,7 +73,6 @@ const PhysioConnectProfessionalForm = () => {
     });
   }, []);
 
-
   useEffect(() => {
     const fetchOldData = async () => {
       try {
@@ -94,8 +85,6 @@ const PhysioConnectProfessionalForm = () => {
       } catch (error) {
         console.error("Error fetching physio data:", error);
       }
-
-
 
       await physioConnectDegreeApi().then((res) => {
         if (res.status >= 200 && res.status < 300) {
@@ -121,16 +110,13 @@ const PhysioConnectProfessionalForm = () => {
     fetchOldData();
   }, []);
 
-
   const formik = useFormik({
     initialValues: {
       bptDegree: {
         degreeId: "",
-
       },
       mptDegree: {
         degreeId: "",
-
       },
 
       specialization: [],
@@ -141,22 +127,19 @@ const PhysioConnectProfessionalForm = () => {
     },
     validationSchema: Yup.object().shape({
       iapMember: Yup.number().required("IAP member is required"),
-      iapNumber: Yup.string().when('iapMember', {
+      iapNumber: Yup.string().when("iapMember", {
         is: 1,
         then: () => Yup.string().required("IAP number is required"),
-        otherwise: () => Yup.string().notRequired()
+        otherwise: () => Yup.string().notRequired(),
       }),
       bptDegree: Yup.object({
         degreeId: Yup.string().required("BPT Degree is required"),
-
       }),
-
 
       // Validation for image
 
       specialization: Yup.array().required("Specialization is required"),
       serviceType: Yup.array().required("Service Type is required"),
-
 
       experience: Yup.number()
         .typeError("Experience must be a number")
@@ -186,7 +169,6 @@ const PhysioConnectProfessionalForm = () => {
           },
           mptDegree: {
             degreeId: mptDegree.degreeId,
-
           },
 
           specialization,
@@ -210,32 +192,33 @@ const PhysioConnectProfessionalForm = () => {
     },
   });
 
-
   useEffect(() => {
     if (oldPhysioData) {
       formik.setValues({
-
-
         bptDegree: {
           degreeId: oldPhysioData.bptDegree?.degreeId || "",
         },
         mptDegree: {
           degreeId: oldPhysioData.mptDegree?.degreeId || "",
         },
-        specialization: Array.isArray(oldPhysioData.specialization) ? oldPhysioData.specialization : [],
-        serviceType: Array.isArray(oldPhysioData.serviceType) ? oldPhysioData.serviceType : [],
-        experience: oldPhysioData.workExperience !== undefined ? String(oldPhysioData.workExperience) : "",
+        specialization: Array.isArray(oldPhysioData.specialization)
+          ? oldPhysioData.specialization
+          : [],
+        serviceType: Array.isArray(oldPhysioData.serviceType)
+          ? oldPhysioData.serviceType
+          : [],
+        experience:
+          oldPhysioData.workExperience !== undefined
+            ? String(oldPhysioData.workExperience)
+            : "",
         // ensure boolean
-        iapMember: Number(oldPhysioData.iapMember) || 0,    // ensure number
-        iapNumber: String(oldPhysioData.iapNumber || ""),   // ensure string
+        iapMember: Number(oldPhysioData.iapMember) || 0, // ensure number
+        iapNumber: String(oldPhysioData.iapNumber || ""), // ensure string
       });
     }
   }, [oldPhysioData]);
 
-
   useEffect(() => {
-
-
     const generalSpecialization = allSpecialization.find(
       (s) => s.name === "General Physio"
     );
@@ -262,16 +245,12 @@ const PhysioConnectProfessionalForm = () => {
       if (!current.includes(generalId)) {
         formik.setFieldValue("specialization", [generalId]);
       }
-
-
-
     } else {
       // If no degree selected, clear specialization
 
       formik.setFieldValue("specialization", []);
     }
   }, [formik.values.bptDegree, formik.values.mptDegree, allSpecialization]);
-
 
   if (physioConnectPhysioId == null || physioConnectPhysioId.length == 0) {
     const physioConnectPhysioId = sessionStorage.getItem("physioConnectId");
@@ -288,20 +267,22 @@ const PhysioConnectProfessionalForm = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-2 py-4  justify-center mx-4 md:mx-8 lg:mx-16">
+      <div className="flex flex-col md:flex-row gap-4 bg-[#FFFDF5] px-2 py-4  justify-center  md:px-8 lg:px-16">
         {/* Left side - Card */}
         <div className="flex-1 flex justify-center">
           <StepIndicator currentStep={2} />
         </div>
 
         {/* Right side - Form */}
-        <div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-white px-12 py-8">
+        <div className="w-full max-w-6xl mx-auto border border-gray-200 rounded-lg bg-white px-4 md:px-12 py-8">
           <form
             onSubmit={formik.handleSubmit}
             className="flex flex-col gap-4 flex-1 max-w-screen-lg"
           >
             <h6 className="font-semibold text-3xl">Professional Details</h6>
-            <p className="text-sm font-semibold text-gray-700">Fill in your professional details below</p>
+            <p className="text-sm font-semibold text-gray-700">
+              Fill in your professional details below
+            </p>
             <label htmlFor="" className="text-sm font-semibold">
               Select Degree
             </label>
@@ -327,7 +308,6 @@ const PhysioConnectProfessionalForm = () => {
                             {selectedItem.name}
                             <button
                               type="button"
-
                               onClick={() =>
                                 formik.setFieldValue("bptDegree.degreeId", null)
                               }
@@ -344,13 +324,16 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Trigger */}
                 <button
-
                   type="button"
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setDegreeOpen(!degreeOpen)}
                 >
                   <span>Select BPT degree</span>
-                  <img src="/aboutImg/dropdown.png" className="w-4 h-4" alt="" />
+                  <img
+                    src="/aboutImg/dropdown.png"
+                    className="w-4 h-4"
+                    alt=""
+                  />
                 </button>
 
                 {/* Dropdown Options */}
@@ -364,7 +347,8 @@ const PhysioConnectProfessionalForm = () => {
                             i.name === "Diploma in Physiotherapy"
                         )
                         .map((i) => {
-                          const isSelected = formik.values.bptDegree.degreeId === i._id;
+                          const isSelected =
+                            formik.values.bptDegree.degreeId === i._id;
                           return (
                             <label
                               htmlFor="bptdegree"
@@ -382,9 +366,8 @@ const PhysioConnectProfessionalForm = () => {
                                 name="bptdegree"
                                 className="w-4 h-4"
                                 value={i._id}
-
                                 checked={isSelected}
-                                onChange={() => { }}
+                                onChange={() => {}}
                               />
                               {i.name}
                             </label>
@@ -396,15 +379,13 @@ const PhysioConnectProfessionalForm = () => {
               </div>
 
               {/* Validation Error */}
-              {formik.touched.bptDegree?.degreeId && formik.errors.bptDegree?.degreeId && (
-                <p className="text-red-500">{formik.errors.bptDegree.degreeId}</p>
-              )}
+              {formik.touched.bptDegree?.degreeId &&
+                formik.errors.bptDegree?.degreeId && (
+                  <p className="text-red-500">
+                    {formik.errors.bptDegree.degreeId}
+                  </p>
+                )}
             </div>
-
-
-
-
-
 
             {/* mpt degree */}
             <div className="flex flex-col gap-2 mt-6">
@@ -426,7 +407,6 @@ const PhysioConnectProfessionalForm = () => {
                             {selectedItem.name}
                             <button
                               type="button"
-
                               onClick={() =>
                                 formik.setFieldValue("mptDegree.degreeId", null)
                               }
@@ -443,13 +423,16 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Trigger */}
                 <button
-
                   type="button"
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setMptDegreeOpen(!mptDegreeOpen)}
                 >
                   <span>Select MPT degree</span>
-                  <img src="/aboutImg/dropdown.png" className="w-4 h-4" alt="" />
+                  <img
+                    src="/aboutImg/dropdown.png"
+                    className="w-4 h-4"
+                    alt=""
+                  />
                 </button>
 
                 {/* Dropdown Options */}
@@ -457,13 +440,11 @@ const PhysioConnectProfessionalForm = () => {
                   <div className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
                     <div className="flex flex-col gap-2">
                       {allDegree
-                        .filter(
-                          (i) =>
-                            i.name === "Master of Physiotherapy"
-                        )
+                        .filter((i) => i.name === "Master of Physiotherapy")
 
                         .map((i) => {
-                          const isSelected = formik.values.mptDegree.degreeId === i._id;
+                          const isSelected =
+                            formik.values.mptDegree.degreeId === i._id;
                           return (
                             <label
                               htmlFor="mptdegree"
@@ -481,9 +462,8 @@ const PhysioConnectProfessionalForm = () => {
                                 name="mptdegree"
                                 className="w-4 h-4"
                                 value={i._id}
-
                                 checked={isSelected}
-                                onChange={() => { }}
+                                onChange={() => {}}
                               />
                               {i.name}
                             </label>
@@ -495,13 +475,13 @@ const PhysioConnectProfessionalForm = () => {
               </div>
 
               {/* Validation Error */}
-              {formik.touched.mptDegree?.degreeId && formik.errors.mptDegree?.degreeId && (
-                <p className="text-red-500">{formik.errors.mptDegree.degreeId}</p>
-              )}
+              {formik.touched.mptDegree?.degreeId &&
+                formik.errors.mptDegree?.degreeId && (
+                  <p className="text-red-500">
+                    {formik.errors.mptDegree.degreeId}
+                  </p>
+                )}
             </div>
-
-
-
 
             <div className="flex flex-col gap-2">
               <label htmlFor="specialization" className="text-sm font-semibold">
@@ -523,7 +503,6 @@ const PhysioConnectProfessionalForm = () => {
                           {selectedItem.name}
                           <button
                             type="button"
-
                             onClick={() => {
                               const updatedSpecializations =
                                 formik.values.specialization.filter(
@@ -546,13 +525,11 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Trigger Button */}
                 <button
-
                   type="button"
                   className="flex items-center justify-between border px-3 py-2 rounded-md w-full cursor-pointer"
                   onClick={() => setOpen(!open)}
                 >
-                  <span>Select
-                    Speciality</span>
+                  <span>Select Speciality</span>
                   <img
                     src="/aboutImg/dropdown.png"
                     className="w-4 h-4"
@@ -562,33 +539,38 @@ const PhysioConnectProfessionalForm = () => {
 
                 {/* Dropdown Options */}
                 {open && (
-                  <div ref={dropdownSpRef} className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto">
+                  <div
+                    ref={dropdownSpRef}
+                    className="absolute z-10 w-full bg-white shadow-md rounded-md p-2 mt-1 border max-h-60 overflow-y-auto"
+                  >
                     <div className="flex flex-col gap-2">
                       {allSpecialization.map((i) => (
-                        <label htmlFor="specialization"
+                        <label
+                          htmlFor="specialization"
                           key={i._id}
                           className="flex items-center gap-2 cursor-pointer p-1 hover:bg-gray-100 rounded"
                           onClick={() => {
-                            const generalId = allSpecialization.find((s) => s.name === "General Physio")?._id;
-                            const isSelected = formik.values.specialization.includes(i._id);
+                            const generalId = allSpecialization.find(
+                              (s) => s.name === "General Physio"
+                            )?._id;
+                            const isSelected =
+                              formik.values.specialization.includes(i._id);
 
                             if (!formik.values.mptDegree?.degreeId) return;
 
-
-
                             if (i._id === generalId) return; // Don't allow toggling General
 
-
-                            const currentSpecializations = formik.values.specialization;
-
+                            const currentSpecializations =
+                              formik.values.specialization;
 
                             let newSpecializations;
 
                             if (isSelected) {
                               // Deselect the clicked one (but keep General)
-                              newSpecializations = currentSpecializations.filter(
-                                (id) => id !== i._id
-                              );
+                              newSpecializations =
+                                currentSpecializations.filter(
+                                  (id) => id !== i._id
+                                );
                             } else {
                               // Deselect any non-general specialization and add new one
                               newSpecializations = currentSpecializations
@@ -596,12 +578,13 @@ const PhysioConnectProfessionalForm = () => {
                                 .concat(i._id);
                             }
 
-                            formik.setFieldValue("specialization", newSpecializations);
+                            formik.setFieldValue(
+                              "specialization",
+                              newSpecializations
+                            );
                           }}
-
                         >
                           <input
-
                             type="checkbox"
                             name="specialization"
                             className="w-4 h-4"
@@ -609,7 +592,7 @@ const PhysioConnectProfessionalForm = () => {
                             checked={formik.values.specialization.includes(
                               i._id
                             )}
-                            onChange={() => { }}
+                            onChange={() => {}}
                           />
                           {i.name}
                         </label>
@@ -621,7 +604,8 @@ const PhysioConnectProfessionalForm = () => {
               {formik.values?.bptDegree?.degreeId?.length > 0 &&
                 !formik.values?.mptDegree?.degreeId?.length &&
                 formik.values?.specialization?.length === 1 &&
-                allSpecialization.find((s) => s.name === "General Physio")?._id === formik.values.specialization[0] && (
+                allSpecialization.find((s) => s.name === "General Physio")
+                  ?._id === formik.values.specialization[0] && (
                   <p className="text-yellow-900 text-sm font-medium">
                     You selected only BPT. So you only get General Physio.
                   </p>
@@ -634,10 +618,10 @@ const PhysioConnectProfessionalForm = () => {
                   </p>
                 )}
 
-              {formik.touched.specialization && formik.errors.specialization && (
-                <p className="text-red-500">{formik.errors.specialization}</p>
-              )}
-
+              {formik.touched.specialization &&
+                formik.errors.specialization && (
+                  <p className="text-red-500">{formik.errors.specialization}</p>
+                )}
             </div>
 
             {/* work exp.  */}
@@ -663,7 +647,6 @@ const PhysioConnectProfessionalForm = () => {
                   {formik.errors.experience}
                 </div>
               ) : null}
-
             </div>
 
             <div className="flex flex-col gap-2">
@@ -674,7 +657,11 @@ const PhysioConnectProfessionalForm = () => {
               <select
                 id="iapMember"
                 name="iapMember"
-                value={formik.values.iapMember === "" ? "" : formik.values.iapMember.toString()}
+                value={
+                  formik.values.iapMember === ""
+                    ? ""
+                    : formik.values.iapMember.toString()
+                }
                 onChange={(e) => {
                   const value = Number(e.target.value); // convert to number (0 or 1)
                   formik.setFieldValue("iapMember", value);
@@ -693,12 +680,12 @@ const PhysioConnectProfessionalForm = () => {
                 <option value={0}>No</option>
               </select>
 
-
               {formik.touched.iapMember && formik.errors.iapMember && (
-                <div className="text-red-500 text-sm mt-1">{formik.errors.iapMember}</div>
+                <div className="text-red-500 text-sm mt-1">
+                  {formik.errors.iapMember}
+                </div>
               )}
             </div>
-
 
             {formik.values.iapMember === 1 && (
               <>
@@ -726,7 +713,6 @@ const PhysioConnectProfessionalForm = () => {
               </>
             )}
 
-
             <div className="flex flex-col gap-2">
               <label htmlFor="serviceType" className="text-sm font-semibold">
                 Select Service Type
@@ -740,13 +726,11 @@ const PhysioConnectProfessionalForm = () => {
                     value="clinic"
                     type="checkbox"
                     onChange={formik.handleChange}
-
                   />
                   Clinic
                 </label>
 
                 <label className="flex items-center gap-2 text-sm text-gray-900 font-medium">
-
                   <Checkbox
                     className="rounded-sm h-4 w-4 border-green border-2  hover:before:opacity-0 checked:bg-green text-green"
                     checked={formik.values.serviceType.includes("home")}
@@ -754,11 +738,9 @@ const PhysioConnectProfessionalForm = () => {
                     name="serviceType"
                     value="home"
                     onChange={formik.handleChange}
-
                   />
                   Home Care
                 </label>
-
               </div>
               {formik.touched.serviceType && formik.errors.serviceType && (
                 <p className="text-red-500">{formik.errors.serviceType}</p>
