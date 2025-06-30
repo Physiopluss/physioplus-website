@@ -3,13 +3,13 @@ import moment from "moment/moment";
 import { FaEye } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-export default function BlogCard({ id, title, description, youTubeLink, image, status, views, tags, blogType, date }) {
+export default function BlogCard({ id, title, description, youTubeLink, image, status, views, tags, blogType, date, slug }) {
 	const navigate = useNavigate();
 	return (
 		<Card
 			className="gap-2 border border-[#EAEBEC] shadow-none cursor-pointer text-black items-stretch transition-all duration-200 hover:scale-[1.02] hover:shadow-[0_4px_12px_rgba(34,197,94,0.2)]"
 
-			onClick={() => navigate(`/blog/${id}`)}
+			onClick={() => navigate(`/blog/${slug}`)}
 			key={id}
 		>
 			<img
@@ -26,7 +26,7 @@ export default function BlogCard({ id, title, description, youTubeLink, image, s
 				</Typography>
 				{description && (
 					<div
-						className="mb-2 text-xs font-normal line-clamp-4"
+						className="mb-2 text-sm font-normal line-clamp-4"
 						dangerouslySetInnerHTML={{
 							__html: description.slice(0, 130) + ' <span class="text-green font-semibold">...read more</span>',
 						}}
@@ -36,7 +36,7 @@ export default function BlogCard({ id, title, description, youTubeLink, image, s
 				<div className="flex w-full justify-between">
 					<Typography
 						variant="h6"
-						className="text-xs font-base"
+						className="text-sm font-base"
 					>
 						{moment(date).format("ll")}
 					</Typography>

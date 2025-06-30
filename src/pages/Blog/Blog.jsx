@@ -75,6 +75,7 @@ const Blog = () => {
 									// tags={Blog.tags}
 									// blogType={Blog.blogType}
 									date={Blog.createdAt}
+									slug={Blog.slug}
 								/>
 							))}
 					</div>

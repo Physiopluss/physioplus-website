@@ -27,9 +27,9 @@ export const listAllBlog = async (page, query) => {
 	}
 };
 
-export const singleBlog = async (id) => {
+export const singleBlog = async (slug) => {
 	try {
-		const response = await instance.get(`web/blog/${id}`);
+		const response = await instance.get(`web/blog/${slug}`);
 
 		if (response.status >= 200 && response.status < 300) {
 			return response;

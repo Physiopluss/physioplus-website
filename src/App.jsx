@@ -257,7 +257,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/blog/:blogId",
+        path: "/blog/:slug",
         element: (
           <Suspense fallback={<Loading />}>
             <BlogDetail />

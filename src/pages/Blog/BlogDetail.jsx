@@ -8,7 +8,7 @@ import ReactGA from "react-ga4";
 import ReactMarkdown from 'react-markdown';
 
 const BlogDetail = () => {
-	let { blogId } = useParams();
+	let { slug } = useParams();
 	const [blogData, setBlogData] = useState([]);
 	const [allBlog, setAllBlog] = useState();
 	const [error, setError] = useState();
@@ -22,7 +22,7 @@ const BlogDetail = () => {
 	useEffect(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 
-		singleBlog(blogId)
+		singleBlog(slug)
 			.then((res) => {
 				setBlogData(res.data.data);
 			})
@@ -33,7 +33,7 @@ const BlogDetail = () => {
 				setAllBlog(res.data.blogs);
 			})
 			.catch((err) => setError(err));
-	}, [blogId]);
+	}, [slug]);
 
 	const reversedAllBlogData = allBlog && [...allBlog]?.reverse();
 
@@ -111,7 +111,7 @@ const BlogDetail = () => {
 						reversedAllBlogData.slice(0, 5).map((blog, i) => (
 							<Link
 								key={i}
-								to={`/blog/${blog._id}`}
+								to={`/blog/${blog.slug}`}
 							>
 								<div className="flex gap-4 my-4 items-center mx-4">
 									<img
