@@ -36,9 +36,7 @@ const OrderCard = ({ orderData }) => {
   const handleViewDetails = () => {
     navigate("/order-details", { state: { appointmentId: orderData?._id } });
   };
-  // const handleReview = () => {
-  // 	navigate('/write-review', { state: { orderData } });
-  // };
+
   return (
     <>
       <style>
@@ -80,10 +78,10 @@ const OrderCard = ({ orderData }) => {
                   Visit
                 </div>
               </div>
-              <div className="flex gap-6">
+              <div className="flex flex-wrap sm:flex-row gap-2 md:gap-6 px-2 md:px-0">
                 <div className="flex items-center gap-1 text-black font-normal text-xs md:text-sm lg:text-base">
                   <img
-                    src="\images\CalendarBlank.png"
+                    src="/images/CalendarBlank.png"
                     alt=""
                     className="w-4 h-4"
                   />
@@ -91,13 +89,15 @@ const OrderCard = ({ orderData }) => {
                     {moment(orderData?.date).format("dddd, DD.MM.YYYY")}
                   </span>
                 </div>
+
                 <div className="flex items-center gap-1 text-black font-normal text-xs md:text-sm lg:text-base">
-                  <img src="\images\Clock.png" alt="" className="w-4 h-4" />
+                  <img src="/images/Clock.png" alt="" className="w-4 h-4" />
                   <span>{orderData?.timeInString}</span>
                 </div>
+
                 {orderData?.otp && (
-                  <span className="text-sm text-green font-semibold px-4">
-                    OTP : {orderData?.otp}
+                  <span className="text-xs md:text-sm text-green font-semibold px-0 md:px-4">
+                    OTP: {orderData?.otp}
                   </span>
                 )}
               </div>

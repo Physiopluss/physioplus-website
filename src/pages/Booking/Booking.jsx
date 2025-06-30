@@ -112,8 +112,8 @@ const Booking = () => {
               patient.phone?.length === 13
                 ? patient.phone.slice(3, 13)
                 : patient.phone?.length === 10
-                  ? patient.phone
-                  : "",
+                ? patient.phone
+                : "",
             painNotes: "",
           });
         } else {
@@ -143,8 +143,8 @@ const Booking = () => {
             ? setAmountToPay(0)
             : setAmountToPay(amount - couponResponse?.data?.discount)
           : setAmountToPay(
-            amount - (couponResponse?.data?.discount * amount) / 100
-          )
+              amount - (couponResponse?.data?.discount * amount) / 100
+            )
         : setAmountToPay(amount);
     } else {
       setAmountToPay(amount);
@@ -280,10 +280,10 @@ const Booking = () => {
     "Error"
   ) : (
     <>
-      <div className="h-40 w-full bg-[#FFFDF5] flex items-center">
+      <div className="h-40 w-full  bg-[#FFFDF5] flex  items-center">
         <Breadcrumbs
           separator=">"
-          className="my-2 mx-2 md:mx-6 lg:mx-12 bg-transparent text-black"
+          className=" hidden md:flex my-2 mx-2 md:mx-6 lg:mx-12 bg-transparent text-black"
         >
           <Link className="text-xs sm:text-base" to="/">
             Home
@@ -292,6 +292,32 @@ const Booking = () => {
           <Link to={`/physios/${physioData.slug}`}>{physioData.fullName}</Link>
           <Link className="font-semibold">Patient Information</Link>
         </Breadcrumbs>
+
+        <div className="flex md:hidden w-full bg-[#FFFDF5] py-4 px-4 md:px-6 lg:px-12 overflow-x-auto">
+          <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs sm:text-sm md:text-base text-black">
+            <Link className="shrink-0" to="/">
+              Home
+            </Link>
+            <span className="shrink-0">{">"}</span>
+
+            <Link className="shrink-0" to="/physios">
+              Physio
+            </Link>
+            <span className="shrink-0">{">"}</span>
+
+            <Link
+              className="shrink-0 break-all"
+              to={`/physios/${physioData.slug}`}
+            >
+              {physioData.fullName}
+            </Link>
+            <span className="shrink-0">{">"}</span>
+
+            <Link className="shrink-0 font-semibold break-all">
+              Patient Information
+            </Link>
+          </div>
+        </div>
       </div>
       <div className="gap-4 justify-around flex flex-col md:flex-row mx-4 md:mx-8 lg:mx-16 ">
         {/* form with date & time */}
@@ -416,14 +442,17 @@ const Booking = () => {
                           if (e.target.value === "__pick_from_map__") {
                             setShowMap(true);
                           } else {
-                            const selectedAddress = patient?.patientAddresses?.find(
-                              (addr) => addr.appointmentAddress === e.target.value
-                            );
-                            
+                            const selectedAddress =
+                              patient?.patientAddresses?.find(
+                                (addr) =>
+                                  addr.appointmentAddress === e.target.value
+                              );
+
                             if (selectedAddress) {
                               formik.setValues({
                                 ...formik.values,
-                                appointmentAddress: selectedAddress.appointmentAddress,
+                                appointmentAddress:
+                                  selectedAddress.appointmentAddress,
                                 pincode: selectedAddress.pincode || "",
                                 city: selectedAddress.city || "",
                                 state: selectedAddress.state || "",
@@ -445,7 +474,8 @@ const Booking = () => {
                             key={addr._id}
                             value={addr.appointmentAddress}
                           >
-                            Address {index + 1}: {addr.appointmentAddress?.split("\n")[0]}
+                            Address {index + 1}:{" "}
+                            {addr.appointmentAddress?.split("\n")[0]}
                           </option>
                         ))}
                         {customLocation && (
@@ -623,8 +653,8 @@ const Booking = () => {
                 </div>
                 <div className={`${couponResponse ? "block" : "hidden"} `}>
                   {couponResponse &&
-                    couponResponse.status >= 200 &&
-                    couponResponse.status < 300 ? (
+                  couponResponse.status >= 200 &&
+                  couponResponse.status < 300 ? (
                     <div className="flex justify-between mb-2 capitalize">
                       <span>Discount</span>{" "}
                       <span className="text-green">

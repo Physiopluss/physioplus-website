@@ -4,11 +4,11 @@ import html2pdf from "html2pdf.js";
 const InvoiceDownloader = ({
   isOpen,
   onClose,
-  orderData,
   invoiceData,
   filename = "invoice.pdf",
 }) => {
   const invoiceRef = useRef();
+
   const handleDownload = () => {
     if (!invoiceRef.current) return;
 
@@ -24,14 +24,15 @@ const InvoiceDownloader = ({
       .save();
   };
 
-  if (!isOpen) return null;
+  // ✅ Restrict access to treatment and appointment only
+  if (!isOpen || invoiceData?.type === "subscription") return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-auto">
-      <div className="bg-white w-full max-w-4xl rounded-lg overflow-hidden shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center overflow-auto px-2 py-4">
+      <div className="bg-white w-full max-w-4xl rounded-lg shadow-lg">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b">
-          <h2 className="text-lg font-bold">Invoice Preview</h2>
+        <div className="flex justify-between items-center px-4 sm:px-6 py-4 border-b">
+          <h2 className="text-base sm:text-lg font-bold">Invoice Preview</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-black text-xl font-bold"
@@ -41,18 +42,17 @@ const InvoiceDownloader = ({
         </div>
 
         {/* Invoice Content */}
-        <div className="p-6 bg-white" ref={invoiceRef}>
+        <div className="p-4 sm:p-6 bg-white" ref={invoiceRef}>
           {/* Clinic Info */}
-          <div className="flex justify-between mb-6">
+          <div className="flex flex-col sm:flex-row justify-between mb-6 gap-4">
             <div>
-              <p className="text-lg font-semibold text-green">
+              <p className="text-base sm:text-lg font-semibold text-green">
                 PhysioPlus Healthcare
               </p>
-
               <p className="text-sm text-gray-600">
                 109,1st Floor,Sankalp Tower,Khatipura Road,Jaipur
               </p>
-              <p>
+              <p className="text-sm">
                 Email:{" "}
                 <span className="text-blue-600 underline">
                   support@physioplushealthcare.com
@@ -61,8 +61,7 @@ const InvoiceDownloader = ({
             </div>
             <div className="text-sm text-gray-700 space-y-1 text-right">
               <p>
-                <strong>GST NO.: </strong>
-                08AANCP1150A1ZT
+                <strong>GST NO.: </strong>08AANCP1150A1ZT
               </p>
               <p>
                 <strong>Invoice #: </strong>
@@ -86,155 +85,110 @@ const InvoiceDownloader = ({
           </div>
 
           {/* Billed / Provided Info */}
-          <div className="flex justify-between text-sm text-gray-700 mb-6 gap-6">
-            {invoiceData.type === "subscription" ? (
-              <>
-                <div className="w-1/2">
-                  <h3 className="font-semibold mb-1">Billed To (Physio)</h3>
-                  <p>{invoiceData.physioName}</p>
-                  <p className="break-words whitespace-pre-line">
-                    {invoiceData.physioAddress}
-                  </p>
-                </div>
-                <div className="w-1/2 text-right">
-                  <h3 className="font-semibold mb-1">Provided By</h3>
-                  <p>PhysioPlus Healthcare</p>
-                  <p>109,1st Floor,Sankalp Tower,Khatipura Road,Jaipur</p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-1/2">
-                  <h3 className="font-semibold mb-1">Billed To (Patient)</h3>
-                  <p>{invoiceData.patientName}</p>
-                  <p className="break-words whitespace-pre-line">
-                    {invoiceData.patientAddress}
-                  </p>
-                </div>
-                <div className="w-1/2 text-right">
-                  <h3 className="font-semibold mb-1">Provided By (Physio)</h3>
-                  <p>{invoiceData.physioName}</p>
-                  <p className="break-words whitespace-pre-line">
-                    {invoiceData.physioAddress}
-                  </p>
-                </div>
-              </>
-            )}
+          <div className="flex flex-col sm:flex-row justify-between text-sm text-gray-700 mb-6 gap-4">
+            <div className="sm:w-1/2">
+              <h3 className="font-semibold mb-1">Billed To (Patient)</h3>
+              <p>{invoiceData.patientName}</p>
+              <p className="break-words whitespace-pre-line">
+                {invoiceData.patientAddress}
+              </p>
+            </div>
+            <div className="sm:w-1/2 text-right">
+              <h3 className="font-semibold mb-1">Provided By (Physio)</h3>
+              <p>{invoiceData.physioName}</p>
+              <p className="break-words whitespace-pre-line">
+                {invoiceData.physioAddress}
+              </p>
+            </div>
           </div>
 
           {/* Services Table */}
-          <table className="w-full text-sm text-left border-t border-b">
-            <thead className="bg-gray-100 text-gray-700">
-              <tr>
-                <th className="px-4 py-2 font-semibold">Description</th>
-                <th className="px-4 py-2 font-semibold">Qty</th>
-                <th className="px-4 py-2 font-semibold">Rate (₹)</th>
-                <th className="px-4 py-2 font-semibold text-right">
-                  Amount (₹)
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="border-t">
-                <td className="px-4 py-2">
-                  {invoiceData.type === "treatment"
-                    ? "Physiotherapy Treatment Sessions"
-                    : invoiceData.type === "subscription"
-                      ? "PhysioPlus Subscription Plan"
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left border-t border-b">
+              <thead className="bg-gray-100 text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 font-semibold">Description</th>
+                  <th className="px-4 py-2 font-semibold">Qty</th>
+                  <th className="px-4 py-2 font-semibold">Rate (₹)</th>
+                  <th className="px-4 py-2 font-semibold text-right">
+                    Amount (₹)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t">
+                  <td className="px-4 py-2">
+                    {invoiceData.type === "treatment"
+                      ? "Physiotherapy Treatment Sessions"
                       : "Physio Consultation"}
-                </td>
-                <td className="px-4 py-2">{invoiceData.type === "treatment" ?
-                  invoiceData.treatment : 1}</td>
-                <td className="px-4 py-2">
-                  {invoiceData.appointmentAmount}
-                </td>
-                <td className="px-4 py-2 text-right">
-                  {invoiceData.type === "treatment"
-                    ? invoiceData.totalTreatmentAmount
-                    : invoiceData.appointmentAmount}
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td className="px-4 py-2">
+                    {invoiceData.type === "treatment"
+                      ? invoiceData.treatment
+                      : 1}
+                  </td>
+                  <td className="px-4 py-2">{invoiceData.appointmentAmount}</td>
+                  <td className="px-4 py-2 text-right">
+                    {invoiceData.type === "treatment"
+                      ? invoiceData.totalTreatmentAmount
+                      : invoiceData.appointmentAmount}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-          {/* Totals Section */}
+          {/* Totals */}
           <div className="mt-6 flex justify-end text-sm">
-            <div className="w-full max-w-xs space-y-2 text-sm">
-              {/* Subtotal */}
-              <div className="flex justify-between">
-                {/* <span>Subtotal:</span>
-                <span>
-                  ₹
-                  {(invoiceData.type === "subscription"
-                    ? invoiceData.amount
-                    : invoiceData.appointmentAmount
-                  ).toLocaleString("en-IN", {
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                  })}
-                </span> */}
-              </div>
-              {/* Coupon Discount */}
-              {invoiceData?.type === "appointment" && invoiceData?._id && (
-                <div className="flex justify-between text-green-700">
-                  <span>
-                    Coupon Discount (
-                    {invoiceData.couponName || "Applied"}):
-                  </span>
-                  <span className="text-green">
-                    {invoiceData.couponType === 0
-                      ? // Flat discount
-                      `- ₹ ${invoiceData.discount.toLocaleString(
-                        "en-IN",
-                        {
-                          minimumFractionDigits:
-                            invoiceData.discount % 1 === 0 ? 0 : 2,
-                          maximumFractionDigits: 2,
-                        }
-                      )}`
-                      : // Percentage discount
-                      (() => {
-                        const baseAmount = invoiceData.appointmentAmount;
+            <div className="w-full max-w-xs space-y-2">
+              {/* Coupon Discount for Appointment */}
+              {invoiceData?.type === "appointment" &&
+                invoiceData?.discount != null &&
+                invoiceData?.appointmentAmount && (
+                  <div className="flex justify-between text-[#08845f]">
+                    <span>
+                      Coupon Discount ({invoiceData?.couponName || "Applied"}):
+                    </span>
+                    <span className="text-green">
+                      {invoiceData?.couponType === 0
+                        ? `- ₹ ${invoiceData.discount.toLocaleString("en-IN")}`
+                        : (() => {
+                            const amt = invoiceData.appointmentAmount;
+                            const discount = (amt * invoiceData.discount) / 100;
+                            return `- ₹ ${discount.toLocaleString("en-IN")}`;
+                          })()}
+                    </span>
+                  </div>
+                )}
 
-                        if (!baseAmount) return "No Discount";
-
-                        const percentageDiscount =
-                          (baseAmount * invoiceData.discount) / 100;
-
-                        return `- ₹ ${percentageDiscount.toLocaleString(
-                          "en-IN",
-                          {
-                            minimumFractionDigits:
-                              percentageDiscount % 1 === 0 ? 0 : 2,
-                            maximumFractionDigits: 2,
-                          }
-                        )}`;
-                      })()}
-                  </span>
-                </div>
-              )}
-
-              {invoiceData?.type === "treatment" && invoiceData?._id && (
-                <div className="flex justify-between text-green-700">
-                  <span>
-                    Coupon Discount (
-                    {"Applied"}):
-                  </span>
-                  <span className="text-green">
-                    {`- ${invoiceData.totalTreatmentAmount - invoiceData.amount}`}
-                  </span>
-                </div>
-              )}
+              {/* Coupon Discount for Treatment */}
+              {invoiceData?.type === "treatment" &&
+                invoiceData?.totalTreatmentAmount != null &&
+                invoiceData?.amount != null &&
+                invoiceData.totalTreatmentAmount > invoiceData.amount && (
+                  <div className="flex justify-between text-[#08845f]">
+                    <span>Coupon Discount (Applied):</span>
+                    <span>
+                      - ₹{" "}
+                      {(
+                        invoiceData.totalTreatmentAmount - invoiceData.amount
+                      ).toLocaleString("en-IN")}
+                    </span>
+                  </div>
+                )}
 
               {/* Total */}
               <div className="flex justify-between font-semibold border-t pt-2">
-                <span>Total Amount:</span>
+                <span>Total Amount (GST inclusive):</span>
                 <span>
                   ₹
-                  {invoiceData.amount.toLocaleString("en-IN", {
-                    minimumFractionDigits: invoiceData.amount % 1 === 0 ? 0 : 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {invoiceData?.amount
+                    ? invoiceData.amount.toLocaleString("en-IN", {
+                        minimumFractionDigits:
+                          invoiceData.amount % 1 === 0 ? 0 : 2,
+                        maximumFractionDigits: 2,
+                      })
+                    : "0.00"}
                 </span>
               </div>
             </div>

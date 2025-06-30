@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import ReactGA from "react-ga4";
-
+import { AiOutlineArrowRight, AiOutlineArrowDown } from "react-icons/ai";
 import { Breadcrumbs } from "@material-tailwind/react";
 import moment from "moment";
 
@@ -19,7 +19,6 @@ const OrderDetails = () => {
   const { state } = useLocation();
   const orderId = state?.appointmentId;
 
-  console.log("Order ", orderData);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -66,8 +65,8 @@ const OrderDetails = () => {
     orderData?.serviceType === 0
       ? orderData?.physioId?.home?.charges
       : orderData?.serviceType === 1
-        ? orderData?.physioId?.clinic?.charges
-        : orderData?.physioId?.online?.charges;
+      ? orderData?.physioId?.clinic?.charges
+      : orderData?.physioId?.online?.charges;
 
   // google analytics
   useEffect(() => {
@@ -80,11 +79,11 @@ const OrderDetails = () => {
 
   return (
     <div className="font-Urbanist  bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]   ">
-      <div className="flex flex-col md:flex-row  w-full  justify-start md:justify-between  h-40    items-start md:items-center mb-4">
+      <div className="flex flex-col md:flex-row  w-full  justify-start md:justify-between h-24 md:h-40    items-start md:items-center mb-4">
         {/* Breadcrumbs */}
         <Breadcrumbs
           separator=">"
-          className="my-2 md:mx-6 lg:mx-12 text-black bg-transparent"
+          className="hidden md:flex my-2 md:mx-6 lg:mx-12 text-black bg-transparent"
         >
           <Link
             to="/profile"
@@ -106,6 +105,32 @@ const OrderDetails = () => {
           </Link>{" "}
           {/* Active breadcrumb */}
         </Breadcrumbs>
+
+        <div className="flex md:hidden w-full bg-[#FFFDF5] py-4 px-4 md:px-6 lg:px-12 overflow-x-auto">
+          <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs sm:text-sm md:text-base text-black">
+            <Link
+              to="/profile"
+              className="text-black  font-semibold hover:text-green"
+            >
+              My Account
+            </Link>
+            <span className="shrink-0">{">"}</span>
+            <Link
+              to="/order-history"
+              className="text-black  font-semibold hover:text-green"
+            >
+              My Bookings
+            </Link>
+            <span className="shrink-0">{">"}</span>
+            <Link to="/order-history">
+              {" "}
+              <span className="text-black hover:text-green font-bold">
+                {orderData?.physioId?.fullName || "Consultation Details"}
+              </span>
+            </Link>{" "}
+            {/* Active breadcrumb */}
+          </div>
+        </div>
       </div>
 
       <div className="mx-4 md:mx-8 lg:mx-16 -mt-12 bg-white pb-8 rounded-xl">
@@ -114,10 +139,11 @@ const OrderDetails = () => {
           {/* Tabs */}
           <div className="flex gap-4 text-sm md:text-base font-medium">
             <span
-              className={`px-3 py-1 rounded-full text-xs font-semibold ${orderData?.appointmentCompleted
-                ? "bg-[#e9f8f0] text-green"
-                : "bg-[#f7ffcf] text-yellow-700"
-                }`}
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                orderData?.appointmentCompleted
+                  ? "bg-[#e9f8f0] text-green"
+                  : "bg-[#f7ffcf] text-yellow-700"
+              }`}
             >
               {orderData?.appointmentCompleted
                 ? "Consultation Completed"
@@ -151,12 +177,12 @@ const OrderDetails = () => {
                     {orderData?.serviceType === "home"
                       ? "Home"
                       : orderData?.serviceType === "clinic"
-                        ? "Clinic"
-                        : "Online"}{" "}
+                      ? "Clinic"
+                      : "Online"}{" "}
                     Visit
                   </p>
 
-                  <div className="flex gap-6 mt-1 text-xs md:text-sm text-black font-normal">
+                  <div className="flex flex-wrap md:flex-row  gap-2 md:gap-6 px-2 md:px-0 mt-1 text-xs md:text-sm text-black font-normal">
                     <div className="flex items-center gap-2">
                       <img
                         src="/images/CalendarBlank.png"
@@ -177,7 +203,7 @@ const OrderDetails = () => {
                     </div>
 
                     {orderData?.otp && (
-                      <span className="text-sm text-green font-semibold px-4">
+                      <span className="text-xs md:text-sm text-green font-semibold px-0 md:px-4">
                         OTP : {orderData?.otp}
                       </span>
                     )}
@@ -251,13 +277,20 @@ const OrderDetails = () => {
             </div>
 
             {/* Cashback Call-to-Action */}
-            <div className="my-7 p-4 bg-[#f5fef9]">
-              <div className="text-xl text-green font-medium mb-2 text-center">
+            <div className="flex flex-col md:flex-row items-center justify-center my-7 p-4 bg-[#f5fef9] gap-2 md:gap-6 text-center">
+              <div className="text-xl md:text-2xl text-green font-medium">
                 Request Treatment and Get a Chance to Earn{" "}
                 <span className="font-bold">70% Cashback</span>
               </div>
-              <div className="text-center text-2xl text-green font-bold animate-pulse">
-                →
+
+              {/* Right arrow for medium and up */}
+              <div className="hidden md:flex text-green animate-pulse">
+                <AiOutlineArrowRight className="text-4xl md:text-5xl" />
+              </div>
+
+              {/* Down arrow for small screens */}
+              <div className="flex md:hidden text-green animate-pulse">
+                <AiOutlineArrowDown className="text-4xl" />
               </div>
             </div>
           </div>
@@ -298,11 +331,11 @@ const OrderDetails = () => {
                     ? orderData?.couponId.couponType === 0
                       ? `- ₹ ${orderData?.couponId.discount}`
                       : orderData?.couponId.couponType === 1 && displayAmount
-                        ? `- ₹ ${(
+                      ? `- ₹ ${(
                           (displayAmount * orderData?.couponId.discount) /
                           100
                         ).toFixed(2)}`
-                        : "No Discount"
+                      : "No Discount"
                     : "No Discount"}
                 </p>
 
@@ -361,10 +394,11 @@ const OrderDetails = () => {
             <button
               onClick={handleSubmitTreatmentRequest}
               disabled={orderData?.isTreatmentRequested === true}
-              className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${orderData?.isTreatmentRequested
-                ? "bg-gray-400 text-white cursor-not-allowed"
-                : "bg-yellow-500 hover:bg-yellow-600 text-white"
-                }`}
+              className={`w-full mt-4 rounded-lg py-2 shadow-sm font-semibold text-lg flex flex-row gap-2 items-center justify-center ${
+                orderData?.isTreatmentRequested
+                  ? "bg-gray-400 text-white cursor-not-allowed"
+                  : "bg-yellow-500 hover:bg-yellow-600 text-white"
+              }`}
             >
               {orderData?.isTreatmentRequested
                 ? "Treatment Already Requested"

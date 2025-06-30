@@ -177,125 +177,139 @@ export default function Navbar() {
         <Collapse open={isNavOpen} className="overflow-y-auto">
           {isNavOpen && (
             <ul className="lg:hidden mt-2 mb-4 flex flex-col gap-2">
-              {NavData.map((data) => (
-                <Link
-                  to={data.slug}
-                  key={data.id}
-                  onClick={() => setIsNavOpen(false)}
-                >
-                  <Typography
-                    variant="small"
-                    color="gray"
-                    className="font-medium text-black"
+              <>
+                {NavData.map((data) => (
+                  <Link
+                    to={data.slug}
+                    key={data.id}
+                    onClick={() => setIsNavOpen(false)}
                   >
-                    <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
-                      {data.name}
-                    </MenuItem>
-                  </Typography>
-                </Link>
-              ))}
-              {isUser ? (
-                <>
-                  <div>
                     <Typography
-                      as="div"
                       variant="small"
-                      className="font-medium border-b border-gray-300"
+                      color="gray"
+                      className="font-medium text-black"
                     >
-                      <ListItem
-                        className="focus:!bg-transparent flex items-center justify-between gap-2 py-2 pr-4 font-medium text-black"
-                        selected={isMobileMenuOpen}
-                        onClick={() => setIsMobileMenuOpen((cur) => !cur)}
+                      <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
+                        {data.name}
+                      </MenuItem>
+                    </Typography>
+                  </Link>
+                ))}
+                {isUser ? (
+                  <>
+                    <div>
+                      <Typography
+                        as="div"
+                        variant="small"
+                        className="font-medium border-b border-gray-300"
                       >
+                        <ListItem
+                          className="focus:!bg-transparent flex items-center justify-between gap-2 py-2 pr-4 font-medium text-black"
+                          selected={isMobileMenuOpen}
+                          onClick={() => {
+                            setIsMobileMenuOpen((cur) => !cur);
+                          }}
+                        >
+                          <Link
+                            to={"/profile"}
+                            variant="small"
+                            className="font-normal"
+                            onClick={() => setIsNavOpen(false)}
+                          >
+                            <div className="cursor-pointer text-sm text-green">
+                              Hi, {patientName ?? "User"}
+                            </div>
+                          </Link>
+                          <BiChevronDown
+                            strokeWidth={2.5}
+                            className={`block h-3 w-3 transition-transform lg:hidden ${
+                              isMobileMenuOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </ListItem>
+                      </Typography>
+                    </div>
+                    <div className="block lg:hidden -mt-2">
+                      <Collapse open={isMobileMenuOpen}>
                         <Link
-                          to={"/profile"}
+                          to={"/order-history"}
                           variant="small"
                           className="font-normal"
                         >
-                          <div className="cursor-pointer text-sm text-green">
-                            Hi, {patientName ?? "User"}
-                          </div>
+                          <MenuItem
+                            key={2}
+                            onClick={() => {
+                              closeMenu();
+                              setIsNavOpen(false);
+                            }}
+                            className={`flex items-center gap-2 rounded text-sm`}
+                          >
+                            Order History
+                          </MenuItem>
                         </Link>
-                        <BiChevronDown
-                          strokeWidth={2.5}
-                          className={`block h-3 w-3 transition-transform lg:hidden ${
-                            isMobileMenuOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </ListItem>
-                    </Typography>
-                  </div>
-                  <div className="block lg:hidden -mt-2">
-                    <Collapse open={isMobileMenuOpen}>
-                      <Link
-                        to={"/order-history"}
-                        variant="small"
-                        className="font-normal"
-                      >
                         <MenuItem
-                          key={2}
-                          onClick={closeMenu}
-                          className={`flex items-center gap-2 rounded text-sm`}
+                          key={3}
+                          className={`flex items-center gap-2 rounded text-sm text-red-600 hover:text-red-900`}
+                          onClick={() => {
+                            closeMenu();
+                            localStorage.removeItem("user");
+                            localStorage.removeItem("userType");
+                            dispatch(setLogOut());
+                            navigate("../");
+                          }}
                         >
-                          Order History
+                          Sign Out
                         </MenuItem>
-                      </Link>
-                      <MenuItem
-                        key={3}
-                        className={`flex items-center gap-2 rounded text-sm text-red-600 hover:text-red-900`}
-                        onClick={() => {
-                          closeMenu();
-                          localStorage.removeItem("user");
-                          localStorage.removeItem("userType");
-                          dispatch(setLogOut());
-                          navigate("../");
-                        }}
-                      >
-                        Sign Out
-                      </MenuItem>
-                    </Collapse>
-                  </div>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => {
-                    setIsNavOpen(false);
-                    localStorage.setItem("userType", "patient");
-                  }}
-                  className="guide-mobile-login-btn"
-                >
-                  <div className="px-4 py-2 text-sm font-medium text-black border-b border-gray-300 hover:bg-gray-100">
-                    Login
-                  </div>
+                      </Collapse>
+                    </div>
+                  </>
+                ) : (
+                  <Link
+                    to="/login"
+                    onClick={() => {
+                      setIsNavOpen(false);
+                      localStorage.setItem("userType", "patient");
+                    }}
+                    className="guide-mobile-login-btn"
+                  >
+                    <div className="px-4 py-2 text-sm font-medium text-black border-b border-gray-300 hover:bg-gray-100">
+                      Login
+                    </div>
+                  </Link>
+                )}
+                <Link to={"/contact"} onClick={() => setIsNavOpen(false)}>
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    className="font-medium text-black mb-2"
+                  >
+                    <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
+                      Support
+                    </MenuItem>
+                  </Typography>
                 </Link>
-              )}
-              <Link to={"/contact"} onClick={() => setIsNavOpen(false)}>
-                <Typography
-                  variant="small"
-                  color="gray"
-                  className="font-medium text-black mb-2"
+
+                <Button
+                  className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200 "
+                  onClick={() => {
+                    navigate("/physios");
+                    setIsNavOpen(false);
+                  }}
                 >
-                  <MenuItem className="flex items-center gap-2 rounded-none border-b border-gray-300">
-                    Support
-                  </MenuItem>
-                </Typography>
-              </Link>
+                  Book an appointment
+                </Button>
 
-              <Button className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200">
-                Book an appointment
-              </Button>
-
-              <div className="cursor-pointer mt-2 flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
-                <MdOutlinePhoneInTalk className="w-4 h-4 text-black" />
-                <span className="text-sm text-black">+91 8107333576</span>
-              </div>
-              <div className="cursor-pointer flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
-                <MdOutlineMailOutline className="w-4 h-4 text-black" />
-                <span className="text-sm text-black">
-                  info@physioplushealthcare.com
-                </span>
-              </div>
+                <div className="cursor-pointer mt-2 flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
+                  <MdOutlinePhoneInTalk className="w-4 h-4 text-black" />
+                  <span className="text-sm text-black">+91 8107333576</span>
+                </div>
+                <div className="cursor-pointer flex items-center space-x-2 font-medium text-blue-gray-500 mb-2">
+                  <MdOutlineMailOutline className="w-4 h-4 text-black" />
+                  <span className="text-sm text-black">
+                    info@physioplushealthcare.com
+                  </span>
+                </div>
+              </>
             </ul>
           )}
         </Collapse>
