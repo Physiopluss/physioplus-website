@@ -74,16 +74,6 @@ const TreatmentCard = ({ orderData }) => {
                 Treatment
               </div>
               <div className="flex gap-6 flex-wrap">
-                {/* <div className="flex items-center gap-1 text-black font-normal text-xs md:text-sm lg:text-base">
-                  <img
-                    src="/images/CalendarBlank.png"
-                    alt=""
-                    className="w-4 h-4"
-                  />
-                  <span>
-                    {moment(orderData?.date).format("dddd, DD.MM.YYYY")}
-                  </span>
-                </div> */}
                 <div className="flex items-center gap-1 text-black font-normal text-xs md:text-sm lg:text-base">
                   <img src="/images/Clock.png" alt="" className="w-4 h-4" />
                   <span>

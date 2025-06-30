@@ -18,7 +18,8 @@ const OrderHistory = () => {
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("Upcoming");
   const [searchQuery, setSearchQuery] = useState("");
-  const [appointmentStatusFilter, setAppointmentStatusFilter] = useState("Appointment");
+  const [appointmentStatusFilter, setAppointmentStatusFilter] =
+    useState("Appointment");
 
   useEffect(() => {
     if (!userId) {
@@ -47,20 +48,12 @@ const OrderHistory = () => {
     if (appointmentStatusFilter === "Appointment") {
       return statusFilter === "Completed"
         ? order?.appointmentCompleted === true
-        : statusFilter === "Upcoming"
-        ? order?.appointmentCompleted === false && order?.status !== "Canceled"
-        : statusFilter === "Canceled"
-        ? order?.status === "Canceled"
-        : true;
+        : order?.appointmentCompleted === false && order?.status !== "Canceled"; // Upcoming
     } else {
       return statusFilter === "Completed"
         ? order?.isTreatmentScheduled?.isTreatmentCompleted === true
-        : statusFilter === "Upcoming"
-        ? order?.isTreatmentScheduled?.isTreatmentCompleted === false &&
-          order?.status !== "Canceled"
-        : statusFilter === "Canceled"
-        ? order?.status === "Canceled"
-        : true;
+        : order?.isTreatmentScheduled?.isTreatmentCompleted === false &&
+            order?.status !== "Canceled"; // Upcoming
     }
   });
 
@@ -86,7 +79,6 @@ const OrderHistory = () => {
       (o) => !o.appointmentCompleted && o.status !== "Canceled"
     ).length,
     Completed: consultationOrders.filter((o) => o.appointmentCompleted).length,
-    Canceled: consultationOrders.filter((o) => o.status === "Canceled").length,
   };
 
   const treatmentCounts = {
@@ -98,7 +90,6 @@ const OrderHistory = () => {
     Completed: treatmentOrders.filter(
       (o) => o?.isTreatmentScheduled?.isTreatmentCompleted
     ).length,
-    Canceled: treatmentOrders.filter((o) => o.status === "Canceled").length,
   };
 
   useEffect(() => {
@@ -216,16 +207,14 @@ const OrderHistory = () => {
         </div>
 
         {/* Status Filters */}
-        <div className="flex gap-4 px-4 pt-4 text-sm md:text-base font-medium">
-          {["Upcoming", "Completed", "Canceled"].map((status) => (
+        <div className="flex flex-wrap md:flex-nowrap gap-2 px-4 pt-4 text-sm md:text-base font-medium overflow-x-auto scrollbar-hide">
+          {["Upcoming", "Completed"].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
-              className={`flex items-center gap-2 px-3 py-1 rounded-md ${
+              className={`flex items-center gap-2 px-3 py-1 rounded-md whitespace-nowrap ${
                 statusFilter === status
-                  ? status === "Canceled"
-                    ? "bg-red-100 text-red-800"
-                    : "bg-green-100 text-green-800"
+                  ? "bg-[#f0fff5] text-green-800"
                   : "bg-gray-100 text-gray-800"
               }`}
             >
@@ -233,9 +222,7 @@ const OrderHistory = () => {
                 src={
                   status === "Upcoming"
                     ? "/images/upcoming 1.png"
-                    : status === "Completed"
-                    ? "/images/successful 1.png"
-                    : "/images/cancelled 1.png"
+                    : "/images/successful 1.png"
                 }
                 alt=""
                 className="h-5 w-5"

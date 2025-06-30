@@ -37,9 +37,11 @@ const TreatmentDetails = () => {
 
   // Check If Payment is Done for All Treatment Days
   useEffect(() => {
-    const isAllPaid = orderData?.isTreatmentScheduled?.treatmentDate?.every((s) => s?.isPaid);
+    const isAllPaid = orderData?.isTreatmentScheduled?.treatmentDate?.every(
+      (s) => s?.isPaid
+    );
     setIsAllDaysPaid(isAllPaid);
-  }, [orderData])
+  }, [orderData]);
 
   useEffect(() => {
     if (!userId) {
@@ -60,8 +62,8 @@ const TreatmentDetails = () => {
     orderData?.serviceType === 0
       ? orderData?.physioId?.home?.charges
       : orderData?.serviceType === 1
-        ? orderData?.physioId?.clinic?.charges
-        : orderData?.physioId?.online?.charges;
+      ? orderData?.physioId?.clinic?.charges
+      : orderData?.physioId?.online?.charges;
 
   const handleViewHistory = async () => {
     try {
@@ -79,10 +81,11 @@ const TreatmentDetails = () => {
       setIsCheckingCashback(true);
       const appointmentId = orderData?._id;
       const cashback = await checkCashback(appointmentId);
-      console.log("Cashback:", cashback.data);
 
       if (!cashback.data) {
-        return toast.error(cashback?.message || 'No cashback available for redemption');
+        return toast.error(
+          cashback?.message || "No cashback available for redemption"
+        );
       }
 
       // cashback = {
@@ -101,7 +104,7 @@ const TreatmentDetails = () => {
       // }
 
       if (cashback.data?.status !== "pending") {
-        toast.success('Cashback is already being processed or completed!');
+        toast.success("Cashback is already being processed or completed!");
         return;
       }
 
@@ -109,7 +112,7 @@ const TreatmentDetails = () => {
       setIsCashbackModalOpen(true);
     } catch (err) {
       console.error("❌ Failed to check cashback:", err);
-      toast.error(err?.message || 'Failed to check cashback availability');
+      toast.error(err?.message || "Failed to check cashback availability");
     } finally {
       setIsCheckingCashback(false);
     }
@@ -123,14 +126,16 @@ const TreatmentDetails = () => {
       const result = await updateCashback(cashbackData._id, upiId);
 
       if (result && result.success) {
-        toast.success('Cashback redemption request submitted successfully!');
+        toast.success("Cashback redemption request submitted successfully!");
         setIsCashbackModalOpen(false);
       } else {
-        throw new Error(result?.message || 'Failed to process cashback redemption');
+        throw new Error(
+          result?.message || "Failed to process cashback redemption"
+        );
       }
     } catch (err) {
       console.error("❌ Failed to redeem cashback:", err);
-      toast.error(err?.message || 'Failed to process cashback redemption');
+      toast.error(err?.message || "Failed to process cashback redemption");
     } finally {
       setIsRedeeming(false);
     }
@@ -166,7 +171,6 @@ const TreatmentDetails = () => {
         amount: amountToPay,
         couponId: orderData?.couponId?._id || null,
       });
-      console.log(result);
 
       if (result.success === true && result.status === 200) {
         toast.success("Payment successful!");
@@ -190,24 +194,58 @@ const TreatmentDetails = () => {
   return (
     <div className="font-Urbanist bg-[#FFFCF0] py-8 px-4 sm:px-12 lg:px-[120px]">
       {/* Breadcrumbs */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-        <Breadcrumbs separator=">" className="text-black bg-transparent">
+      <div className="flex flex-col md:flex-row  w-full  justify-start md:justify-between h-24 md:h-40    items-start md:items-center mb-4">
+        {/* Breadcrumbs */}
+        <Breadcrumbs
+          separator=">"
+          className="hidden md:flex my-2 md:mx-6 lg:mx-12 text-black bg-transparent"
+        >
           <Link
             to="/profile"
-            className="text-black font-semibold hover:text-green"
+            className="text-black  font-semibold hover:text-green"
           >
             My Account
           </Link>
           <Link
             to="/order-history"
-            className="text-black font-semibold hover:text-green"
+            className="text-black  font-semibold hover:text-green"
           >
             My Bookings
           </Link>
-          <span className="text-black hover:text-green font-bold">
-            {orderData?.physioId?.fullName}
-          </span>
+          <Link to="/order-history">
+            {" "}
+            <span className="text-black hover:text-green font-bold">
+              {orderData?.physioId?.fullName}
+            </span>
+          </Link>{" "}
+          {/* Active breadcrumb */}
         </Breadcrumbs>
+
+        <div className="flex md:hidden w-full bg-[#FFFDF5] py-4 px-4 md:px-6 lg:px-12 overflow-x-auto">
+          <div className="flex flex-wrap gap-x-2 gap-y-1 text-xs sm:text-sm md:text-base text-black">
+            <Link
+              to="/profile"
+              className="text-black  font-semibold hover:text-green"
+            >
+              My Account
+            </Link>
+            <span className="shrink-0">{">"}</span>
+            <Link
+              to="/order-history"
+              className="text-black  font-semibold hover:text-green"
+            >
+              My Bookings
+            </Link>
+            <span className="shrink-0">{">"}</span>
+            <Link to="/order-history">
+              {" "}
+              <span className="text-black hover:text-green font-bold">
+                {orderData?.physioId?.fullName || "Treatment Details"}
+              </span>
+            </Link>{" "}
+            {/* Active breadcrumb */}
+          </div>
+        </div>
       </div>
 
       {/* Top Info Section */}
@@ -235,12 +273,13 @@ const TreatmentDetails = () => {
                     {orderData?.serviceType === "home"
                       ? "Home"
                       : orderData?.serviceType === "clinic"
-                        ? "Clinic"
-                        : "Online"}{" "}
+                      ? "Clinic"
+                      : "Online"}{" "}
                     Visit
                   </p>
 
-                  <div className="flex gap-6 mt-1 text-xs md:text-sm text-black font-normal">
+                  <div className="flex flex-wrap md:flex-row sm:items-center gap-2 sm:gap-4 mt-1 text-xs md:text-sm text-black font-normal">
+                    {/* Date */}
                     <div className="flex items-center gap-2">
                       <img
                         src="/images/CalendarBlank.png"
@@ -251,6 +290,8 @@ const TreatmentDetails = () => {
                         {moment(orderData?.date).format("dddd, DD.MM.YYYY")}
                       </span>
                     </div>
+
+                    {/* Time */}
                     <div className="flex items-center gap-2">
                       <img
                         src="/images/Clock.png"
@@ -260,8 +301,9 @@ const TreatmentDetails = () => {
                       <span>{orderData?.timeInString}</span>
                     </div>
 
+                    {/* OTP */}
                     {orderData?.otp && (
-                      <span className="text-sm text-green font-semibold px-4">
+                      <span className="text-xs md:text-sm text-green font-semibold px-0 md:px-4">
                         OTP : {orderData?.otp}
                       </span>
                     )}
@@ -370,11 +412,11 @@ const TreatmentDetails = () => {
                     ? orderData?.couponId.couponType === 0
                       ? `- ₹ ${orderData?.couponId.discount}`
                       : orderData?.couponId.couponType === 1 && displayAmount
-                        ? `- ₹ ${(
+                      ? `- ₹ ${(
                           (displayAmount * orderData?.couponId.discount) /
                           100
                         ).toFixed(2)}`
-                        : "No Discount"
+                      : "No Discount"
                     : "No Discount"}
                 </p>
 
@@ -412,12 +454,17 @@ const TreatmentDetails = () => {
             </div>
             <button
               onClick={() => setIsModalOpen(true)}
-              disabled={!orderData.invoice || orderData.invoice.type != "treatment"}
-              className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed" >
+              disabled={
+                !orderData.invoice || orderData.invoice.type != "treatment"
+              }
+              className="w-full mt-4 rounded-lg py-2 shadow-sm bg-green text-white font-semibold text-lg flex flex-row gap-2 items-center justify-center  disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <RiFileDownloadLine className="w-5 h-5" />
               Download Invoice
             </button>
-            <p className="text-xs text-gray-600 mt-2">* Available after treatment completion</p>
+            <p className="text-xs text-gray-600 mt-2">
+              * Available after treatment completion
+            </p>
             <InvoiceDownloader
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
@@ -451,16 +498,16 @@ const TreatmentDetails = () => {
               {orderData?.gender === 0
                 ? "Female"
                 : orderData?.gender === 1
-                  ? "Male"
-                  : "Other"}
+                ? "Male"
+                : "Other"}
             </p>
             <p>
               <strong>Service Type:</strong>{" "}
               {orderData?.serviceType === 0
                 ? "Home Visit"
                 : orderData?.serviceType === 1
-                  ? "Clinic Visit"
-                  : "Online Visit"}
+                ? "Clinic Visit"
+                : "Online Visit"}
             </p>
             <p>
               <strong>Consultation Amount:</strong> ₹ {orderData?.amount}
@@ -468,8 +515,9 @@ const TreatmentDetails = () => {
             <p>
               <strong>Payment:</strong> {orderData?.paymentmode || "Online"} -{" "}
               <span
-                className={`font-semibold ${orderData?.paymentStatus === 1 ? "text-green" : "text-red-500"
-                  }`}
+                className={`font-semibold ${
+                  orderData?.paymentStatus === 1 ? "text-green" : "text-red-500"
+                }`}
               >
                 {orderData?.paymentStatus === 1 ? "Paid" : "Unpaid"}
               </span>
@@ -477,7 +525,7 @@ const TreatmentDetails = () => {
           </div>
         </details>
 
-        <details className="p-4">
+        <details open className="p-4">
           <summary className="font-semibold text-lg text-black cursor-pointer">
             Your Problem
           </summary>
@@ -486,7 +534,7 @@ const TreatmentDetails = () => {
           </div>
         </details>
 
-        <details className="p-4">
+        <details open className="p-4">
           <summary className="font-semibold text-lg text-black cursor-pointer">
             Physio Prescription
           </summary>
@@ -496,7 +544,7 @@ const TreatmentDetails = () => {
           </div>
         </details>
 
-        <details className="p-4">
+        <details open className="p-4">
           <summary className="font-semibold text-lg text-black cursor-pointer">
             Treatment Report
           </summary>
@@ -506,8 +554,8 @@ const TreatmentDetails = () => {
               {orderData?.serviceType === 0
                 ? "Home Visit"
                 : orderData?.serviceType === 1
-                  ? "Clinic Visit"
-                  : "Online Visit"}
+                ? "Clinic Visit"
+                : "Online Visit"}
             </p>
             <p>
               <strong>Treatment Days:</strong>{" "}
@@ -517,12 +565,12 @@ const TreatmentDetails = () => {
               <strong>Treatment Duration:</strong>{" "}
               {treatmentInfo?.treatmentDate?.length > 0
                 ? `${moment(treatmentInfo.treatmentDate[0].date).format(
-                  "D MMM"
-                )} - ${moment(
-                  treatmentInfo.treatmentDate[
-                    treatmentInfo.treatmentDate.length - 1
-                  ].date
-                ).format("D MMM")}`
+                    "D MMM"
+                  )} - ${moment(
+                    treatmentInfo.treatmentDate[
+                      treatmentInfo.treatmentDate.length - 1
+                    ].date
+                  ).format("D MMM")}`
                 : "-"}
             </p>
             <p>
@@ -540,8 +588,9 @@ const TreatmentDetails = () => {
               >
                 <span>{moment(session.date).format("D MMM")}</span>
                 <span
-                  className={`font-semibold flex items-center gap-2 ${session?.isPaid ? "text-green" : "text-red-500"
-                    }`}
+                  className={`font-semibold flex items-center gap-2 ${
+                    session?.isPaid ? "text-green" : "text-red-500"
+                  }`}
                 >
                   ₹ {(treatmentInfo?.amount || 0).toLocaleString("en-IN")}
                   {session?.isPaid ? (
@@ -613,10 +662,10 @@ const TreatmentDetails = () => {
           try {
             await handleRedeemCashback(upiId);
             // Show success state in the modal
-            setCashbackData(prev => ({
+            setCashbackData((prev) => ({
               ...prev,
-              status: 'process',
-              userUpiId: upiId
+              status: "process",
+              userUpiId: upiId,
             }));
           } catch (error) {
             // Error is already handled in handleRedeemCashback

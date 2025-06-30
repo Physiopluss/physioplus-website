@@ -39,19 +39,19 @@ const TransactionModal = ({ orderData, isOpen, onClose, transactions }) => {
                     <td className="px-4 py-2 border">
                       {txn.createdAt
                         ? new Date(txn.createdAt).toLocaleString("en-IN", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
-                        })
-                        : txn.updatedAt
-                          ? new Date(txn.updatedAt).toLocaleString("en-IN", {
                             dateStyle: "medium",
                             timeStyle: "short",
                           })
-                          : "-"}
+                        : txn.updatedAt
+                        ? new Date(txn.updatedAt).toLocaleString("en-IN", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "-"}
                     </td>
                     <td className="px-4 py-2 border">₹{txn.amount}</td>
                     <td className="px-4 py-2 border">{txn.paymentMode}</td>
-                    <td className="px-4 py-2 border capitalize">
+                    <td className="px-4 py-2 border capitalize text-green">
                       {txn.paymentStatus}
                     </td>
                     {/* <td className="px-4 py-2 border">
