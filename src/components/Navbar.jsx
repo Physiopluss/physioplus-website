@@ -21,7 +21,6 @@ import { MdOutlineMailOutline, MdOutlinePhoneInTalk } from "react-icons/md";
 import { BiChevronDown } from "react-icons/bi";
 
 import { FaUser, FaUserMd } from "react-icons/fa"; // for patient and physio icons
-import LoginGuide from "../pages/LoginGuide";
 
 export default function Navbar() {
   const user =
@@ -44,7 +43,6 @@ export default function Navbar() {
 
   return (
     <>
-      <LoginGuide openLoginMenu={() => setIsMenuOpen(true)} />
       <header className="hidden bg-[#F1F9F4] py-4 px-6 lg:flex justify-between items-center">
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
@@ -67,7 +65,7 @@ export default function Navbar() {
             >
               <MenuHandler>
                 <Link
-                  className="text-sm text-black cursor-pointer guide-desktop-login-btn"
+                  className="text-sm text-black cursor-pointer "
                   to="/login"
                   onClick={(e) => {
                     e.preventDefault();
@@ -157,7 +155,7 @@ export default function Navbar() {
             color="blue-gray"
             variant="text"
             onClick={toggleIsNavOpen}
-            className="ml-auto mr-4 lg:hidden guide-mobile-menu-btn"
+            className="ml-auto mr-4 lg:hidden "
           >
             {isNavOpen ? (
               <IoMdClose className="h-6 w-6" />
@@ -270,7 +268,6 @@ export default function Navbar() {
                       setIsNavOpen(false);
                       localStorage.setItem("userType", "patient");
                     }}
-                    className="guide-mobile-login-btn"
                   >
                     <div className="px-4 py-2 text-sm font-medium text-black border-b border-gray-300 hover:bg-gray-100">
                       Login
