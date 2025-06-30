@@ -67,14 +67,14 @@ const Blog = () => {
 									key={Blog._id}
 									id={Blog._id}
 									title={Blog.title}
-									description={Blog.description}
-									youTubeLink={Blog.youTubeLink}
-									image={Blog.image}
-									status={Blog.status}
-									views={Blog.views}
-									tags={Blog.tags}
-									blogType={Blog.blogType}
-									date={Blog.date}
+									description={Blog.body}
+									// youTubeLink={Blog.youTubeLink}
+									image={Blog.coverImage}
+									// status={Blog.status}
+									// views={Blog.views}
+									// tags={Blog.tags}
+									// blogType={Blog.blogType}
+									date={Blog.createdAt}
 								/>
 							))}
 					</div>

@@ -49,15 +49,15 @@ const BlogDetail = () => {
 			>
 				<div className="flex flex-col w-full md:max-w-screen-md gap-4 p-4">
 					<img
-						src={blogData.image}
+						src={blogData.coverImage}
 						alt={blogData.title}
 						className="object-cover max-h-80"
 					/>
 					<h2 className="text-3xl font-bold">{blogData.title}</h2>
-					{blogData.date && (
+					{blogData.createdAt && (
 						<p className="flex items-center gap-1">
 							<CiClock2 />
-							{moment(blogData.date).format("ll")}
+							{moment(blogData.createdAt).format("ll")}
 						</p>
 					)}
 					<div className="markdown-content">
@@ -115,12 +115,12 @@ const BlogDetail = () => {
 							>
 								<div className="flex gap-4 my-4 items-center mx-4">
 									<img
-										src={blog.image}
+										src={blog.coverImage}
 										alt={blog.title}
 										className="w-24 aspect-square rounded-md object-cover"
 									/>
 									<div className="flex flex-col gap-1">
-										<p className="text-sm">{moment(blogData.date).format("ll")}</p>
+										<p className="text-sm">{moment(blog.createdAt).format("ll")}</p>
 										<h6 className="font-bold leading-4">{blog.title}</h6>
 									</div>
 								</div>
