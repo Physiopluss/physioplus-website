@@ -25,4 +25,9 @@ export const NavData = [
 		name: "Contact",
 		slug: "/contact",
 	},
+	{
+		id: 7,
+		name: "Homecare",
+		slug: "/homecare",
+	},
 ];

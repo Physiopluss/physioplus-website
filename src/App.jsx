@@ -25,7 +25,47 @@ const Login = lazy(() => import("./pages/Auth/Login"));
 
 const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 
-// pages
+// homecare
+// auth new for homecare
+import HomecareLayout from "./pages/layout/HomecareLayout";
+// for patient
+const LoginNew = lazy(() => import("./pages/homecare/auth/LoginNew"));
+const SignUpNew = lazy(() => import("./pages/homecare/auth/SignUpNew"));
+const HomecareSupport = lazy(() => import("./pages/homecare/HomecareSupport"));
+const PatientProfile = lazy(() =>
+  import("./pages/homecare/patient/PatientProfile")
+);
+const PatientOrderHistory = lazy(() =>
+  import("./pages/homecare/patient/PatientOrderHistory")
+);
+
+const ConsultationOrderList = lazy(() =>
+  import("./pages/homecare/patient/ConsultationOrderList")
+);
+const TreatmentOrderList = lazy(() =>
+  import("./pages/homecare/patient/TreatmentOrderList")
+);
+
+const ViewConsultation = lazy(() =>
+  import("./pages/homecare/patient/ViewConsultation")
+);
+const ViewTreatment = lazy(() =>
+  import("./pages/homecare/patient/ViewTreatment")
+);
+const HomePhysios = lazy(() => import("./pages/homecare/HomePhysios"));
+const BookPhysioPage = lazy(() => import("./pages/homecare/BookPhysioPage"));
+const PhysioProfile = lazy(() => import("./pages/homecare/PhysioProfile"));
+const BookingSummaryPage = lazy(() =>
+  import("./pages/homecare/BookingSummaryPage")
+);
+
+// for physio
+const PhysioAccount = lazy(() =>
+  import("./pages/homecare/physio/PhysioAccount")
+);
+
+// main sites
+
 const Home = lazy(() => import("./pages/Home"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -134,6 +174,7 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
+
       {
         path: "/physios",
         element: (
@@ -315,6 +356,142 @@ const router = createBrowserRouter([
       </Suspense>
     ),
     errorElement: <ErrorComp />,
+  },
+
+  // homecare routes
+  {
+    path: "/homecare",
+    element: <HomecareLayout />,
+    children: [
+      {
+        path: "",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <HomePhysios />
+          </Suspense>
+        ),
+      },
+      {
+        path: "login-new",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <LoginNew />
+          </Suspense>
+        ),
+      },
+      {
+        path: "signup-new",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <SignUpNew />
+          </Suspense>
+        ),
+      },
+      {
+        path: "about",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <About />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "contact",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <HomecareSupport />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "patient-profile",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PatientProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: "patient-order-history",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PatientOrderHistory />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "consultation-orders",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ConsultationOrderList />
+          </Suspense>
+        ),
+      },
+      {
+        path: "consultation-detail/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ViewConsultation />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "treatment-orders",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <TreatmentOrderList />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "treatment-detail/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ViewTreatment />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "book/:physioId",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <BookPhysioPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "profile/:physioId",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PhysioProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: "summary",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <BookingSummaryPage />
+          </Suspense>
+        ),
+      },
+
+      // physio connect
+      {
+        path: "physio",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PhysioAccount />
+          </Suspense>
+        ),
+      },
+    ],
   },
 ]);
 

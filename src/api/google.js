@@ -107,3 +107,50 @@ export const getCurrentPosition = () => {
     );
   });
 };
+
+
+export const getCurrentLocationDetails = (GOOGLE_API_KEY) => {
+  if (!navigator.geolocation) {
+    return Promise.reject(new Error("Geolocation not supported."));
+  }
+
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const res = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.latitude},${coords.longitude}&key=${GOOGLE_API_KEY}`
+          );
+          const data = await res.json();
+          const result = data.results?.[0];
+          if (!result) throw new Error("Location not found");
+
+          const components = result.address_components || [];
+
+          const pin =
+            components.find((c) => c.types.includes("postal_code"))
+              ?.long_name || "";
+          const near =
+            components.find(
+              (c) =>
+                c.types.includes("sublocality") || c.types.includes("locality")
+            )?.long_name || "";
+
+          resolve({
+            address: result.formatted_address || "",
+            nearby: near,
+            pincode: pin,
+            lat: coords.latitude,
+            lng: coords.longitude,
+          });
+        } catch (error) {
+          reject(new Error("Failed to fetch location data"));
+        }
+      },
+      (err) => {
+        reject(new Error("Failed to access your current location"));
+      }
+    );
+  });
+};
+
