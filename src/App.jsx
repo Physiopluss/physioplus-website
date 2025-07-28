@@ -45,10 +45,16 @@ const ConsultationOrderList = lazy(() =>
 const TreatmentOrderList = lazy(() =>
   import("./pages/homecare/patient/TreatmentOrderList")
 );
-
+const PerferConsultation = lazy(() =>
+  import("./pages/homecare/patient/PerferConsultation")
+);
 const ViewConsultation = lazy(() =>
   import("./pages/homecare/patient/ViewConsultation")
 );
+const PerferTreatment = lazy(() =>
+  import("./pages/homecare/patient/PerferTreatment")
+);
+const PaymentPage = lazy(() => import("./pages/homecare/patient/PaymentPage"));
 const ViewTreatment = lazy(() =>
   import("./pages/homecare/patient/ViewTreatment")
 );
@@ -431,6 +437,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "prefer-consultation/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PerferConsultation />
+          </Suspense>
+        ),
+      },
+      {
         path: "consultation-detail/:id",
         element: (
           <Suspense fallback={<Loading />}>
@@ -447,12 +461,27 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-
+      {
+        path: "prefer-Treatment/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PerferTreatment />
+          </Suspense>
+        ),
+      },
       {
         path: "treatment-detail/:id",
         element: (
           <Suspense fallback={<Loading />}>
             <ViewTreatment />
+          </Suspense>
+        ),
+      },
+      {
+        path: "treatment-payment",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PaymentPage />
           </Suspense>
         ),
       },

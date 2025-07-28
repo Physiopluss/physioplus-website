@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const newModalSlice = createSlice({
-    name: "modal",
+    name: "modalNew",
     initialState,
     reducers: {
         setOtpModalOpen: (state) => {

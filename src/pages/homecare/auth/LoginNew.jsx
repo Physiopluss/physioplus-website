@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { login } from "../../../api/auth.js";
 import toast from "react-hot-toast";
 import { numberSchema } from "../../../validation.js";
 import { useFormik } from "formik";
@@ -9,8 +8,9 @@ import { setOtpModalOpen } from "../../../slices/homecare/newModalSlice.js";
 import { useDispatch } from "react-redux";
 import { setLoginData } from "../../../slices/homecare/newAuthSlice.js";
 import { Input } from "@material-tailwind/react";
+import { loginNew } from "../../../api/homecare.js";
 
-const Login = () => {
+const LoginNew = () => {
   const dispatch = useDispatch();
 
   const formik = useFormik({
@@ -19,7 +19,7 @@ const Login = () => {
     },
     validationSchema: Yup.object({ phone: numberSchema }),
     onSubmit: (values) => {
-      login(values.phone).then((res) => {
+      loginNew(values.phone).then((res) => {
         if (res.status >= 200 && res.status < 300) {
           toast.success(res.data.message, {
             id: "otpSendViaLogin",
@@ -115,4 +115,4 @@ const Login = () => {
     </div>
   );
 };
-export default Login;
+export default LoginNew;

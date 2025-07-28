@@ -6,7 +6,7 @@ const initialState = {
 };
 
 export const newPhysioDetailSlice = createSlice({
-    name: "physioDetail",
+    name: "physioDetailNew",
     initialState,
     reducers: {
         setPhysioDetail: (state, action) => {

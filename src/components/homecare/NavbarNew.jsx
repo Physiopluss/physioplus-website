@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Collapse,
@@ -18,32 +18,29 @@ import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
 
 import { NewNavData } from "./Mock/NewNavData";
-import { setLogOut } from "../../slices/homecare/newAuthSlice";
+import { setLogOut, setUser } from "../../slices/homecare/newAuthSlice";
 import NewNavLinks from "./comp/NewNavLinks";
 
 export default function NavbarNew() {
-  const rawUser = localStorage.getItem("homecareUser");
-  const user = rawUser ? JSON.parse(rawUser) : null;
-
-  let decoded;
-  try {
-    decoded = user ? jwtDecode(user?.userToken) : null;
-  } catch {
-    decoded = null;
-  }
-
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const user = localStorage.getItem("homecareUser");
+    if (user) {
+      dispatch(setUser(JSON.parse(user)));
+    }
+  }, [dispatch]);
+  const user =
+    localStorage.getItem("homecareUser") &&
+    JSON.parse(localStorage.getItem("homecareUser"));
+  const decoded = user && jwtDecode(user?.userToken);
   const patientName = decoded?.patient?.fullName;
   const physioName = decoded?.physio?.fullName;
-
-  const isUser = useSelector((state) => state.auth.user);
+  const isUser = useSelector((e) => e.authNew.user);
   const userType = localStorage.getItem("homecareUserType");
-
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const closeMenu = () => setIsMenuOpen(false);
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
@@ -97,13 +94,13 @@ export default function NavbarNew() {
             >
               <MenuHandler>
                 <div className="cursor-pointer text-sm text-green">
-                  Hi, {patientName ?? physioName ?? "User"}
+                  Hi, {patientName ?? "User"}
                 </div>
               </MenuHandler>
 
               <MenuList className="p-1">
                 <Link to={"/homecare/patient-profile"} className="font-normal">
-                  <MenuItem>Hi, {patientName ?? physioName ?? "User"}</MenuItem>
+                  <MenuItem>Hi, {patientName ?? "User"}</MenuItem>
                 </Link>
                 <Link
                   to={"/homecare/patient-order-history"}
@@ -198,37 +195,44 @@ export default function NavbarNew() {
                   selected={isMobileMenuOpen}
                   onClick={() => setIsMobileMenuOpen((cur) => !cur)}
                 >
-                  <div className="text-sm text-green">
-                    Hi, {patientName ?? physioName ?? "User"}
-                  </div>
+                  <Link
+                    to={"/homecare/patient-profile"}
+                    className="text-sm text-green"
+                    onClick={() => setIsNavOpen(false)}
+                  >
+                    <MenuItem>Hi, {patientName ?? "User"}</MenuItem>
+                  </Link>
+
                   <BiChevronDown
-                    strokeWidth={2.5}
-                    className={`h-3 w-3 transition-transform ${
+                    className={`h-4 w-4 transition-transform ${
                       isMobileMenuOpen ? "rotate-180" : ""
                     }`}
                   />
                 </ListItem>
 
-                <Collapse open={isMobileMenuOpen}>
-                  <Link
-                    to="/homecare/patient-order-history"
-                    onClick={() => setIsNavOpen(false)}
-                  >
-                    <MenuItem className="text-sm">Order History</MenuItem>
-                  </Link>
-                  <MenuItem
-                    className="text-sm text-red-600 hover:text-red-900"
-                    onClick={() => {
-                      closeMenu();
-                      localStorage.removeItem("homecareUser");
-                      localStorage.removeItem("homecareUserType");
-                      dispatch(setLogOut());
-                      navigate("/homecare");
-                    }}
-                  >
-                    Sign Out
-                  </MenuItem>
-                </Collapse>
+                {isMobileMenuOpen && (
+                  <Collapse open={isMobileMenuOpen}>
+                    <Link
+                      to="/homecare/patient-order-history"
+                      onClick={() => setIsNavOpen(false)}
+                    >
+                      <MenuItem className="text-sm">Order History</MenuItem>
+                    </Link>
+
+                    <MenuItem
+                      className="text-sm text-red-600 hover:text-red-900"
+                      onClick={() => {
+                        closeMenu();
+                        localStorage.removeItem("homecareUser");
+                        localStorage.removeItem("homecareUserType");
+                        dispatch(setLogOut());
+                        navigate("/homecare");
+                      }}
+                    >
+                      Sign Out
+                    </MenuItem>
+                  </Collapse>
+                )}
               </>
             ) : (
               <Link

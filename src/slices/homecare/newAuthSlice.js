@@ -10,7 +10,7 @@ const initialState = {
 };
 
 export const newAuthSlice = createSlice({
-    name: "auth",
+    name: "authNew",
     initialState,
     reducers: {
         setLoginData: (state, value) => {
@@ -37,6 +37,7 @@ export const newAuthSlice = createSlice({
 
         setUser: (state, value) => {
             state.user = value.payload;
+            
         },
         setLogOut: (state) => {
             state.phone = null;

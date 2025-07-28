@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
 import toast from "react-hot-toast";
-import { signUp } from "../../../api/auth.js";
+
 import * as Yup from "yup";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import { setOtpModalOpen } from "../../../slices/homecare/newModalSlice.js";
 import OtpModalNew from "../../../components/homecare/comp/OtpModalNew.jsx";
 import { Radio } from "@material-tailwind/react";
 import "react-day-picker/style.css";
+import { signUpNew } from "../../../api/homecare.js";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ const SignUp = () => {
       date: Yup.number().required("Date is required"),
     }),
     onSubmit: (values) => {
-      signUp(values).then((res) => {
+      signUpNew(values).then((res) => {
         if (res.status >= 200 && res.status < 300) {
           toast.success(res.data.message, {
             id: "otpSendViaSignup",

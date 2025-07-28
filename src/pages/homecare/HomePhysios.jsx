@@ -9,72 +9,92 @@ export default function HomePhysios() {
   const [filter, setFilter] = useState("default");
   const [physios, setPhysios] = useState([]);
   const [loading, setLoading] = useState(false);
-
-  console.log("physios", physios);
+  const [showLocationPopup, setShowLocationPopup] = useState(true); // Show popup on load
 
   const fetchPhysios = async () => {
     setLoading(true);
-    try {
-      const params = {};
-      if (search) params.search = search;
-      if (filter !== "default") params.filter = filter;
+    const params = {};
+    if (search) params.search = search;
+    if (filter !== "default") params.filter = filter;
 
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            params.lat = lat;
-            params.lng = lng;
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          params.lat = lat;
+          params.lng = lng;
 
+          try {
             const data = await getPhysios(params);
             setPhysios(data);
+          } catch (error) {
+            console.error("Error fetching physios:", error);
+            setPhysios([]);
+          } finally {
+            setShowLocationPopup(false);
             setLoading(false);
-          },
-          () => {
-            fallbackFetch(params);
           }
-        );
-      } else {
-        fallbackFetch(params);
-      }
-    } catch (error) {
-      console.error("Error fetching physios:", error);
-      setPhysios([]);
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setShowLocationPopup(true);
+          setLoading(false);
+        }
+      );
+    } else {
+      setShowLocationPopup(true);
       setLoading(false);
     }
   };
 
-  const fallbackFetch = async (params) => {
-    try {
-      const data = await getPhysios(params);
-      setPhysios(data);
-    } catch (error) {
-      console.error(error);
-      setPhysios([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Run fetchPhysios when filters or search change,
+  // but only if location is already allowed (popup hidden)
   useEffect(() => {
-    fetchPhysios();
+    if (!showLocationPopup) {
+      fetchPhysios();
+    }
   }, [search, filter]);
 
   const handleSeeAll = () => {
     setSearch("");
     setFilter("default");
-    fetchPhysios(); // Ensures fresh data regardless of state change
+    fetchPhysios();
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 mb-16">
-      {/* Greeting + Search */}
+    <div className="w-full max-w-4xl mx-auto px-4 mb-16 relative">
+      {/* Location Permission Popup */}
+      {showLocationPopup && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-lg w-[90%] max-w-sm text-center">
+            <h2 className="text-lg font-bold mb-2 text-red-700">
+              Location Required
+            </h2>
+            <p className="text-gray-700 text-sm mb-4">
+              To find nearby physiotherapists, we need access to your location.
+              <br />
+              Please click “Allow Location” and accept permission in your
+              browser popup.
+            </p>
+            <button
+              className="bg-green hover:bg-[#15692c] text-white px-4 py-2 rounded-lg text-sm font-medium"
+              onClick={() => {
+                fetchPhysios(); // User-triggered → prompts browser
+              }}
+            >
+              Allow Location
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Promo Banner */}
       <div className="my-6 w-[320px] sm:w-full mx-auto">
         <PromoBannerSwiper />
       </div>
+
+      {/* Greeting + Search */}
       <div className="flex flex-col gap-3 bg-[#d9fddd] text-green-900 p-4 rounded-md sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-sm sm:text-base">Hello Patient 👋</h3>
@@ -92,6 +112,7 @@ export default function HomePhysios() {
           />
         </div>
       </div>
+
       {/* Filters */}
       <div className="flex flex-wrap gap-2 mt-4 mb-6">
         {["price", "rating", "mpt"].map((f) => (

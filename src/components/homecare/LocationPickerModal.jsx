@@ -13,6 +13,7 @@ export default function LocationPickerModal({
   const [address, setAddress] = useState("");
   const [nearby, setNearby] = useState("");
   const [pincode, setPincode] = useState("");
+  const [latLng, setLatLng] = useState(null); // Add this
 
   useEffect(() => {
     if (!isOpen || !window.google || !mapRef.current) return;
@@ -43,10 +44,10 @@ export default function LocationPickerModal({
 
           marker.addListener("dragend", () => {
             const newPos = marker.getPosition();
-            fetchAddress({ lat: newPos.lat(), lng: newPos.lng() });
+            const newLatLng = { lat: newPos.lat(), lng: newPos.lng() };
+            fetchAddress(newLatLng);
           });
 
-          // Optional: Click on map sets pin
           map.addListener("click", (e) => {
             const clicked = { lat: e.latLng.lat(), lng: e.latLng.lng() };
             marker.setPosition(clicked);
@@ -63,6 +64,7 @@ export default function LocationPickerModal({
   }, [isOpen]);
 
   const fetchAddress = (latLng) => {
+    setLatLng(latLng); // Save current lat/lng
     if (!geocoderRef.current) return;
 
     geocoderRef.current.geocode({ location: latLng }, (results, status) => {
@@ -89,8 +91,8 @@ export default function LocationPickerModal({
   };
 
   const handleConfirm = () => {
-    if (!address) {
-      alert("Please wait for address to load...");
+    if (!address || !latLng) {
+      alert("Please wait for location to load...");
       return;
     }
 
@@ -98,7 +100,10 @@ export default function LocationPickerModal({
       address,
       nearby,
       pincode,
+      lat: latLng.lat,
+      lng: latLng.lng,
     });
+
     onClose();
   };
 
@@ -131,6 +136,11 @@ export default function LocationPickerModal({
           {pincode && (
             <div>
               <strong>Pincode:</strong> {pincode}
+            </div>
+          )}
+          {latLng && (
+            <div>
+              <strong>Lat/Lng:</strong> {latLng.lat}, {latLng.lng}
             </div>
           )}
         </div>

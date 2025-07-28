@@ -5,20 +5,21 @@ import { setOtpModalOpen } from "../../../slices/homecare/newModalSlice";
 import { setUser } from "../../../slices/homecare/newAuthSlice";
 import OTPInput from "react-otp-input";
 import { IoIosCloseCircle } from "react-icons/io";
-import { login, OtpVerify, signUp } from "../../../api/auth";
+
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   physioConnectLogin,
   physioConnectOtpVerify,
 } from "../../../api/physioConnect";
+import { loginNew, OtpVerifyNew, signUpNew } from "../../../api/homecare";
 
 export default function OtpModalNew() {
-  const modalOpen = useSelector((state) => state.modal.otpModalOpen);
-  const phone = useSelector((state) => state.auth.phone);
+  const modalOpen = useSelector((state) => state.modalNew.otpModalOpen); // ✅ correct modal slice
+  const phone = useSelector((state) => state.authNew.phone); // ✅ correct auth slice
   const { type, fullName, gender, date, dob } = useSelector(
-    (state) => state.auth
-  );
+    (state) => state.authNew
+  ); // ✅
 
   const [disabled, setDisabled] = useState(true);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -57,7 +58,7 @@ export default function OtpModalNew() {
     try {
       const res = isPhysio
         ? await physioConnectOtpVerify(phone, otp, fullName)
-        : await OtpVerify(phone, otp, type, fullName, gender, date, dob);
+        : await OtpVerifyNew(phone, otp, type, fullName, gender, date, dob);
 
       if (res.status >= 200 && res.status < 300) {
         const userData = {
@@ -102,9 +103,9 @@ export default function OtpModalNew() {
       if (type === "physio") {
         physioConnectLogin(phone);
       } else if (type === "login") {
-        login(phone);
+        loginNew(phone);
       } else {
-        signUp({ fullName, phone, dob, gender });
+        signUpNew({ fullName, phone, dob, gender });
       }
 
       // Reset Timer
