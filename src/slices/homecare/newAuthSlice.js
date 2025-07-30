@@ -15,7 +15,7 @@ export const newAuthSlice = createSlice({
     reducers: {
         setLoginData: (state, value) => {
             state.phone = value.payload;
-            state.type = "login";
+            state.type = "patient";
         },
 
         setSignupData: (state, value) => {

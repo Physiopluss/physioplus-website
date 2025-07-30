@@ -133,6 +133,142 @@ export async function getConsultationById(consultationId) {
   }
 }
 
+export const payForAppointmentDayToRazorpay = async ({
+  selectedDate, // ✅ expect array now
+  couponId,
+  amount,
+  formData,
+  patientId,
+  physioId,
+  userToken,
+}) => {
+  if (!userToken) throw new Error("userToken is required");
+  if (!patientId) throw new Error("patientId is required");
+  if (!physioId) throw new Error("physioId is required");
+  if (!amount) throw new Error("amount is required");
+
+  try {
+    const response = await instanceHomeCare.post(
+      "/web/patient/payAppointmentDay",
+      {
+        date:selectedDate, // ✅ array of day IDs
+    formData,
+        couponId,
+        amount,
+        patientId,
+        physioId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      const data = response.data.razorpay;
+      
+      const result = await verifyAppointmentPayment({ data, userToken });
+      return result;
+    } else {
+      throw new Error(response?.data?.message || "Payment initiation failed");
+    }
+  } catch (error) {
+    console.error("Razorpay Payment Error:", error);
+    throw error;
+  }
+};
+
+export const verifyAppointmentPayment = async ({ data, userToken }) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY,
+      amount: data.notes.amount,
+      currency: data.currency,
+      name: "Physioplus Healthcare",
+      description: `Appointment Payment - Physio ID: ${data.notes.physioId}`,
+      order_id: data.id,
+      prefill: {
+        name: data.notes.patientName,
+        contact: data.notes.phone,
+      },
+      handler: async (response) => {
+        try {
+          const verifyRes = await instanceHomeCare.post(
+            "web/patient/verifyAppointmentPayment",
+            {
+              orderId: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+
+          if (verifyRes.status >= 200 && verifyRes.status < 300) {
+            resolve(verifyRes.data);
+          } else {
+            reject(
+              new Error(
+                verifyRes.data?.message || "Payment verification failed"
+              )
+            );
+          }
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          reject(error);
+        }
+      },
+      theme: {
+        color: "#039342",
+      },
+    };
+
+    if (window.Razorpay) {
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } else {
+      reject(new Error("Razorpay is not available"));
+    }
+  });
+};
+
+
+export const requestPhysioToSchedule = async ({ orderId, patientId, physioId }) => {
+  if (!orderId || !patientId || !physioId) {
+    throw new Error("Missing required parameters");
+  }
+
+  const res = await instanceHomeCare.get(
+    "/web/patient/sendNotificationForTreatment",
+    {
+      params: {
+        appointmentId: orderId,
+        patientId,
+        physioId,
+      },
+    }
+  );
+
+  return res;
+};
+
+export const getInvoiceByOrderId = async (orderId,type) => {
+  if (!orderId ) throw new Error("Order ID is required");
+  if (!type ) throw new Error("type is required");
+  const res = await instanceHomeCare.get(`/web/patient/getInvoice`, {
+    params: { appointmentId: orderId, type },
+  });
+
+  return res.data;
+};
+
+
 // ✅ GET All Treatments of a Patient
 export async function getAllPatientTreatments(patientId) {
   try {

@@ -109,7 +109,9 @@ const PaymentPage = () => {
       });
 
       toast.success("Payment successful");
-      navigate("/homecare/orders");
+      navigate(`/homecare/prefer-Treatment/${order.id || order._id}`, {
+        state: { order },
+      });
     } catch (err) {
       toast.error(err?.message || "Payment failed");
     }

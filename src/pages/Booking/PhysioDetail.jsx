@@ -1,6 +1,9 @@
 import ReactGA from "react-ga4";
 import { Link, useParams } from "react-router-dom";
-import { useFetchSinglePhysioDataQuery, useGetPhysioReviewsQuery } from "../../api/physios";
+import {
+  useFetchSinglePhysioDataQuery,
+  useGetPhysioReviewsQuery,
+} from "../../api/physios";
 import { setPhysioDetail } from "../../slices/physioSlice";
 import { useDispatch } from "react-redux";
 
@@ -18,7 +21,6 @@ import Skeleton from "react-loading-skeleton";
 import SlotComponent from "../../components/SlotComponent";
 import MediaGallery from "../../components/MediaGallery";
 
-
 const PhysioDetail = () => {
   const { slug } = useParams();
   const { data, error, isLoading } = useFetchSinglePhysioDataQuery(slug);
@@ -34,8 +36,12 @@ const PhysioDetail = () => {
 
   // dispatch(setPhysioDetail({ physioId, physioData }));
   // Get reviews data
-  const { data: reviewsResponse, isLoading: reviewsLoading, error: reviewsError } = useGetPhysioReviewsQuery(physioId, {
-    skip: !physioId // Skip if physioId is not available
+  const {
+    data: reviewsResponse,
+    isLoading: reviewsLoading,
+    error: reviewsError,
+  } = useGetPhysioReviewsQuery(physioId, {
+    skip: !physioId, // Skip if physioId is not available
   });
 
   // Extract reviews from the response
@@ -52,9 +58,6 @@ const PhysioDetail = () => {
   //   }
   // }, [reviewsResponse, reviews]);
 
-
-
-
   const [selectedRating, setSelectedRating] = useState("all");
   const [filteredReviews, setFilteredReviews] = useState(reviews);
 
@@ -62,11 +65,11 @@ const PhysioDetail = () => {
     if (selectedRating.toString().toLowerCase() === "all") {
       setFilteredReviews(reviews);
     } else {
-      setFilteredReviews(reviews.filter(r => r.rating === Number(selectedRating)));
+      setFilteredReviews(
+        reviews.filter((r) => r.rating === Number(selectedRating))
+      );
     }
   }, [selectedRating, reviews]);
-
-
 
   // Dispatch physio data only once when available
   useEffect(() => {
@@ -83,12 +86,17 @@ const PhysioDetail = () => {
   };
 
   const handleImageError = (e) => {
-    e.target.src = physioData.gender === 1 ? "/mockPhysioMale.png" : "/mockPhysioFemale.png";
+    e.target.src =
+      physioData.gender === 1 ? "/mockPhysioMale.png" : "/mockPhysioFemale.png";
     setImageLoaded(true);
   };
 
   // Placeholder images
-  const placeholderImages = ["../clinicImg1.jpg", "../clinicImg2.png", "../clinicImg3.webp"];
+  const placeholderImages = [
+    "../clinicImg1.jpg",
+    "../clinicImg2.png",
+    "../clinicImg3.webp",
+  ];
 
   const images = physioData?.serviceType?.includes("clinic")
     ? physioData?.clinic?.imagesClinic?.length > 0
@@ -98,7 +106,11 @@ const PhysioDetail = () => {
 
   // google analytics
   useEffect(() => {
-    ReactGA.send({ hitType: "pageview", page: window.location.pathname, title: "Physio Detail" });
+    ReactGA.send({
+      hitType: "pageview",
+      page: window.location.pathname,
+      title: "Physio Detail",
+    });
   }, []);
 
   // scroll to top
@@ -135,7 +147,8 @@ const PhysioDetail = () => {
               {physioData?.city || physioData?.clinic?.zipCode ? (
                 <>
                   {physioData.city
-                    ? physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)
+                    ? physioData.city.charAt(0).toUpperCase() +
+                      physioData.city.slice(1)
                     : ""}
                   {physioData.clinic?.zipCode !== 0 && (
                     <> - {physioData.clinic.zipCode}</>
@@ -146,7 +159,7 @@ const PhysioDetail = () => {
                 <>
                   {physioData?.home?.homeCity
                     ? physioData.home.homeCity.charAt(0).toUpperCase() +
-                    physioData.home.homeCity.slice(1)
+                      physioData.home.homeCity.slice(1)
                     : ""}
                   {physioData?.home?.zipCode !== 0 && (
                     <> - {physioData.home.zipCode}</>
@@ -154,9 +167,7 @@ const PhysioDetail = () => {
                 </>
               )}
             </span>
-
           </div>
-
 
           {/* Image and Name Section */}
           <div className="flex gap-4 col-span-1 sm:col-span-2">
@@ -166,11 +177,16 @@ const PhysioDetail = () => {
                 {!imageLoaded && <Skeleton className="w-28 h-28 rounded-lg" />}
                 <img
                   loading="lazy"
-                  className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer border-2 ${physioData?.subscriptionId?.planId?.planType === 2
-                    ? "shadow-lg shadow-[#e7d234]"
-                    : " shadow-lg shadow-green"
-                    } ${!imageLoaded ? "hidden" : "block"}`}
-                  src={physioData.profileImage ? physioData.profileImage : "/mockPhysioMale.png"}
+                  className={`rounded-lg justify-center bg-[#F1F9F4] w-28 h-28 object-cover cursor-pointer border-2 ${
+                    physioData?.subscriptionId?.planId?.planType === 2
+                      ? "shadow-lg shadow-[#e7d234]"
+                      : " shadow-lg shadow-green"
+                  } ${!imageLoaded ? "hidden" : "block"}`}
+                  src={
+                    physioData.profileImage
+                      ? physioData.profileImage
+                      : "/mockPhysioMale.png"
+                  }
                   alt={physioData.fullName}
                   onLoad={handleImageLoad}
                   onError={handleImageError}
@@ -199,12 +215,16 @@ const PhysioDetail = () => {
                 </div>
               )}
 
-              <div className={`absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap rounded-2xl text-sm w-fit flex items-center gap-1.5 ${physioData?.subscriptionId?.planId?.planType === 2
-                ? "bg-yellow-100 text-yellow-900"
-                : "bg-green  text-white"
-                }`}>
+              <div
+                className={`absolute -bottom-5 right-1/2 translate-x-1/2 py-1 px-4 border-white border text-nowrap rounded-2xl text-sm w-fit flex items-center gap-1.5 ${
+                  physioData?.subscriptionId?.planId?.planType === 2
+                    ? "bg-yellow-100 text-yellow-900"
+                    : "bg-green  text-white"
+                }`}
+              >
                 <FaShoppingBag className="w-3 h-3" />
-                {physioData.workExperience ? physioData.workExperience : 1}+ Years
+                {physioData.workExperience ? physioData.workExperience : 1}+
+                Years
               </div>
             </div>
             {/* Name and Speciality */}
@@ -227,13 +247,15 @@ const PhysioDetail = () => {
                         </p>
                       ))
                     ) : (
-                      <p className="rounded-full py-2 px-4 bg-[#F1F9F4] text-nowrap w-fit">General Pain</p>
+                      <p className="rounded-full py-2 px-4 bg-[#F1F9F4] text-nowrap w-fit">
+                        General Pain
+                      </p>
                     )}
                   </p>
                 </div>
                 {/* Rating and Reviews */}
                 <div className="text-xs flex items-center gap-2.5 lg:flex-col lg:items-start">
-                  <div className="text-sm flex items-center gap-2.5 " >
+                  <div className="text-sm flex items-center gap-2.5 ">
                     {physioData?.subscriptionId?.planId?.planType === 2 && (
                       <button
                         type="button"
@@ -243,34 +265,42 @@ const PhysioDetail = () => {
                       </button>
                     )}
                     <div className="py-1 px-4 border-white border  bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
-
                       <FaStar className="w-3 h-3" />
                       {physioData.rating ? physioData.rating : "Recently Added"}
                     </div>
                   </div>
 
-
-                  {physioData?.serviceType?.includes("clinic") ? (
-                    physioData.clinic && (
-                      <div className="flex items-start gap-1">
-                        <ImLocation className="w-4 h-4 pt-0.5 text-green" />
-                        <div className="text-sm flex flex-row">
-                          <div className="font-medium">{physioData.clinic.name}</div><div className="flex flex-row gap-1"><FaCircle className="h-1.5 w-2 mt-2 ml-2 " /> {physioData.clinic.address}</div>
+                  {physioData?.serviceType?.includes("clinic")
+                    ? physioData.clinic && (
+                        <div className="flex items-start gap-1">
+                          <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+                          <div className="text-sm flex flex-row">
+                            <div className="font-medium">
+                              {physioData.clinic.name}
+                            </div>
+                            <div className="flex flex-row gap-1">
+                              <FaCircle className="h-1.5 w-2 mt-2 ml-2 " />{" "}
+                              {physioData.clinic.address}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  ) : physioData?.serviceType?.includes("home") ? (
-                    physioData.city && (
-                      <div className="flex items-start gap-1">
-                        <ImLocation className="w-4 h-4 pt-0.5 text-green" />
-                        <div className="text-sm">
-                          <span>{physioData.city.charAt(0).toUpperCase() + physioData.city.slice(1)}</span>{" "}
-                          {physioData.home?.zipCode && physioData.home.zipCode !== 0 && `- ${physioData.home.zipCode}`}
+                      )
+                    : physioData?.serviceType?.includes("home")
+                    ? physioData.city && (
+                        <div className="flex items-start gap-1">
+                          <ImLocation className="w-4 h-4 pt-0.5 text-green" />
+                          <div className="text-sm">
+                            <span>
+                              {physioData.city.charAt(0).toUpperCase() +
+                                physioData.city.slice(1)}
+                            </span>{" "}
+                            {physioData.home?.zipCode &&
+                              physioData.home.zipCode !== 0 &&
+                              `- ${physioData.home.zipCode}`}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  ) : null}
-
+                      )
+                    : null}
                 </div>
               </div>
             </div>
@@ -286,16 +316,21 @@ const PhysioDetail = () => {
                 <div className="flex flex-wrap gap-1.5 p-0 mt-1">
                   {physioData?.specialization?.length !== 0 ? (
                     physioData?.specialization?.slice(0, 2).map((p, i) => (
-                      <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-sm" key={i}>
+                      <span
+                        className="rounded-full py-1 px-3 bg-[#E6F4EC] text-sm"
+                        key={i}
+                      >
                         {p.name}
                       </span>
                     ))
                   ) : (
-                    <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-xs">General Pain</span>
+                    <span className="rounded-full py-1 px-3 bg-[#E6F4EC] text-xs">
+                      General Pain
+                    </span>
                   )}
                 </div>
 
-                <div className="text-sm flex items-center gap-2.5 " >
+                <div className="text-sm flex items-center gap-2.5 ">
                   {physioData?.subscriptionId?.planId?.planType === 2 && (
                     <button
                       type="button"
@@ -305,7 +340,6 @@ const PhysioDetail = () => {
                     </button>
                   )}
                   <div className="py-1 px-4 border-white border  bg-green rounded-2xl text-sm text-white w-fit flex items-center gap-1.5 mt-1">
-
                     <FaStar className="w-3 h-3" />
                     {physioData.rating ? physioData.rating : "Recently Added"}
                   </div>
@@ -315,16 +349,21 @@ const PhysioDetail = () => {
                   <div className="flex items-start gap-2">
                     <ImLocation className="w-4 h-4 mt-0.5 text-green" />
                     <div className="text-sm">
-                      {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
+                      {physioData?.serviceType?.includes("clinic") &&
+                      physioData.clinic ? (
                         <div className="flex">
-                          <span className="text-sm">{physioData.clinic.name}</span>
+                          <span className="text-sm">
+                            {physioData.clinic.name}
+                          </span>
                           <FaCircle className="h-1.5 w-2 mt-2 ml-2 mr-2" />
                           {physioData.clinic.address}
                         </div>
                       ) : (
                         <div className="text-sm">
                           {physioData.city}
-                          {physioData.home?.zipCode && physioData.home.zipCode !== 0 && ` - ${physioData.home.zipCode}`}
+                          {physioData.home?.zipCode &&
+                            physioData.home.zipCode !== 0 &&
+                            ` - ${physioData.home.zipCode}`}
                         </div>
                       )}
                     </div>
@@ -332,9 +371,7 @@ const PhysioDetail = () => {
                 </div>
               </div>
             </div>
-
           </div>
-
 
           {/* Degree Section Aligned to Start */}
 
@@ -342,7 +379,8 @@ const PhysioDetail = () => {
             <div className="flex items-start gap-2 md:hidden mt-1">
               <ImLocation className="w-4 h-4 mt-0.5 text-green" />
               <div className="text-sm">
-                {physioData?.serviceType?.includes("clinic") && physioData.clinic ? (
+                {physioData?.serviceType?.includes("clinic") &&
+                physioData.clinic ? (
                   <div className="flex">
                     <span className="text-sm">{physioData.clinic.name}</span>
                     <FaCircle className="h-1.5 w-2 mt-2 ml-2 mr-2" />
@@ -351,7 +389,9 @@ const PhysioDetail = () => {
                 ) : (
                   <div className="text-sm">
                     {physioData.city}
-                    {physioData.home?.zipCode && physioData.home.zipCode !== 0 && ` - ${physioData.home.zipCode}`}
+                    {physioData.home?.zipCode &&
+                      physioData.home.zipCode !== 0 &&
+                      ` - ${physioData.home.zipCode}`}
                   </div>
                 )}
               </div>
@@ -364,11 +404,12 @@ const PhysioDetail = () => {
 
             {/* degree */}
 
-            {(physioData?.bptDegree?.degreeId?._id || physioData?.mptDegree?.degreeId?._id) && (
+            {(physioData?.bptDegree?.degreeId?._id ||
+              physioData?.mptDegree?.degreeId?._id) && (
               <div className="bg-green-50 text-green-700 text-sm px-1 py-1 gap-2 rounded-full flex flex-wrap">
                 {[
                   physioData?.bptDegree?.degreeId,
-                  physioData?.mptDegree?.degreeId
+                  physioData?.mptDegree?.degreeId,
                 ]
                   .filter((deg) => deg && deg._id)
                   .map((deg, index) => (
@@ -381,13 +422,8 @@ const PhysioDetail = () => {
                   ))}
               </div>
             )}
-
-
-
-
           </div>
         </div>
-
 
         {/* right side */}
         <div className="row-span-2">
@@ -399,35 +435,31 @@ const PhysioDetail = () => {
           {/* Clinic Images */}
 
           <div>
-            {physioData?.serviceType?.includes("clinic") && <p className="text-xl font-semibold mb-4">Clinic Photos</p>}
-            <MediaGallery
-              items={images}
-              type="images"
-            />
+            {physioData?.serviceType?.includes("clinic") && (
+              <p className="text-xl font-semibold mb-4">Clinic Photos</p>
+            )}
+            <MediaGallery items={images} type="images" />
             <hr className="my-4" />
           </div>
-
-
-
-
 
           {/* about section */}
           <div className="mb-6 ">
             <p className="text-xl font-semibold mb-4">About Me</p>
-            <p className={twMerge("line-clamp-4", truncate && "line-clamp-none")}>
+            <p
+              className={twMerge("line-clamp-4", truncate && "line-clamp-none")}
+            >
               <p>{physioData?.about}</p>
               <p className="mt-2">
-                India's top-rated and most reliable physiotherapists can be found on PhysioplusHealthcare.com. The
-                platform connects you with physiotherapists who have over 43 years of experience. Explore profiles of
-                professionals, read patient testimonials, and make an informed choice when selecting the best
+                India's top-rated and most reliable physiotherapists can be
+                found on PhysioplusHealthcare.com. The platform connects you
+                with physiotherapists who have over 43 years of experience.
+                Explore profiles of professionals, read patient testimonials,
+                and make an informed choice when selecting the best
                 physiotherapist for your needs.
               </p>
             </p>
             {physioData?.about?.length > 100 ? (
-              <button
-                onClick={() => setTruncate(!truncate)}
-                className="mt-2"
-              >
+              <button onClick={() => setTruncate(!truncate)} className="mt-2">
                 {truncate ? (
                   <p className="flex gap-1 items-center text-blue-600 underline underline-offset-2">
                     Hide <IoIosArrowUp />
@@ -442,15 +474,15 @@ const PhysioDetail = () => {
             <hr className="my-4" />
           </div>
 
-
-
           {/* speciality section */}
           <div className="my-6">
             <p className="text-xl font-semibold mb-4">Speciality</p>
             <p className="pb-3">
-              Our expert physiotherapists specialize in providing effective pain relief strategies for conditions such
-              as back pain, neck pain, and joint discomfort. Through targeted exercises and hands-on techniques, we aim
-              to alleviate pain and restore your quality of life
+              Our expert physiotherapists specialize in providing effective pain
+              relief strategies for conditions such as back pain, neck pain, and
+              joint discomfort. Through targeted exercises and hands-on
+              techniques, we aim to alleviate pain and restore your quality of
+              life
             </p>
             <div className="sm:hidden w-full mt-1">
               {physioData?.subspecializationId?.length > 0 ? (
@@ -475,7 +507,9 @@ const PhysioDetail = () => {
                   </div>
                 </div>
               ) : (
-                <div className="text-sm text-gray-500">No specializations listed</div>
+                <div className="text-sm text-gray-500">
+                  No specializations listed
+                </div>
               )}
             </div>
             {/* Desktop Grid View (shows only on desktop) */}
@@ -500,23 +534,28 @@ const PhysioDetail = () => {
                       onClick={() => setShowAll(!showAll)}
                       className="text-blue-600 text-xs sm:text-sm underline ml-2"
                     >
-                      {showAll ? "Show less" : `+${physioData.subspecializationId.length - 10} more`}
+                      {showAll
+                        ? "Show less"
+                        : `+${physioData.subspecializationId.length - 10} more`}
                     </button>
                   )}
                 </>
               ) : (
-                <div className="text-sm text-gray-500">No specializations listed</div>
+                <div className="text-sm text-gray-500">
+                  No specializations listed
+                </div>
               )}
             </div>
             <hr className="my-4" />
           </div>
 
-
           {/*Certificate & Award or Recoginazation  */}
           {/* Certificate Images */}
           {physioData?.achievement?.length > 0 && (
             <div className="my-6">
-              <p className="text-xl font-semibold mb-4">Certificate & Awards or Recognition</p>
+              <p className="text-xl font-semibold mb-4">
+                Certificate & Awards or Recognition
+              </p>
               <div className="flex gap-2 rounded-md my-2 overflow-x-hidden">
                 {physioData.achievement.map((achievement, index) => (
                   <div key={index} className="flex flex-col items-center">
@@ -532,11 +571,6 @@ const PhysioDetail = () => {
               <hr className="my-4" />
             </div>
           )}
-
-
-
-
-
 
           {/* Treatment Charges */}
           {/* <div className="my-6">
@@ -565,7 +599,6 @@ const PhysioDetail = () => {
 </div> */}
           {/* <hr className="my-4" /> */}
 
-
           {/* reviews */}
           <section className="my-8">
             <p className="text-xl font-semibold mb-4">Reviews & Ratings</p>
@@ -576,10 +609,11 @@ const PhysioDetail = () => {
                   key={rating}
                   onClick={() => setSelectedRating(rating)}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border-2
-          ${selectedRating === rating
-                      ? "bg-green text-white border-green"
-                      : "bg-white text-green border-green"
-                    }`}
+          ${
+            selectedRating === rating
+              ? "bg-green text-white border-green"
+              : "bg-white text-green border-green"
+          }`}
                 >
                   <FaStar className="text-yellow-400" />
                   {rating === "all" ? "All" : `${rating} Star`}
@@ -599,9 +633,13 @@ const PhysioDetail = () => {
               className="max-w-auto"
             >
               {reviewsLoading ? (
-                <SwiperSlide><div>Loading reviews...</div></SwiperSlide>
+                <SwiperSlide>
+                  <div>Loading reviews...</div>
+                </SwiperSlide>
               ) : reviewsError ? (
-                <SwiperSlide><div>Error loading reviews</div></SwiperSlide>
+                <SwiperSlide>
+                  <div>Error loading reviews</div>
+                </SwiperSlide>
               ) : filteredReviews.length > 0 ? (
                 filteredReviews.map((review) => (
                   <SwiperSlide key={review._id}>
@@ -615,15 +653,13 @@ const PhysioDetail = () => {
                     {/* </div> */}
 
                     <ReviewCardTwo
-
                       id={review._id}
                       name={`${review.patientId?.fullName}` || "Anonymous"}
                       img={review.patientId?.profilePhoto || "/user.png"}
                       rating={review.rating}
-                      review={review.comment}  // Using 'comment' from API
+                      review={review.comment} // Using 'comment' from API
                       patientType="Patient"
                       date={review.createdAt}
-
                     />
                   </SwiperSlide>
                 ))
@@ -633,11 +669,7 @@ const PhysioDetail = () => {
                 </SwiperSlide>
               )}
             </Swiper>
-
-
           </section>
-
-
         </div>
       </div>
     </>

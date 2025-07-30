@@ -51,6 +51,7 @@ const PerferConsultation = lazy(() =>
 const ViewConsultation = lazy(() =>
   import("./pages/homecare/patient/ViewConsultation")
 );
+const TaxInvoice = lazy(() => import("./components/homecare/comp/TaxInvoice"));
 const PerferTreatment = lazy(() =>
   import("./pages/homecare/patient/PerferTreatment")
 );
@@ -58,6 +59,10 @@ const PaymentPage = lazy(() => import("./pages/homecare/patient/PaymentPage"));
 const ViewTreatment = lazy(() =>
   import("./pages/homecare/patient/ViewTreatment")
 );
+
+// physio
+const LoginPhysio = lazy(() => import("./pages/homecare/auth/LoginPhysio"));
+
 const HomePhysios = lazy(() => import("./pages/homecare/HomePhysios"));
 const BookPhysioPage = lazy(() => import("./pages/homecare/BookPhysioPage"));
 const PhysioProfile = lazy(() => import("./pages/homecare/PhysioProfile"));
@@ -386,6 +391,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "login-physio",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <LoginPhysio />
+          </Suspense>
+        ),
+      },
+      {
         path: "signup-new",
         element: (
           <Suspense fallback={<Loading />}>
@@ -487,10 +500,10 @@ const router = createBrowserRouter([
       },
 
       {
-        path: "book/:physioId",
+        path: "show-invoice",
         element: (
           <Suspense fallback={<Loading />}>
-            <BookPhysioPage />
+            <TaxInvoice />
           </Suspense>
         ),
       },
@@ -503,7 +516,15 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "summary",
+        path: "book/:physioId",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <BookPhysioPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "book/summary",
         element: (
           <Suspense fallback={<Loading />}>
             <BookingSummaryPage />

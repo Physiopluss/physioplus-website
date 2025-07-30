@@ -4,6 +4,7 @@ import { BsBagCheckFill, BsFillPinMapFill } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FiGift } from "react-icons/fi";
 import { getTreatmentById } from "../../../api/homecare";
+import CashbackReveal from "../../../components/homecare/comp/CashbackReveal";
 
 const PerferTreatment = () => {
   const navigate = useNavigate();
@@ -13,6 +14,9 @@ const PerferTreatment = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [treatmentDays, setTreatmentDays] = useState([]);
+  const [showCashbackModal, setShowCashbackModal] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const cashbackPct = order?.isTreatmentScheduled?.cashbackPercentage ?? 5;
 
   useEffect(() => {
     const fetchTreatment = async () => {
@@ -41,6 +45,11 @@ const PerferTreatment = () => {
     treatmentDays.length > 0 &&
     treatmentDays.every((day) => day.isPaid === true);
 
+  const handleInvoiceDownload = () => {
+    navigate("/homecare/show-invoice", {
+      state: { order, type: "treatment" },
+    });
+  };
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-[60vh] space-y-3 text-center">
@@ -146,7 +155,25 @@ const PerferTreatment = () => {
           </div>
         </div>
       )}
-      {!isPaid && (
+      {/* Scratch card */}
+      {order?.isTreatmentScheduled?.isCashBack && !revealed && (
+        <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
+          <FiGift className="w-12 h-12 text-green mb-4" />
+          <div className="text-green font-semibold text-xl mb-2 text-center">
+            Congratulations!
+          </div>
+          <div className="text-base text-green mb-5 text-center">
+            You&apos;ve received a Scratch Card 🎉
+          </div>
+          <button
+            onClick={() => setShowCashbackModal(true)}
+            className="w-full rounded-lg py-3 bg-gradient-to-r from-green/90 via-green/70 to-green/90 text-base font-semibold text-white shadow-md"
+          >
+            Tap to Reveal
+          </button>
+        </div>
+      )}
+      {revealed && (
         <>
           <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
             <div className="mb-4 text-green">
@@ -158,53 +185,37 @@ const PerferTreatment = () => {
             <div className="text-base text-green mb-5 text-center">
               You&apos;ve received a Scratch Card 🎉
             </div>
-            <button className="w-full rounded-lg py-3 text-base font-semibold text-white bg-gradient-to-r from-green/90 via-green/70 to-green/90 shadow-md transition hover:brightness-110">
-              Tap to Reveal
-            </button>
+            <div className="w-full rounded-lg py-3 text-base font-semibold text-white bg-green shadow-md transition hover:brightness-110">
+              Cashback Pending
+            </div>
           </div>
+          {/* Credited Message */}
+          {order?.credited && (
+            <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
+              <FiGift className="w-12 h-12 text-green mb-4" />
+              <div className="text-green font-semibold text-xl mb-2 text-center">
+                Cashback Credited ✅
+              </div>
+              <div className="text-base text-green mb-5 text-center">
+                {cashbackPct}% will be applied to your wallet.
+              </div>
+            </div>
+          )}
         </>
       )}
 
-      {order?.isTreatmentScheduled?.isCashBack && (
-        <>
-          <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
-            <div className="mb-4 text-green">
-              <FiGift className="w-12 h-12" />
-            </div>
-            <div className="text-green font-semibold text-xl mb-2 text-center">
-              Congratulations!
-            </div>
-            <div className="text-base text-green mb-5 text-center">
-              You&apos;ve received a Scratch Card 🎉
-            </div>
-            <button className="w-full rounded-lg py-3 text-base font-semibold text-white bg-green shadow-md transition hover:brightness-110">
-              Cashback Pending
-            </button>
-          </div>{" "}
-          <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
-            <div className="mb-4 text-green">
-              <FiGift className="w-12 h-12" />
-            </div>
-            <div className="text-green font-semibold text-xl mb-2 text-center">
-              Congratulations!
-            </div>
-            <div className="text-base text-green mb-5 text-center">
-              You&apos;ve received a Scratch Card 🎉
-            </div>
-            <button className="w-full rounded-lg py-3 text-base font-semibold text-white bg-green shadow-md transition hover:brightness-110">
-              Cashback Pending
-            </button>
-          </div>
-        </>
+      {/* Modal */}
+      {showCashbackModal && (
+        <CashbackReveal
+          cashbackPercentage={cashbackPct}
+          onReveal={() => {
+            setRevealed(true);
+            setShowCashbackModal(false);
+          }}
+          onClose={() => setShowCashbackModal(false)}
+        />
       )}
-      <div className="w-full mx-auto rounded-xl shadow-md bg-green/5 border border-gray-100 py-6 px-5 flex flex-col items-center">
-        <div className="mb-4 text-green">
-          <FiGift className="w-12 h-12" />
-        </div>
-        <div className="text-green font-semibold text-xl mb-2 text-center">
-          Congratulations! Cashback Credited
-        </div>
-      </div>
+
       <div className="rounded-xl border p-4 space-y-2 shadow-sm">
         <details open>
           <summary className="font-medium">Treatment Report</summary>
@@ -295,7 +306,11 @@ const PerferTreatment = () => {
           <button className="w-full bg-green text-white font-semibold py-2 rounded-lg mt-2">
             Payment Completed
           </button>
-          <button className="w-full border border-green text-green font-semibold py-2 rounded-lg mt-2">
+          <button
+            className="w-full border border-green text-green font-semibold py-2 rounded-lg mt-2"
+            // disabled={!order?.isTreatmentScheduled?.isTreatmentCompleted}
+            onClick={handleInvoiceDownload}
+          >
             Download Invoice
           </button>
         </>

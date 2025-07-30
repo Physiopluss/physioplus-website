@@ -35,7 +35,6 @@ export default function PhysioProfile() {
     };
     fetchPhysio();
   }, [physioId]);
-  console.log("physio", physio);
 
   if (loading) return <div className="text-center mt-4">Loading...</div>;
   if (!physio) return <div className="text-center mt-4">Physio not found</div>;
@@ -216,7 +215,7 @@ export default function PhysioProfile() {
         <button
           className="w-full bg-green hover:bg-[#15692c] text-white py-3 rounded-xl text-sm font-medium"
           onClick={() =>
-            navigate(`/book/${physio?._id}`, { state: { physio } })
+            navigate(`/homecare/book/${physio?._id}`, { state: { physio } })
           }
         >
           Book Physio Now

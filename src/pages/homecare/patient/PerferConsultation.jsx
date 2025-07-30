@@ -3,7 +3,11 @@ import React, { useEffect, useState } from "react";
 import { BsBagCheckFill, BsFillPinMapFill } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 import GiveRating from "../../../components/homecare/comp/GiveRating";
-import { getConsultationById } from "../../../api/homecare";
+import {
+  getConsultationById,
+  requestPhysioToSchedule,
+} from "../../../api/homecare";
+import toast from "react-hot-toast";
 
 const PerferConsultation = () => {
   const navigate = useNavigate();
@@ -13,6 +17,28 @@ const PerferConsultation = () => {
   const [error, setError] = useState("");
   const [order, setOrder] = useState(null);
 
+  const handleScheduleRequest = async () => {
+    try {
+      const res = await requestPhysioToSchedule({
+        orderId: order._id,
+        patientId: order?.patientId?._id,
+        physioId: order?.physioId?._id,
+      });
+
+      if (res?.status >= 200 && res?.status < 300) {
+        toast.success("Request sent to physio!");
+      } else {
+        toast.error(res?.data?.message || "Request failed");
+      }
+    } catch (err) {
+      toast.error(err?.message || "Something went wrong");
+    }
+  };
+  useEffect(() => {
+    if (order?.isTreatmentRequested) {
+      console.log("Physio has been requested to schedule treatment.");
+    }
+  }, [order?.isTreatmentRequested]);
   useEffect(() => {
     const fetchConsultation = async () => {
       setLoading(true);
@@ -192,7 +218,7 @@ const PerferConsultation = () => {
               <button
                 className="w-full bg-green text-white rounded-lg py-1 font-medium text-sm"
                 onClick={() =>
-                  navigate(`/homecare/consultation-detail/${order?.id}`, {
+                  navigate(`/homecare/consultation-detail/${order._id}`, {
                     state: { order },
                   })
                 }
@@ -217,8 +243,18 @@ const PerferConsultation = () => {
                 {"70"}% Off
               </div>
             </div>
-            <button className="bg-white w-full text-green rounded-md px-3 py-1 text-xs font-semibold shadow border">
-              Ask your Physio to Schedule
+            <button
+              onClick={handleScheduleRequest}
+              disabled={order?.isTreatmentRequested}
+              className={`w-full px-3 py-1 text-xs font-semibold rounded-md shadow border ${
+                order?.isTreatmentRequested
+                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                  : "bg-white text-green"
+              }`}
+            >
+              {order?.isTreatmentRequested
+                ? "Request already send"
+                : "Ask your Physio to Schedule"}
             </button>
           </div>
 
@@ -269,7 +305,7 @@ const PerferConsultation = () => {
               <button
                 className="w-full bg-green text-white rounded-lg py-1 font-medium text-sm"
                 onClick={() =>
-                  navigate(`/homecare/consultation-detail/${order?.id}`, {
+                  navigate(`/homecare/consultation-detail/${order?._id}`, {
                     state: { order },
                   })
                 }

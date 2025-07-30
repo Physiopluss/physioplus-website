@@ -5,21 +5,17 @@ import { setOtpModalOpen } from "../../../slices/homecare/newModalSlice";
 import { setUser } from "../../../slices/homecare/newAuthSlice";
 import OTPInput from "react-otp-input";
 import { IoIosCloseCircle } from "react-icons/io";
-
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  physioConnectLogin,
-  physioConnectOtpVerify,
-} from "../../../api/physioConnect";
 import { loginNew, OtpVerifyNew, signUpNew } from "../../../api/homecare";
+import { loginPhysio, OtpVerifyPhysio } from "../../../api/homecare/physio";
 
 export default function OtpModalNew() {
   const modalOpen = useSelector((state) => state.modalNew.otpModalOpen); // ✅ correct modal slice
   const phone = useSelector((state) => state.authNew.phone); // ✅ correct auth slice
   const { type, fullName, gender, date, dob } = useSelector(
     (state) => state.authNew
-  ); // ✅
+  );
 
   const [disabled, setDisabled] = useState(true);
   const [timeLeft, setTimeLeft] = useState(60);
@@ -57,7 +53,7 @@ export default function OtpModalNew() {
 
     try {
       const res = isPhysio
-        ? await physioConnectOtpVerify(phone, otp, fullName)
+        ? await OtpVerifyPhysio(phone, otp, type, fullName)
         : await OtpVerifyNew(phone, otp, type, fullName, gender, date, dob);
 
       if (res.status >= 200 && res.status < 300) {
@@ -101,8 +97,8 @@ export default function OtpModalNew() {
   const handleResendOtp = () => {
     try {
       if (type === "physio") {
-        physioConnectLogin(phone);
-      } else if (type === "login") {
+        loginPhysio(phone);
+      } else if (type === "patient") {
         loginNew(phone);
       } else {
         signUpNew({ fullName, phone, dob, gender });

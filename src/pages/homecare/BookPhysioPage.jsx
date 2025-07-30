@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ActivitySquare,
   ArrowLeft,
@@ -11,13 +11,35 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import SlotDates from "../../components/homecare/SlotDates";
 import { BsBagCheckFill, BsFillPinMapFill } from "react-icons/bs";
 import LocationPickerModal from "../../components/homecare/LocationPickerModal";
+import { getPatientDetails } from "../../api/homecare";
+import { toast } from "react-hot-toast";
 
+// --- Helper Functions ---
+function calculateAgeFromDOB(dob) {
+  const currentYear = new Date().getFullYear();
+  const birthYear = parseInt(dob);
+  return birthYear ? currentYear - birthYear : "";
+}
+
+function getGenderText(code) {
+  const map = {
+    0: "Female",
+    1: "Male",
+    2: "Other",
+  };
+  return map[code] ?? "";
+}
+
+// --- Main Component ---
 export default function BookPhysioPage() {
   const { physioId } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
   const physio = state?.physio;
+  const patientId =
+    JSON.parse(localStorage.getItem("homecareUser"))?.userId ?? null;
 
+  const [patient, setPatient] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
@@ -30,7 +52,38 @@ export default function BookPhysioPage() {
     address: "",
     nearby: "",
     pincode: "",
+    lat: "",
+    lng: "",
   });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!patientId) return;
+
+      try {
+        const data = await getPatientDetails(patientId);
+        if (!data) {
+          toast.error("Patient not found");
+          return;
+        }
+        setPatient(data);
+
+        setFormData((prev) => ({
+          ...prev,
+          name: data?.fullName || "",
+          age: calculateAgeFromDOB(data?.dob),
+          gender: getGenderText(data?.gender),
+          address: data?.appointmentAddress || "",
+          pincode: data?.zipCode || "",
+          lat: data?.latitude || "",
+          lng: data?.longitude || "",
+        }));
+      } catch (err) {
+        toast.error("Failed to fetch patient details");
+      }
+    };
+    fetchData();
+  }, [patientId]);
 
   const fullToShortDay = {
     Monday: "Mon",
@@ -45,12 +98,14 @@ export default function BookPhysioPage() {
   const workingDaysAbbreviated =
     physio?.home?.workingDays?.map((day) => fullToShortDay[day]) || [];
 
-  const handleLocationSelect = ({ address,nearby, pincode }) => {
+  const handleLocationSelect = ({ address, nearby, pincode, lat, lng }) => {
     setFormData((prev) => ({
       ...prev,
       address,
       nearby,
       pincode,
+      lat,
+      lng,
     }));
   };
 
@@ -71,7 +126,7 @@ export default function BookPhysioPage() {
         <div className="flex gap-4 items-start">
           <img
             src={physio?.profileImage}
-            alt={physio.fullName}
+            alt={physio?.fullName}
             className="w-20 h-20 rounded-full object-cover border"
           />
           <div className="flex-1">
@@ -89,7 +144,6 @@ export default function BookPhysioPage() {
                   .join(", ")}
               </span>
             </p>
-
             <div className="flex gap-2 text-sm">
               <Users className="w-4 h-4" /> {physio?.patientCount} Patient
               Treated
@@ -190,10 +244,10 @@ export default function BookPhysioPage() {
                   setFormData({ ...formData, gender: e.target.value })
                 }
               >
-                <option>Gender (Select or Edit)</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Other</option>
+                <option value="">Gender (Select or Edit)</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
               </select>
               <textarea
                 className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
@@ -242,8 +296,9 @@ export default function BookPhysioPage() {
             <button
               className="mt-5 w-full bg-green hover:bg-[#15692c] text-white py-3 rounded-xl text-sm font-medium"
               onClick={() => {
-                navigate("/book/summary", {
+                navigate("/homecare/book/summary", {
                   state: {
+                    patient,
                     physio,
                     formData,
                     selectedDate,

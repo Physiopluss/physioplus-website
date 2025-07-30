@@ -1,26 +1,81 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getInvoiceByOrderId } from "../../../api/homecare";
 
-const TaxInvoice = ({
-  type = "Consultation", // "Consultation" or "Treatment"
-  physioName = "Dr. Vishal",
-  invoiceNumber = "PPY4512",
-  invoiceDate = "15 Jan 2025",
-  modeOfPayment = "Online",
-  patientName = "Manish Sharma",
-  address = "Plot no 506 Shanti Nagar. Mansrover, Jaipur, 302020",
-  charges = 700,
-  discountPercent = 50,
-  couponLabel = "Coupon Applied",
-  transactionId = "",
-  pincode = "302021",
-  orgName = "Home Care",
-  serviceDays, // only for Treatment, e.g. 5
-}) => {
-  const discountAmount = charges * (discountPercent / 100);
-  const total = charges - discountAmount;
+const orgName = "Home Care";
+
+// Utility to reverse calculate original amount & discount
+function reverseCoupon({ paid, couponType, couponValue }) {
+  let original = paid,
+    discount = 0;
+  if (couponType === 1 && couponValue > 0) {
+    // percent (couponType 1)
+    original = paid / (1 - couponValue / 100);
+    discount = original - paid;
+  } else if (couponType === 0 && couponValue > 0) {
+    // flat (couponType 0)
+    original = paid + couponValue;
+    discount = couponValue;
+  }
+  // rounding to 2 decimals
+  original = Math.round(original * 100) / 100;
+  discount = Math.round(discount * 100) / 100;
+  return { original, discount };
+}
+
+const TaxInvoice = () => {
   const invoiceRef = useRef();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+
+  const order = state?.order;
+  const type = state?.type ?? "appointment";
+
+  const [invoice, setInvoice] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvoice = async () => {
+      try {
+        const res = await getInvoiceByOrderId(order?._id, type);
+        setInvoice(res.data);
+      } catch (err) {
+        console.error("Invoice fetch failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (order?._id) fetchInvoice();
+    else {
+      setLoading(false);
+      navigate("/homecare/orders"); // fallback redirect if opened directly
+    }
+  }, [order, type, navigate]);
+
+  // === Prepare invoice fields ===
+  const paid = Number(invoice?.amount ?? 0);
+  const couponType = Number(invoice?.couponType ?? 0); // 1 = percent, 0 = flat
+  const couponValue = Number(invoice?.couponDiscount ?? 0);
+  const couponLabel = invoice?.couponName ?? "Coupon Applied";
+
+  const { original: originalAmount, discount: discountAmount } = reverseCoupon({
+    paid,
+    couponType,
+    couponValue,
+  });
+
+  const finalInvoiceNumber = invoice?.invoiceNumber ?? "N/A";
+  const finalInvoiceDate = invoice?.createdAt
+    ? new Date(invoice.createdAt).toLocaleDateString()
+    : "—";
+  const finalTransactionId = invoice?.transactionId?.transactionId ?? "";
+  const finalPatientAddress = invoice?.patientAddress ?? "N/A";
+  const finalPatientZip = invoice?.patientId?.zipCode ?? "—";
+  const finalPaymentMode = invoice?.paymentMode ?? "—";
+  const physioName = invoice?.physioName ?? "N/A";
 
   const handleDownloadPDF = async () => {
     const element = invoiceRef.current;
@@ -32,101 +87,166 @@ const TaxInvoice = ({
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pageWidth - 20;
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, "PNG", 10, 10, pdfWidth, pdfHeight);
-    pdf.save(`${orgName.replace(/\s/g, "_")}_Tax_Invoice.pdf`);
+
+    let heightLeft = pdfHeight;
+    let position = 10;
+
+    pdf.addImage(imgData, "PNG", 10, position, pdfWidth, pdfHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 10, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+    }
+
+    pdf.save(
+      `${orgName.replace(/\s/g, "_")}_${finalInvoiceNumber}_Invoice.pdf`
+    );
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center py-6 text-gray-500">
+        Loading Invoice...
+      </div>
+    );
+  }
+
   return (
-    <div>
-      {/* Invoice Card */}
+    <div className="bg-[#f8fafc] min-h-screen py-6">
       <div
         ref={invoiceRef}
         className="bg-white w-full max-w-md mx-auto my-6 rounded-lg shadow p-5"
         style={{ fontFamily: "Inter, Arial, sans-serif" }}
       >
+        <h1 className="flex justify-center text-2xl text-green mb-6">
+          Tax Invoice
+        </h1>
+
         {/* Header */}
         <div className="text-center mb-4">
           <div className="font-semibold text-lg">{orgName}</div>
-          <div className="text-xs text-gray-600">{pincode}</div>
+          <div className="text-xs text-gray-600">{finalPatientZip}</div>
         </div>
         <hr className="mb-3" />
-        {/* Details */}
+
+        {/* Invoice Details */}
         <div className="space-y-2 text-sm text-black/90 mb-4">
           <div>
             <span className="font-medium">Physio Name :</span> {physioName}
           </div>
           <div>
             <span className="font-medium">Invoice Number :</span>{" "}
-            {invoiceNumber}
+            {finalInvoiceNumber}
           </div>
           <div>
-            <span className="font-medium">Type :</span> {type}
+            <span className="font-medium">Service Type :</span>{" "}
+            {invoice?.type ?? type}
           </div>
-          {type === "Treatment" && serviceDays && (
+
+          {type === "treatment" &&
+            invoice?.appointmentId?.isTreatmentScheduled?.treatmentDate
+              ?.length > 0 && (
+              <div className="space-y-1">
+                <div>
+                  <span className="font-medium">Service Days :</span>{" "}
+                  {
+                    invoice?.appointmentId?.isTreatmentScheduled?.treatmentDate
+                      ?.length
+                  }{" "}
+                  Day(s)
+                </div>
+                {invoice?.appointmentId?.isTreatmentScheduled.treatmentDate.map(
+                  (day, index) => (
+                    <div
+                      key={day._id || index}
+                      className="ml-2 text-sm text-gray-700"
+                    >
+                      <span className="font-medium">• Day {index + 1}:</span>{" "}
+                      {new Date(day.date).toLocaleDateString()}{" "}
+                      {day.isPaid && (
+                        <span className="text-green-600 ml-1">
+                          [Paid - {day.paymentMode}]
+                        </span>
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+
+          {type === "appointment" && (
             <div>
-              <span className="font-medium">Service Days :</span> {serviceDays}{" "}
-              Day
+              <span className="font-medium">Service Day :</span>{" "}
+              {invoice?.appointmentId?.date}
             </div>
           )}
+
           <div>
-            <span className="font-medium">Invoice Date :</span> {invoiceDate}
+            <span className="font-medium">Invoice Date :</span>{" "}
+            {finalInvoiceDate}
           </div>
           <div>
             <span className="font-medium">Transaction Id :</span>{" "}
-            {transactionId ? (
-              transactionId
-            ) : (
+            {finalTransactionId || (
               <span className="text-gray-400">ID will generate</span>
             )}
           </div>
           <div>
             <span className="font-medium">Mode of Payment :</span>{" "}
-            {modeOfPayment}
+            {finalPaymentMode}
           </div>
         </div>
         <hr className="mb-3" />
-        {/* Patient */}
+
+        {/* Patient Info */}
         <div className="space-y-1 text-sm mb-2">
           <div>
-            <span className="font-medium">Invoice To :</span> {patientName}
+            <span className="font-medium">Invoice To :</span>{" "}
+            {invoice?.patientName ?? "N/A"}
           </div>
           <div>
-            <span className="font-medium">Address :</span> {address}
+            <span className="font-medium">Address :</span> {finalPatientAddress}
           </div>
         </div>
+
         {/* Payment Summary */}
         <div className="bg-gray-50 border p-3 rounded-md mt-4 mb-5">
           <div className="flex justify-between text-sm">
             <span>
-              {type === "Consultation"
-                ? "Consultation Charges"
+              {type === "appointment"
+                ? "Appointment Charges"
                 : "Treatment Charges"}
             </span>
-            <span>₹{charges}</span>
+            <span>₹{originalAmount.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-sm text-green-700 mt-1">
-            <span>
-              {couponLabel} {discountPercent}%{" "}
-              <span className="text-xs text-green-500 underline cursor-pointer">
-                Edit
+          {discountAmount > 0 && (
+            <div className="flex justify-between text-sm text-green-700 mt-1">
+              <span>
+                {couponLabel} (
+                {couponType === 1 ? `${couponValue}%` : `₹${couponValue}`})
               </span>
-            </span>
-            <span>-₹{discountAmount}</span>
-          </div>
+              <span>-₹{discountAmount.toFixed(2)}</span>
+            </div>
+          )}
           <hr className="my-2" />
           <div className="flex justify-between font-medium text-base">
-            <span>Total Amount</span>
-            <span>₹{total}</span>
+            <span>Total Amount Paid</span>
+            <span>₹{paid.toFixed(2)}</span>
           </div>
         </div>
       </div>
+
       {/* Download Button */}
       <button
         onClick={handleDownloadPDF}
-        className="block w-full max-w-md mx-auto rounded-md bg-green-600 hover:bg-green-700 text-white text-base py-3 font-semibold mt-2"
+        className="block w-full max-w-md mx-auto rounded-md bg-green/90 hover:bg-green text-white text-base py-3 font-semibold mt-2"
       >
         Download Invoice
       </button>
