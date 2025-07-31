@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getConsultationById } from "../../../api/homecare";
+import moment from "moment";
 
 const genderMap = {
   0: "Female",
@@ -13,7 +14,7 @@ const ViewConsultation = () => {
   const { state } = useLocation();
   const [order, setOrder] = useState(state?.order || {});
   const orderId = state?.order?._id;
-
+  const formattedDate = moment(order?.date).format("DD MMM YYYY");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -70,6 +71,9 @@ const ViewConsultation = () => {
               <strong>Consultation Amount:</strong> ₹{order?.amount}
             </p>
             <p>
+              <strong>Consultation Date:</strong> {formattedDate}
+            </p>
+            <p>
               <strong>Payment Mode:</strong> {order?.paymentMode || "N/A"}
             </p>
             <p>
@@ -106,7 +110,7 @@ const ViewConsultation = () => {
           <summary className="font-medium">Address</summary>
           <textarea
             readOnly
-            value={order?.appointmentAddress || ""}
+            value={order?.patientId?.appointmentAddress || ""}
             className="w-full mt-2 p-2 border rounded bg-gray-100 text-sm"
             rows={2}
           />

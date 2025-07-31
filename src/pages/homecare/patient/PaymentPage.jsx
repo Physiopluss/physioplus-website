@@ -246,8 +246,10 @@ const PaymentPage = () => {
         </div>
         {couponResponse?.status >= 200 && (
           <div className="flex justify-between text-green-700">
-            <span>Discount (Coupon)</span>
-            <span>- ₹{Math.max(0, amount - amountToPay).toFixed(2)}</span>
+            <span className="text-green">Discount ({couponName})</span>
+            <span className="text-green">
+              - ₹{Math.max(0, amount - amountToPay).toFixed(2)}
+            </span>
           </div>
         )}
       </div>

@@ -79,15 +79,26 @@ export default function NavbarNew() {
 
         <div className="flex items-center space-x-6">
           {!isUser ? (
-            <Link
-              to="/homecare/login-new"
-              className="text-sm text-black"
-              onClick={() =>
-                localStorage.setItem("homecareUserType", "patient")
-              }
-            >
-              Login
-            </Link>
+            <>
+              <Link
+                to="/homecare/login-new"
+                className="text-sm text-black hover:text-blue-800"
+                onClick={() =>
+                  localStorage.setItem("homecareUserType", "patient")
+                }
+              >
+                Patient Login
+              </Link>
+              <Link
+                to="/homecare/login-physio"
+                className="text-sm text-black hover:text-red-800"
+                onClick={() =>
+                  localStorage.setItem("homecareUserType", "physio")
+                }
+              >
+                Physio Login
+              </Link>
+            </>
           ) : (
             <Menu
               open={isMenuOpen}
@@ -227,15 +238,28 @@ export default function NavbarNew() {
                 )}
               </>
             ) : (
-              <Link to="/homecare/login-new">
-                <MenuItem
-                  onClick={() =>
-                    localStorage.setItem("homecareUserType", "patient")
-                  }
-                >
-                  Login
-                </MenuItem>
-              </Link>
+              <>
+                <Link to="/homecare/login-new">
+                  <MenuItem
+                    onClick={() =>
+                      localStorage.setItem("homecareUserType", "patient")
+                    }
+                    className="text-green"
+                  >
+                    Patient Login
+                  </MenuItem>
+                </Link>
+                <Link to="/homecare/login-physio">
+                  <MenuItem
+                    onClick={() =>
+                      localStorage.setItem("homecareUserType", "physio")
+                    }
+                    className="text-blue-800"
+                  >
+                    Physio Login
+                  </MenuItem>
+                </Link>
+              </>
             )}
 
             <Link to="/homecare/contact">

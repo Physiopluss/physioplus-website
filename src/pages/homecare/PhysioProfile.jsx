@@ -13,6 +13,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { getPhysioById } from "../../api/homecare";
 import { BsBagCheckFill, BsFillPinMapFill } from "react-icons/bs";
+import { useSelector } from "react-redux";
 
 export default function PhysioProfile() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function PhysioProfile() {
   const [physio, setPhysio] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showFull, setShowFull] = useState(false);
-
+  const isUser = useSelector((e) => e.authNew.user);
   useEffect(() => {
     const fetchPhysio = async () => {
       try {
@@ -214,9 +215,13 @@ export default function PhysioProfile() {
       <div className="mt-8">
         <button
           className="w-full bg-green hover:bg-[#15692c] text-white py-3 rounded-xl text-sm font-medium"
-          onClick={() =>
-            navigate(`/homecare/book/${physio?._id}`, { state: { physio } })
-          }
+          onClick={() => {
+            if (isUser) {
+              navigate(`/homecare/book/${physio?._id}`, { state: { physio } });
+            } else {
+              navigate(`/homecare/login-new`);
+            }
+          }}
         >
           Book Physio Now
         </button>

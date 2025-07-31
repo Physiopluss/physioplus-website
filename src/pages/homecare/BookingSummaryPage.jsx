@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { couponApi, payForAppointmentDayToRazorpay } from "../../api/homecare";
+import {
+  couponApi,
+  payForAppointmentByCash,
+  payForAppointmentDayToRazorpay,
+} from "../../api/homecare";
 import { Button, Input } from "@material-tailwind/react";
 
 export default function BookingSummaryPage() {
@@ -82,17 +86,36 @@ export default function BookingSummaryPage() {
     if (!paymentMethod) return toast.error("Select payment method");
 
     try {
-      await payForAppointmentDayToRazorpay({
-        selectedDate,
-        formData,
-        couponId: couponResponse?.data?._id,
-        amount: amountToPay,
-        patientId,
-        userToken,
-        physioId: physio?._id,
-      });
+      if (paymentMethod === "cash") {
+        // Call the cash payment API
+        await payForAppointmentByCash({
+          selectedDate,
+          formData,
+          phone: patient?.phone,
+          couponId: couponResponse?.data?._id,
+          amount: amountToPay,
+          patientId,
+          userToken,
+          physioId: physio?._id,
+        });
 
-      toast.success("Payment successful");
+        toast.success("Cash appointment booked successfully");
+      } else {
+        // Call the Razorpay/online payment API
+        await payForAppointmentDayToRazorpay({
+          selectedDate,
+          formData,
+          phone: patient?.phone,
+          couponId: couponResponse?.data?._id,
+          amount: amountToPay,
+          patientId,
+          userToken,
+          physioId: physio?._id,
+        });
+
+        toast.success("Online payment successful");
+      }
+
       setShowConfirmation(true);
     } catch (err) {
       toast.error(err?.message || "Payment failed");
@@ -111,7 +134,7 @@ export default function BookingSummaryPage() {
         </p>
         <button
           className="bg-green text-white w-full max-w-xs py-3 rounded-xl text-sm font-medium"
-          onClick={() => navigate("/homecare")}
+          onClick={() => navigate("/homecare/consultation-orders")}
         >
           Done
         </button>
@@ -226,8 +249,10 @@ export default function BookingSummaryPage() {
           </div>
           {couponResponse?.status >= 200 && (
             <div className="flex justify-between text-green-700">
-              <span>Discount (Coupon)</span>
-              <span>- ₹{(amount - amountToPay).toFixed(2)}</span>
+              <span className="text-green">Discount ({couponName})</span>
+              <span className="text-green">
+                - ₹{(amount - amountToPay).toFixed(2)}
+              </span>
             </div>
           )}
           <div className="flex justify-between font-semibold text-base">
@@ -250,8 +275,8 @@ export default function BookingSummaryPage() {
             <div>
               <div className="text-sm font-semibold">{patientName}</div>
               <div className="text-xs text-gray-600">
-                {getGenderLabel(formData?.gender)},{" "}
-                {getAgeFromDOB(formData?.dob)} yrs
+                {formData?.gender || getGenderLabel(patient?.gender)},{" "}
+                {formData?.age || getAgeFromDOB(patient?.dob)} years
               </div>
             </div>
           </div>

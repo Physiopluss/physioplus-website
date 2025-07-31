@@ -47,15 +47,19 @@ const LoginPhysio = () => {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="text-center">
         <img
           alt="Physioplus healthcare"
           src="/logo-nobg.png"
-          className="mx-auto h-10 w-auto"
+          className="mx-auto h-12 w-auto mb-4"
         />
-        <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
+        <div className="w-16 h-16 mx-auto rounded-full bg-green/10 text-green flex items-center justify-center text-2xl font-bold">
+          👨‍⚕️
+        </div>
+        <h2 className="mt-4 text-2xl font-bold text-gray-900">Physio Login</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Access your dashboard with your registered number
+        </p>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -102,6 +106,13 @@ const LoginPhysio = () => {
           </div>
         </form>
         <OtpModalNew type="physio" phone={formik.values.phone} />
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Not a Physio?{" "}
+          <Link to="/homecare/login" className="text-green font-semibold">
+            Patient Login
+          </Link>
+        </p>
       </div>
     </div>
   );

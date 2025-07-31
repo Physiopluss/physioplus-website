@@ -8,6 +8,7 @@ import {
   requestPhysioToSchedule,
 } from "../../../api/homecare";
 import toast from "react-hot-toast";
+import moment from "moment";
 
 const PerferConsultation = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const PerferConsultation = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [order, setOrder] = useState(null);
-
+  const formattedDate = moment(order?.date).format("DD MMM YYYY");
   const handleScheduleRequest = async () => {
     try {
       const res = await requestPhysioToSchedule({
@@ -200,7 +201,7 @@ const PerferConsultation = () => {
                   {order?.physioId?.fullName || "Physio Name"}
                 </h3>
                 <p className="text-sm text-gray-600">consultation</p>
-                <p className="text-xs text-gray-500 mt-1">{order?.date}</p>
+                <p className="text-xs text-gray-500 mt-1">{formattedDate}</p>
               </div>
             </div>
 
@@ -290,7 +291,7 @@ const PerferConsultation = () => {
                 </h3>
                 <p className="text-sm text-gray-600">consultation</p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {order?.date || "Date not available"}
+                  {formattedDate || "Date not available"}
                 </p>
               </div>
             </div>

@@ -46,15 +46,20 @@ const LoginNew = () => {
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="text-center">
         <img
           alt="Physioplus healthcare"
           src="/logo-nobg.png"
-          className="mx-auto h-10 w-auto"
+          className="mx-auto h-12 w-auto mb-4"
         />
-        <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
-        </h2>
+        <div className="w-16 h-16 mx-auto rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-2xl font-bold">
+          🙋‍♂️
+        </div>
+        <h2 className="mt-4 text-2xl font-bold text-gray-900">Patient Login</h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Book appointments and track your recovery using your registered mobile
+          number
+        </p>
       </div>
 
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -109,6 +114,12 @@ const LoginNew = () => {
             className="font-semibold text-xs ps-1 underline leading-6  text-green hover:text-black"
           >
             Click here
+          </Link>
+        </p>
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Not a Patient?{" "}
+          <Link to="/homecare/login" className="text-blue-800 font-semibold">
+            Physio Login
           </Link>
         </p>
       </div>

@@ -133,10 +133,65 @@ export async function getConsultationById(consultationId) {
   }
 }
 
+export const payForAppointmentByCash = async ({
+  selectedDate, // ✅ expect array now
+  couponId,
+  amount,
+  phone,
+  formData,
+  patientId,
+  physioId,
+  userToken,
+}) => {
+  if (!userToken) throw new Error("userToken is required");
+  if (!patientId) throw new Error("patientId is required");
+  if (!physioId) throw new Error("physioId is required");
+  if (!amount) throw new Error("amount is required");
+
+  try {
+    const response = await instanceHomeCare.post(
+      "/web/patient/payAppointmentDayByCash",
+      {
+        date:selectedDate, // ✅ array of day IDs
+        phone,
+        age:formData?.age,
+        patientName:formData?.name,
+        gender:formData?.gender,
+        painNotes:formData.problem,
+        appointmentAddress:formData?.address,
+        nearby:formData?.nearby,
+        zipCode:formData?.pincode,
+        latitude:formData?.lat,
+        longitude:formData?.lng,
+        couponId,
+        amount,
+        patientId,
+        physioId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      const data = response.data.data;
+      return data;
+    } else {
+      throw new Error(response?.data?.message || "Payment initiation failed");
+    }
+  } catch (error) {
+    console.error("Razorpay Payment Error:", error);
+    throw error;
+  }
+};
 export const payForAppointmentDayToRazorpay = async ({
   selectedDate, // ✅ expect array now
   couponId,
   amount,
+  phone,
   formData,
   patientId,
   physioId,
@@ -152,7 +207,16 @@ export const payForAppointmentDayToRazorpay = async ({
       "/web/patient/payAppointmentDay",
       {
         date:selectedDate, // ✅ array of day IDs
-    formData,
+        phone,
+        age:formData?.age,
+        patientName:formData?.name,
+        gender:formData?.gender,
+        painNotes:formData?.problem,
+        appointmentAddress:formData?.address,
+        nearby:formData?.nearby,
+        zipCode:formData?.pincode,
+        latitude:formData?.lat,
+        longitude:formData?.lng,
         couponId,
         amount,
         patientId,
@@ -167,7 +231,8 @@ export const payForAppointmentDayToRazorpay = async ({
     );
 
     if (response.status >= 200 && response.status < 300) {
-      const data = response.data.razorpay;
+      const data = response.data.data;
+   
       
       const result = await verifyAppointmentPayment({ data, userToken });
       return result;
@@ -186,7 +251,9 @@ export const verifyAppointmentPayment = async ({ data, userToken }) => {
       key: import.meta.env.VITE_RAZORPAY_KEY,
       amount: data.notes.amount,
       currency: data.currency,
+      age:data.notes.age,
       name: "Physioplus Healthcare",
+      address:data.notes.appointmentAddress,
       description: `Appointment Payment - Physio ID: ${data.notes.physioId}`,
       order_id: data.id,
       prefill: {
@@ -297,7 +364,9 @@ export async function getTreatmentById(treatmentId) {
   }
 }
 
-
+export const sendCashbackRevealEvent = (CashBackId, userUpiId) => {
+  return instanceHomeCare.put(`/web/patient/updateCashBack?CashBackId=${CashBackId}&userUpiId=${userUpiId}`);
+};
 
 
 export const couponApi = async (couponName, patientId, userToken) => {
