@@ -134,9 +134,9 @@ export default function HomePhysios() {
           <p className="text-gray-500 text-sm">
             Loading nearby physiotherapists...
           </p>
-        ) : physios.length > 0 ? (
-          physios.map((physio) => (
-            <PhysioCard key={physio._id} physio={physio} />
+        ) : physios?.length > 0 ? (
+          physios?.map((physio) => (
+            <PhysioCard key={physio?._id} physio={physio} />
           ))
         ) : (
           <p className="text-gray-600 text-sm">No physiotherapists found.</p>
