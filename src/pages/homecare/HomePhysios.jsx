@@ -1,4 +1,3 @@
-// src/pages/home/HomePhysios.jsx
 import React, { useState, useEffect } from "react";
 import PromoBannerSwiper from "../../components/homecare/PromoBannerSwiper";
 import PhysioCard from "../../components/homecare/PhysioCard";
@@ -9,86 +8,75 @@ export default function HomePhysios() {
   const [filter, setFilter] = useState("default");
   const [physios, setPhysios] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [showLocationPopup, setShowLocationPopup] = useState(true); // Show popup on load
 
-  const fetchPhysios = async () => {
+  const fetchPhysiosWithCoords = async (lat, lng) => {
     setLoading(true);
-    const params = {};
-    if (search) params.search = search;
-    if (filter !== "default") params.filter = filter;
+    const params = {
+      ...(search && { search }),
+      ...(filter !== "default" && { filter }),
+      lat,
+      lng,
+    };
 
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          params.lat = lat;
-          params.lng = lng;
-
-          try {
-            const data = await getPhysios(params);
-            setPhysios(data);
-          } catch (error) {
-            console.error("Error fetching physios:", error);
-            setPhysios([]);
-          } finally {
-            setShowLocationPopup(false);
-            setLoading(false);
-          }
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setShowLocationPopup(true);
-          setLoading(false);
-        }
-      );
-    } else {
-      setShowLocationPopup(true);
+    try {
+      const data = await getPhysios(params);
+      setPhysios(data);
+    } catch (error) {
+      console.error("Error fetching physios:", error);
+      setPhysios([]);
+    } finally {
       setLoading(false);
     }
   };
 
-  // Run fetchPhysios when filters or search change,
-  // but only if location is already allowed (popup hidden)
+  // Get location on initial load
   useEffect(() => {
-    if (!showLocationPopup) {
-      fetchPhysios();
-    }
+    setLoading(true); // Show loader on page load
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        fetchPhysiosWithCoords(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      },
+      (error) => {
+        console.error("Location access denied:", error);
+        setLoading(false); // Stop loader even if error
+      }
+    );
+  }, []);
+
+  // Re-fetch on filter/search change
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        fetchPhysiosWithCoords(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      },
+      (error) => {
+        console.error("Location error on update:", error);
+      }
+    );
   }, [search, filter]);
 
   const handleSeeAll = () => {
     setSearch("");
     setFilter("default");
-    fetchPhysios();
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        fetchPhysiosWithCoords(
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      },
+      () => {}
+    );
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4 mb-16 relative">
-      {/* Location Permission Popup */}
-      {showLocationPopup && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-[90%] max-w-sm text-center">
-            <h2 className="text-lg font-bold mb-2 text-red-700">
-              Location Required
-            </h2>
-            <p className="text-gray-700 text-sm mb-4">
-              To find nearby physiotherapists, we need access to your location.
-              <br />
-              Please click “Allow Location” and accept permission in your
-              browser popup.
-            </p>
-            <button
-              className="bg-green hover:bg-[#15692c] text-white px-4 py-2 rounded-lg text-sm font-medium"
-              onClick={() => {
-                fetchPhysios(); // User-triggered → prompts browser
-              }}
-            >
-              Allow Location
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Promo Banner */}
       <div className="my-6 w-[320px] sm:w-full mx-auto">
         <PromoBannerSwiper />
@@ -140,10 +128,12 @@ export default function HomePhysios() {
         </button>
       </div>
 
-      {/* Physio Cards */}
+      {/* Loader or Physio Cards */}
       <div className="space-y-4">
         {loading ? (
-          <p className="text-gray-500 text-sm">Loading...</p>
+          <p className="text-gray-500 text-sm">
+            Loading nearby physiotherapists...
+          </p>
         ) : physios.length > 0 ? (
           physios.map((physio) => (
             <PhysioCard key={physio._id} physio={physio} />

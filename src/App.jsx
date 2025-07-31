@@ -28,6 +28,7 @@ const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 // homecare
 // auth new for homecare
 import HomecareLayout from "./pages/layout/HomecareLayout";
+import TestPage from "./pages/TestPage";
 // for patient
 const LoginNew = lazy(() => import("./pages/homecare/auth/LoginNew"));
 const SignUpNew = lazy(() => import("./pages/homecare/auth/SignUpNew"));
@@ -381,6 +382,11 @@ const router = createBrowserRouter([
             <HomePhysios />
           </Suspense>
         ),
+      },
+
+      {
+        path: "test",
+        element: <TestPage />,
       },
       {
         path: "login-new",
