@@ -142,6 +142,22 @@ const PerferTreatment = () => {
         </ul>
       </div>
 
+      {isPaid && (
+        <div className="bg-gradient-to-r from-green/20 to-white rounded-md text-green my-4">
+          <div className="flex items-center justify-center gap-2">
+            <div className="font-semibold text-lg my-2 w-[60%]">
+              <p className="mb-2">Want to save more?</p>
+              <p className="text-xs mb-2">
+                Pay at once and get{" "}
+                <span className="font-extrabold bg-white rounded text-green p-2">
+                  70% Off
+                </span>
+              </p>
+            </div>
+            <img src="/homecare/coins.png" alt="" className="w-10 h-10" />
+          </div>
+        </div>
+      )}
       {/* Scratch card */}
       {order?.isTreatmentScheduled?.isCashBack?.status === "pending" &&
         !revealed && (
