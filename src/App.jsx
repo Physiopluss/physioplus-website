@@ -61,7 +61,7 @@ const ViewTreatment = lazy(() =>
   import("./pages/homecare/patient/ViewTreatment")
 );
 
-// physio
+// patient side physio
 const LoginPhysio = lazy(() => import("./pages/homecare/auth/LoginPhysio"));
 
 const HomePhysios = lazy(() => import("./pages/homecare/HomePhysios"));
@@ -72,6 +72,17 @@ const BookingSummaryPage = lazy(() =>
 );
 
 // for physio
+
+const PhysioOrderHistory = lazy(() =>
+  import("./pages/homecare/physio/PhysioOrderHistory")
+);
+const ConsultationPage = lazy(() =>
+  import("./pages/homecare/physio/ConsultationPage")
+);
+const TreatmentPage = lazy(() =>
+  import("./pages/homecare/physio/TreatmentPage")
+);
+// const  =lazy(()=>import("./pages/homecare/physio/"))
 const PhysioAccount = lazy(() =>
   import("./pages/homecare/physio/PhysioAccount")
 );
@@ -388,6 +399,7 @@ const router = createBrowserRouter([
         path: "test",
         element: <TestPage />,
       },
+      // patient routes
       {
         path: "login-new",
         element: (
@@ -396,14 +408,7 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: "login-physio",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <LoginPhysio />
-          </Suspense>
-        ),
-      },
+
       {
         path: "signup-new",
         element: (
@@ -538,7 +543,73 @@ const router = createBrowserRouter([
         ),
       },
 
-      // physio connect
+      // physio
+
+      {
+        path: "login-physio",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <LoginPhysio />
+          </Suspense>
+        ),
+      },
+
+      {
+        path: "physio-profile",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <br />
+          </Suspense>
+        ),
+      },
+      {
+        path: "physio-order-history",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PhysioOrderHistory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "physio-consultations",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ConsultationPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "physio-treatments",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <TreatmentPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <br />
+          </Suspense>
+        ),
+      },
+      {
+        path: "",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <br />
+          </Suspense>
+        ),
+      },
+      {
+        path: "",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <br />
+          </Suspense>
+        ),
+      },
       {
         path: "physio",
         element: (

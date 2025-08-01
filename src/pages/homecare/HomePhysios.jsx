@@ -1,21 +1,64 @@
 import React, { useState, useEffect } from "react";
+import { FiSearch } from "react-icons/fi";
+import { FaChevronDown, FaTimes } from "react-icons/fa";
 import PromoBannerSwiper from "../../components/homecare/PromoBannerSwiper";
 import PhysioCard from "../../components/homecare/PhysioCard";
 import { getPhysios } from "../../api/homecare";
 
 export default function HomePhysios() {
   const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [filter, setFilter] = useState("default");
+  const [priceOption, setPriceOption] = useState("");
+  const [ratingOption, setRatingOption] = useState("");
   const [physios, setPhysios] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [latLng, setLatLng] = useState({ lat: null, lng: null });
+  const [useLocation, setUseLocation] = useState(true);
+  const [locationReady, setLocationReady] = useState(false);
+  const [city, setCity] = useState("");
 
-  const fetchPhysiosWithCoords = async (lat, lng) => {
+  // Fetch user's location and city
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        setLatLng({ lat, lng });
+        setLocationReady(true);
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+          );
+          const data = await res.json();
+          const cityName =
+            data?.address?.city ||
+            data?.address?.town ||
+            data?.address?.village ||
+            data?.address?.county ||
+            "";
+          setCity(cityName);
+        } catch (err) {
+          console.error("Failed to fetch city name:", err);
+        }
+      },
+      (err) => {
+        console.error("Location error:", err);
+        setUseLocation(false);
+        setLocationReady(true);
+      }
+    );
+  }, []);
+
+  const fetchPhysiosWithFilters = async () => {
     setLoading(true);
     const params = {
       ...(search && { search }),
-      ...(filter !== "default" && { filter }),
-      lat,
-      lng,
+      ...(filter === "mpt" && { filter }),
+      ...(filter === "price" && priceOption && { priceSort: priceOption }),
+      ...(filter === "rating" && ratingOption && { rating: ratingOption }),
+      ...(useLocation && latLng.lat && { lat: latLng.lat, lng: latLng.lng }),
     };
 
     try {
@@ -29,50 +72,43 @@ export default function HomePhysios() {
     }
   };
 
-  // Get location on initial load
+  // Trigger fetch when dependencies change
   useEffect(() => {
-    setLoading(true); // Show loader on page load
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        fetchPhysiosWithCoords(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      (error) => {
-        console.error("Location access denied:", error);
-        setLoading(false); // Stop loader even if error
-      }
-    );
-  }, []);
+    if (locationReady) {
+      fetchPhysiosWithFilters();
+    }
+  }, [locationReady, search, filter, priceOption, ratingOption, useLocation]);
 
-  // Re-fetch on filter/search change
+  // Clear search when input is empty
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        fetchPhysiosWithCoords(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      (error) => {
-        console.error("Location error on update:", error);
-      }
-    );
-  }, [search, filter]);
+    if (searchInput.trim() === "") {
+      setSearch("");
+    }
+  }, [searchInput]);
 
-  const handleSeeAll = () => {
-    setSearch("");
-    setFilter("default");
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        fetchPhysiosWithCoords(
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      () => {}
-    );
+  const handleSearchClick = () => {
+    const trimmed = searchInput.trim();
+    setSearch(trimmed);
+  };
+
+  const handleFilterSelect = (type) => {
+    setFilter(type);
+    setPriceOption("");
+    setRatingOption("");
+  };
+
+  const clearPriceFilter = () => {
+    setPriceOption("");
+    if (filter === "price") setFilter("default");
+  };
+
+  const clearRatingFilter = () => {
+    setRatingOption("");
+    if (filter === "rating") setFilter("default");
+  };
+
+  const handleSeeAllToggle = () => {
+    setUseLocation((prev) => !prev);
   };
 
   return (
@@ -90,52 +126,147 @@ export default function HomePhysios() {
             How is your health today?
           </p>
         </div>
-        <div className="w-full sm:w-1/2">
+        <div className="w-full sm:w-1/2 flex gap-2">
           <input
             type="text"
             placeholder='Search for "Dr. Name"'
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
           />
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-wrap gap-2 mt-4 mb-6">
-        {["price", "rating", "mpt"].map((f) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-3 py-1 rounded-md text-sm ${
-              filter === f
-                ? "bg-green text-white"
-                : "bg-[#e5f7ec] text-green border-gray-300"
-            }`}
+            onClick={handleSearchClick}
+            className="px-3 py-2 rounded-lg bg-green text-white flex items-center gap-1"
           >
-            {f === "price" && "Sort by Price"}
-            {f === "rating" && "Rating"}
-            {f === "mpt" && "MPT Physio"}
+            <FiSearch />
+            Search
           </button>
-        ))}
+        </div>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between m-4">
-        <p className="font-semibold">Nearby Physio's</p>
-        <button className="text-green text-sm" onClick={handleSeeAll}>
-          See All
+        <p className="font-semibold">
+          {useLocation
+            ? `Nearby Physio's${city ? ` in ${city}` : ""}`
+            : "All Physio's in India"}
+        </p>
+        <button
+          className={`text-sm font-medium px-3 py-1 rounded-md ${
+            useLocation
+              ? "bg-[#e5f7ec] text-green border"
+              : "bg-green text-white"
+          }`}
+          onClick={handleSeeAllToggle}
+        >
+          {useLocation ? "See All" : "See Nearby"}
         </button>
       </div>
 
-      {/* Loader or Physio Cards */}
+      {/* Filters */}
+      <div className="flex flex-wrap gap-2 mt-4 mb-6">
+        {/* Price Filter */}
+        <div className="relative">
+          <button
+            onClick={() => handleFilterSelect("price")}
+            className={`px-3 py-1 rounded-md text-sm flex items-center gap-1 ${
+              filter === "price" && priceOption
+                ? "bg-green text-white"
+                : "bg-[#e5f7ec] text-green border"
+            }`}
+          >
+            {priceOption
+              ? priceOption === "lowToHigh"
+                ? "Low to High"
+                : "High to Low"
+              : "Sort by Price"}
+            {priceOption && (
+              <FaTimes
+                className="text-xs ml-1 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearPriceFilter();
+                }}
+              />
+            )}
+            {!priceOption && <FaChevronDown className="text-xs" />}
+          </button>
+          {filter === "price" && !priceOption && (
+            <div className="absolute z-10 bg-white border mt-1 rounded shadow-md text-sm w-40">
+              <button
+                onClick={() => setPriceOption("lowToHigh")}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+              >
+                Low to High
+              </button>
+              <button
+                onClick={() => setPriceOption("highToLow")}
+                className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+              >
+                High to Low
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Rating Filter */}
+        <div className="relative">
+          <button
+            onClick={() => handleFilterSelect("rating")}
+            className={`px-3 py-1 rounded-md text-sm flex items-center gap-1 ${
+              filter === "rating" && ratingOption
+                ? "bg-green text-white"
+                : "bg-[#e5f7ec] text-green border"
+            }`}
+          >
+            {ratingOption ? `${ratingOption} Star Physio` : "Rating"}
+            {ratingOption && (
+              <FaTimes
+                className="text-xs ml-1 cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  clearRatingFilter();
+                }}
+              />
+            )}
+            {!ratingOption && <FaChevronDown className="text-xs" />}
+          </button>
+          {filter === "rating" && !ratingOption && (
+            <div className="absolute z-10 bg-white border mt-1 rounded shadow-md text-sm w-44">
+              {[5, 4, 3, 2, 1].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRatingOption(String(star))}
+                  className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                >
+                  {star} Star Physio
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* MPT Filter */}
+        <button
+          onClick={() =>
+            filter === "mpt" ? setFilter("default") : handleFilterSelect("mpt")
+          }
+          className={`px-3 py-1 rounded-md text-sm ${
+            filter === "mpt"
+              ? "bg-green text-white"
+              : "bg-[#e5f7ec] text-green border"
+          }`}
+        >
+          MPT Physio
+        </button>
+      </div>
+
+      {/* Physio Results */}
       <div className="space-y-4">
         {loading ? (
-          <p className="text-gray-500 text-sm">
-            Loading nearby physiotherapists...
-          </p>
+          <p className="text-gray-500 text-sm">Loading physiotherapists...</p>
         ) : physios?.length > 0 ? (
-          physios?.map((physio) => (
+          physios.map((physio) => (
             <PhysioCard key={physio?._id} physio={physio} />
           ))
         ) : (
