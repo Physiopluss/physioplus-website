@@ -257,10 +257,10 @@ export default function BookPhysioPage() {
                   setFormData({ ...formData, problem: e.target.value })
                 }
               />
-              <div className="flex justify-end">
+              <div className="flex justify-start">
                 <button
                   onClick={() => setShowMapModal(true)}
-                  className="text-xs text-green-700 underline"
+                  className="text-xs hover:text-blue-800 hover:bg-white border border-blue-800  text-white bg-blue-800 px-4 py-2 rounded-md font-semibold"
                 >
                   Use Current Location
                 </button>

@@ -109,7 +109,7 @@ const LoginPhysio = () => {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           Not a Physio?{" "}
-          <Link to="/homecare/login" className="text-green font-semibold">
+          <Link to="/homecare/login-new" className="text-green font-semibold">
             Patient Login
           </Link>
         </p>

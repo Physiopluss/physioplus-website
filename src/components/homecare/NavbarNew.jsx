@@ -117,17 +117,17 @@ export default function NavbarNew() {
                       <MenuItem>Profile</MenuItem>
                     </Link>
                     <Link to="/homecare/patient-order-history">
-                      <MenuItem>Order History</MenuItem>
+                      <MenuItem>Booking History</MenuItem>
                     </Link>
                   </>
                 )}
                 {isPhysio && (
                   <>
-                    <Link to="/homecare/physio-dashboard">
-                      <MenuItem>Dashboard</MenuItem>
+                    <Link to="/homecare/physio-profile">
+                      <MenuItem>Profile</MenuItem>
                     </Link>
-                    <Link to="/homecare/physio-wallet">
-                      <MenuItem>Wallet</MenuItem>
+                    <Link to="/homecare/physio-order-history">
+                      <MenuItem>Booking History</MenuItem>
                     </Link>
                   </>
                 )}
@@ -214,17 +214,21 @@ export default function NavbarNew() {
                           <MenuItem className="text-sm">Profile</MenuItem>
                         </Link>
                         <Link to="/homecare/patient-order-history">
-                          <MenuItem className="text-sm">Order History</MenuItem>
+                          <MenuItem className="text-sm">
+                            Booking History
+                          </MenuItem>
                         </Link>
                       </>
                     )}
                     {isPhysio && (
                       <>
-                        <Link to="/homecare/physio-dashboard">
-                          <MenuItem className="text-sm">Dashboard</MenuItem>
+                        <Link to="/homecare/physio-profile">
+                          <MenuItem className="text-sm">Profile</MenuItem>
                         </Link>
-                        <Link to="/homecare/physio-wallet">
-                          <MenuItem className="text-sm">Wallet</MenuItem>
+                        <Link to="/homecare/physio-order-history">
+                          <MenuItem className="text-sm">
+                            Booking History
+                          </MenuItem>
                         </Link>
                       </>
                     )}

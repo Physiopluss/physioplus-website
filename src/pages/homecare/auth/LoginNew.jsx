@@ -105,7 +105,7 @@ const LoginNew = () => {
             </button>
           </div>
         </form>
-        <OtpModalNew type="login" phone={formik.values.phone} />
+        <OtpModalNew type="patient" phone={formik.values.phone} />
 
         <p className="mt-8 text-center text-sm text-gray-500">
           Create an account
@@ -116,12 +116,15 @@ const LoginNew = () => {
             Click here
           </Link>
         </p>
-        <p className="mt-6 text-center text-sm text-gray-500">
+        {/* <p className="mt-6 text-center text-sm text-gray-500">
           Not a Patient?{" "}
-          <Link to="/homecare/login" className="text-blue-800 font-semibold">
+          <Link
+            to="/homecare/login-physio"
+            className="text-blue-800 font-semibold"
+          >
             Physio Login
           </Link>
-        </p>
+        </p> */}
       </div>
     </div>
   );

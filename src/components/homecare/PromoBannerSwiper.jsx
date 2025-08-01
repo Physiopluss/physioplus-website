@@ -7,12 +7,16 @@ import "swiper/css/pagination";
 const promoData = [
   {
     id: 1,
-    image: "/images/discount1.png",
+    image: "/homecare/banner2.jpeg",
   },
 
   {
+    id: 2,
+    image: "/homecare/banner1.jpeg",
+  },
+  {
     id: 3,
-    image: "/images/discount3.png",
+    image: "/homecare/banner3.jpeg",
   },
 ];
 
@@ -32,7 +36,7 @@ export default function PromoBannerSwiper() {
           <img
             src={image}
             alt={`Promo ${id}`}
-            className="w-full h-40 sm:h-52 md:h-64 md:object-cover rounded-xl"
+            className="w-full h-40  md:h-64 object-contain md:object-contain rounded-xl"
           />
         </SwiperSlide>
       ))}

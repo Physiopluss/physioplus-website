@@ -1,6 +1,6 @@
 // src/components/homecare/SlotDates.jsx
 import React from "react";
-import { format, addDays } from "date-fns";
+import { format, addDays, isToday } from "date-fns";
 
 const getShortDay = (date) => format(date, "EEE"); // e.g., 'Mon'
 const getDayNumber = (date) => format(date, "d"); // e.g., '23'
@@ -13,7 +13,7 @@ export default function SlotDates({ workingDays = [], selected, onSelect }) {
     <div className="flex gap-2 overflow-x-auto no-scrollbar py-1">
       {next14Days.map((date, i) => {
         const shortDay = getShortDay(date);
-        const isWorking = workingDays.includes(shortDay);
+        const isWorking = workingDays.includes(shortDay) && !isToday(date); // 👈 exclude today
         const isSelected =
           selected &&
           format(date, "yyyy-MM-dd") === format(selected, "yyyy-MM-dd");

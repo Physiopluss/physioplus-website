@@ -10,13 +10,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { loginNew, OtpVerifyNew, signUpNew } from "../../../api/homecare";
 import { loginPhysio, OtpVerifyPhysio } from "../../../api/homecare/physio";
 
-export default function OtpModalNew() {
-  const modalOpen = useSelector((state) => state.modalNew.otpModalOpen); // ✅ correct modal slice
-  const phone = useSelector((state) => state.authNew.phone); // ✅ correct auth slice
-  const { type, fullName, gender, date, dob } = useSelector(
-    (state) => state.authNew
-  );
+export default function OtpModalNew({ type = "patient", phone: propPhone }) {
+  const modalOpen = useSelector((state) => state.modalNew.otpModalOpen);
+  const reduxPhone = useSelector((state) => state.authNew.phone);
+  const { fullName, gender, date, dob } = useSelector((state) => state.authNew);
 
+  const phone = propPhone || reduxPhone; // use propPhone if passed
   const [disabled, setDisabled] = useState(true);
   const [timeLeft, setTimeLeft] = useState(60);
   const [otp, setOtp] = useState("");
@@ -27,7 +26,6 @@ export default function OtpModalNew() {
 
   const redirectPath = location.state?.from || "/homecare";
 
-  // Timer on modal open
   useEffect(() => {
     if (modalOpen) {
       setDisabled(true);
@@ -48,13 +46,12 @@ export default function OtpModalNew() {
     }
   }, [modalOpen]);
 
-  const submitHandler = async (type) => {
-    const isPhysio = type === "physio";
-
+  const submitHandler = async () => {
     try {
-      const res = isPhysio
-        ? await OtpVerifyPhysio(phone, otp, type, fullName)
-        : await OtpVerifyNew(phone, otp, type, fullName, gender, date, dob);
+      const res =
+        type === "physio"
+          ? await OtpVerifyPhysio(phone, otp, type, fullName)
+          : await OtpVerifyNew(phone, otp, type, fullName, gender, date, dob);
 
       if (res.status >= 200 && res.status < 300) {
         const userData = {
@@ -63,7 +60,6 @@ export default function OtpModalNew() {
           phone: res?.data.data.phone,
         };
 
-        // ✅ Scoped localStorage usage
         localStorage.setItem("homecareUser", JSON.stringify(userData));
         localStorage.setItem("homecareUserType", type);
 
@@ -77,7 +73,7 @@ export default function OtpModalNew() {
 
         setTimeout(() => {
           navigate(redirectPath, { replace: true });
-          window.location.reload(); // optional
+          window.location.reload();
         }, 1500);
       } else {
         toast.error(res.data.message || "Invalid OTP", {
@@ -104,7 +100,6 @@ export default function OtpModalNew() {
         signUpNew({ fullName, phone, dob, gender });
       }
 
-      // Reset Timer
       setTimeLeft(60);
       setDisabled(true);
 
@@ -162,7 +157,7 @@ export default function OtpModalNew() {
         />
 
         <button
-          onClick={() => submitHandler(type)}
+          onClick={submitHandler}
           className="w-56 ring-1 ring-green bg-lightGreen hover:text-white py-1 hover:bg-green px-5 font-semibold text-green rounded-lg text-base"
         >
           Submit
