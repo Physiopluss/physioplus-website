@@ -219,7 +219,7 @@ export default function PhysioProfile() {
             if (isUser) {
               navigate(`/homecare/book/${physio?._id}`, { state: { physio } });
             } else {
-              navigate(`/homecare/login-new`);
+              navigate(`/homecare/login-signup`);
             }
           }}
         >

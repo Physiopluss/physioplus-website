@@ -205,3 +205,39 @@ summary::-webkit-details-marker {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+.react-time-picker {
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.375rem;
+  background-color: white;
+  padding: 0.5rem 0.75rem;
+  color: #111827;
+}
+
+.react-time-picker__wrapper {
+  border: none !important;
+}
+
+.react-time-picker__inputGroup__input {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #111827;
+  width: 2rem;
+  text-align: center;
+}
+
+.react-time-picker__inputGroup__divider {
+  padding: 0 2px;
+  color: #6b7280;
+}
+
+.react-time-picker__clear-button,
+.react-time-picker__clock-button {
+  display: none;
+}

@@ -16,10 +16,9 @@ import { MdOutlineMailOutline, MdOutlinePhoneInTalk } from "react-icons/md";
 import { BiChevronDown } from "react-icons/bi";
 import { jwtDecode } from "jwt-decode";
 import { useSelector, useDispatch } from "react-redux";
-
-import { NewNavData } from "./Mock/NewNavData";
 import { setLogOut, setUser } from "../../slices/homecare/newAuthSlice";
 import NewNavLinks from "./comp/NewNavLinks";
+import { getNewNavData } from "./Mock/NewNavData";
 
 export default function NavbarNew() {
   const dispatch = useDispatch();
@@ -44,7 +43,7 @@ export default function NavbarNew() {
     : decoded?.physio?.fullName;
 
   const isUser = useSelector((e) => e.authNew.user);
-
+  const navData = getNewNavData();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -181,7 +180,7 @@ export default function NavbarNew() {
         {/* Mobile Menu */}
         <Collapse open={isNavOpen} className="overflow-y-auto">
           <ul className="lg:hidden mt-2 mb-4 flex flex-col gap-2">
-            {NewNavData.map((data) => (
+            {navData.map((data) => (
               <Link
                 to={data.slug}
                 key={data.id}

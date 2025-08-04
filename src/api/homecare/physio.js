@@ -44,6 +44,43 @@ export const OtpVerifyPhysio = async (phone, otp, type) => {
 };
 
 
+
+export async function getPhysioDetails(id) {
+  const res = await instanceHomeCare.get("/web/physio/physioById", {
+    params: { physioId: id },
+  });
+  return res?.data?.data;
+}
+
+
+export async function getPhysioWalletRevenue({ mode, physioId }) {
+  try {
+    const res = await instanceHomeCare.get("/web/physio/getPhysioWalletRevenue", {
+      params: {    
+        physioId,   
+      },
+    });
+    return res?.data?.data;
+  } catch (error) {
+    console.error("Error fetching wallet details:", error);
+    throw error;
+  }
+}
+export async function getPhysioWalletDetails({ mode, physioId }) {
+  try {
+    const res = await instanceHomeCare.get("/web/physio/getPhysioWallet", {
+      params: {
+        mode,       // "online" or "cash"
+        physioId,   // physio's user ID
+      },
+    });
+    return res?.data?.data;
+  } catch (error) {
+    console.error("Error fetching wallet details:", error);
+    throw error;
+  }
+}
+
 export async function getAllPhysioConsultations(physioId) {
   try {
     const response = await instanceHomeCare.get("web/physio/getAppointmentByPhysio", {
@@ -59,7 +96,7 @@ export async function getAllPhysioConsultations(physioId) {
 export async function getConsultationById(consultationId) {
   try {
     const response = await instanceHomeCare.get("web/physio/singleAppointment", {
-      params: { consultationId },
+      params: { appointmentId:consultationId },
     });
     return response?.data?.data;
   } catch (error) {
@@ -67,6 +104,21 @@ export async function getConsultationById(consultationId) {
     throw error;
   }
 }
+
+export async function createTreatmentPlan(payload) {
+  try {
+    const res = await instanceHomeCare.post("web/physio/create-treatment", payload);
+    return res?.data;
+  } catch (err) {
+    console.error("Error creating treatment:", err);
+    throw err;
+  }
+}
+export const verifyConsultationOtp = async ({ consultationId, otp }) => {
+  const res = await instanceHomeCare.post("web/physio/verify-appointment", { appointmentId:consultationId, otp });
+  return res.data;
+};
+
 
 export async function getAllPhysioTreatments(physioId) {
   try {
@@ -80,14 +132,26 @@ export async function getAllPhysioTreatments(physioId) {
   }
 }
 
-export async function getTreatmentById(treatmentId) {
+export async function getTreatmentById(id) {
   try {
     const response = await instanceHomeCare.get("web/physio/singleTreatment", {
-      params: { treatmentId },
+      params: { appointmentId:id },
     });
     return response?.data?.data;
   } catch (error) {
     console.error("Error fetching treatment:", error);
     throw error;
   }
+}
+export async function markTreatmentDaysPaid(dayIds = [], treatmentId) {
+  return instanceHomeCare.post("/web/physio/markTreatmentDaysPaid", {
+    appointmentId:treatmentId,
+    dateId:dayIds,
+  });
+}
+
+export async function markTreatmentComplete(treatmentId) {
+  return instanceHomeCare.post("/web/physio/completeTreatment", {
+    appointmentId:treatmentId,
+  });
 }

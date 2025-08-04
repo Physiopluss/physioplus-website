@@ -12,10 +12,6 @@ const promoData = [
 
   {
     id: 2,
-    image: "/homecare/banner1.jpeg",
-  },
-  {
-    id: 3,
     image: "/homecare/banner3.jpeg",
   },
 ];

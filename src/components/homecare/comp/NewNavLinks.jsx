@@ -1,17 +1,22 @@
+// src/components/NewNavLinks.jsx
+import React from "react";
 import { NavLink } from "react-router-dom";
-import { NewNavData } from "../Mock/NewNavData";
+import { getNewNavData } from "../Mock/NewNavData";
+
 const NewNavLinks = () => {
+  const navData = getNewNavData(); // 🔁 dynamically get data
+
   return (
     <div className="flex gap-x-1 lg:gap-x-2">
-      {NewNavData.map((data) => (
+      {navData.map((data) => (
         <NavLink
           key={data.id}
           to={data.slug}
           className={({ isActive }) =>
-            `text-lg font-semibold px-2 xl:px-4 cursor-pointer hover:text-green  ${
+            `text-lg font-semibold px-2 xl:px-4 cursor-pointer hover:text-green ${
               isActive
-                ? "text-green  transition-transform hover:scale-105 "
-                : "  transition transform hover:scale-105"
+                ? "text-green transition-transform hover:scale-105"
+                : "transition transform hover:scale-105"
             }`
           }
         >
@@ -21,4 +26,5 @@ const NewNavLinks = () => {
     </div>
   );
 };
+
 export default NewNavLinks;

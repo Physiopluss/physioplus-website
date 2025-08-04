@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { getAllPhysioConsultations } from "../../../api/homecare/physio"; // ✅ Adjust path if needed
+import { useNavigate } from "react-router-dom";
 
 export default function ConsultationPage() {
   const [activeTab, setActiveTab] = useState("OnGoing");
   const [ongoingData, setOngoingData] = useState([]);
   const [completedData, setCompletedData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   const physioId =
     JSON.parse(localStorage.getItem("homecareUser"))?.userId ?? null;
-
   useEffect(() => {
     if (!physioId) return;
 
@@ -20,8 +20,6 @@ export default function ConsultationPage() {
 
         const ongoing = [];
         const completed = [];
-
-        console.log(data, "data");
         data.forEach((item) => {
           const itemData = {
             id: item._id,
@@ -32,7 +30,8 @@ export default function ConsultationPage() {
               month: "short",
               year: "numeric",
             }),
-
+            isTreatmentRequested: item?.isTreatmentRequested,
+            appointmentStatus: item?.appointmentStatus,
             status: item?.appointmentCompleted,
           };
 
@@ -94,20 +93,29 @@ export default function ConsultationPage() {
             Invoice
           </button>
 
-          {!item?.isTreatmentRequested && (
-            <button className="flex-1 bg-green text-white py-2 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition">
+          {item?.isTreatmentRequested && item?.appointmentStatus === 0 && (
+            <button
+              onClick={() => navigate(`/homecare/create-treatment/${item.id}`)}
+              className="flex-1 bg-green text-white py-2 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition"
+            >
               Create Treatment Plan
             </button>
           )}
 
           {item?.appointmentStatus === 1 && (
-            <button className="flex-1 bg-green text-white py-2 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition">
+            <button
+              onClick={() => navigate(`/homecare/physio-treatment/${item.id}`)}
+              className="flex-1 bg-green text-white py-2 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition"
+            >
               Go To Treatment
             </button>
           )}
         </div>
       ) : (
-        <button className="mt-5 bg-green text-white w-full py-2.5 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition">
+        <button
+          onClick={() => navigate(`/homecare/physio-consultation/${item.id}`)}
+          className="mt-5 bg-green text-white w-full py-2.5 rounded-xl text-sm font-semibold shadow hover:bg-green/90 transition"
+        >
           Start
         </button>
       )}

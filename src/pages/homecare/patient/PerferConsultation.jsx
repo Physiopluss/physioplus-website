@@ -298,11 +298,17 @@ const PerferConsultation = () => {
 
             <div className="flex gap-4 mt-4">
               <button
-                className="w-full border border-green rounded-lg py-1 font-medium text-sm"
+                className={`w-full rounded-lg py-1 font-medium text-sm border ${
+                  order?.isRated
+                    ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
+                    : "bg-green text-white border-green hover:bg-green-700"
+                }`}
                 onClick={() => setShowRating(true)}
+                disabled={order?.isRated}
               >
                 Rating
               </button>
+
               <button
                 className="w-full bg-green text-white rounded-lg py-1 font-medium text-sm"
                 onClick={() =>
@@ -314,6 +320,11 @@ const PerferConsultation = () => {
                 View
               </button>
             </div>
+            {order?.isRated && (
+              <div className="text-red-600 font-medium text-xs my-2 justify-center flex">
+                You already rated this appointment
+              </div>
+            )}
           </div>
           {showRating && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">

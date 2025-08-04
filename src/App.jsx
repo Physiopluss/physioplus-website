@@ -82,6 +82,19 @@ const ConsultationPage = lazy(() =>
 const TreatmentPage = lazy(() =>
   import("./pages/homecare/physio/TreatmentPage")
 );
+const PhysioProfileData = lazy(() =>
+  import("./pages/homecare/physio/PhysioProfile")
+);
+const WalletPage = lazy(() => import("./pages/homecare/physio/WalletPage"));
+const ConsultationDetailPage = lazy(() =>
+  import("./pages/homecare/physio/ConsultationDetailPage")
+);
+const TreatmentDetailPage = lazy(() =>
+  import("./pages/homecare/physio/TreatmentDetailPage")
+);
+const CreateTreatmentPage = lazy(() =>
+  import("./pages/homecare/physio/CreateTreatmentPage")
+);
 // const  =lazy(()=>import("./pages/homecare/physio/"))
 const PhysioAccount = lazy(() =>
   import("./pages/homecare/physio/PhysioAccount")
@@ -558,7 +571,7 @@ const router = createBrowserRouter([
         path: "physio-profile",
         element: (
           <Suspense fallback={<Loading />}>
-            <br />
+            <PhysioProfileData />
           </Suspense>
         ),
       },
@@ -579,6 +592,23 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "physio-consultation/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <ConsultationDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "create-treatment/:id",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <CreateTreatmentPage />
+          </Suspense>
+        ),
+      },
+
+      {
         path: "physio-treatments",
         element: (
           <Suspense fallback={<Loading />}>
@@ -587,10 +617,18 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "",
+        path: "physio-treatment/:id",
         element: (
           <Suspense fallback={<Loading />}>
-            <br />
+            <TreatmentDetailPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "physio-wallet",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <WalletPage />
           </Suspense>
         ),
       },

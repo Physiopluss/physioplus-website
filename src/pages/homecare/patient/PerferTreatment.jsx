@@ -161,15 +161,15 @@ const PerferTreatment = () => {
       {/* Scratch card */}
       {order?.isTreatmentScheduled?.isCashBack?.status === "pending" &&
         !revealed && (
-          <div className="w-full max-w-[340px] mx-auto rounded-2xl shadow-xl bg-gradient-to-br from-amber-300 via-green-200 to-green-500 p-[2px] relative overflow-hidden my-8">
+          <div className="w-full max-w-[340px] mx-auto rounded-2xl shadow-xl bg-gradient-to-br from-green via-[#37e449] to-yellow-600 p-[2px] relative overflow-hidden my-8">
             {/* Subtle glow overlay */}
             <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent pointer-events-none rounded-2xl" />
             <div className="relative bg-white rounded-2xl py-7 px-4 flex flex-col items-center">
               {/* Gift icon in gold/green gradient circle */}
-              <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-green-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
+              <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
                 <FiGift className="text-white w-8 h-8" />
               </span>
-              <div className="text-2xl font-bold text-green-700 mb-2 tracking-wide drop-shadow text-center">
+              <div className="text-2xl font-bold text-black mb-2 tracking-wide drop-shadow text-center">
                 Congratulations!
               </div>
               <div className="text-base text-green mb-3 text-center font-semibold">
@@ -179,7 +179,7 @@ const PerferTreatment = () => {
               </div>
               <button
                 onClick={() => setShowCashbackModal(true)}
-                className="w-full rounded-lg py-3 bg-gradient-to-r from-green via-green-400 to-amber-400 text-base font-bold text-white shadow-md tracking-wide mt-2 hover:brightness-105 transition"
+                className="w-full rounded-lg py-3 bg-gradient-to-r from-green via-[#37e449] to-green text-base font-bold text-white shadow-md tracking-wide mt-2 hover:brightness-105 transition"
               >
                 Tap to Reveal
               </button>
@@ -195,25 +195,25 @@ const PerferTreatment = () => {
         )}
 
       {order?.isTreatmentScheduled?.isCashBack?.status === "process" && (
-        <div className="w-full max-w-[340px] mx-auto rounded-2xl shadow-xl bg-gradient-to-br from-amber-300 via-green-200 to-green-500 p-[2px] relative overflow-hidden my-8">
+        <div className="w-full max-w-[340px] mx-auto rounded-2xl shadow-xl bg-gradient-to-br from-green via-[#37e449] to-yellow-600 p-[2px] relative overflow-hidden my-8">
           {/* Subtle glow overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/25 to-transparent pointer-events-none rounded-2xl" />
           <div className="relative bg-white rounded-2xl py-7 px-4 flex flex-col items-center">
             {/* Gift icon in gold/green gradient circle */}
-            <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-green-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
+            <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
               <FiGift className="text-white w-8 h-8" />
             </span>
-            <h2 className="text-2xl font-bold text-green-700 mb-1 tracking-wide drop-shadow">
+            <h2 className="text-2xl font-bold text-black mb-1 tracking-wide drop-shadow">
               Congratulations!
             </h2>
             <p className="text-gray-700 text-base mb-2 font-medium">
               You are eligible for 🎁 <br />
-              <span className="mx-1 text-[1.4em] font-extrabold bg-gradient-to-r from-amber-500 to-green text-transparent bg-clip-text drop-shadow">
+              <span className="mx-1 text-[1.4em] font-extrabold bg-gradient-to-r from-green via-[#37e449] to-green text-transparent bg-clip-text drop-shadow">
                 {cashbackPct} Cashback
               </span>
             </p>
             <button
-              className="w-full mt-2 rounded-lg py-3 bg-gradient-to-r from-green via-[#3bee67] to-amber-400 text-base font-semibold text-white shadow-md"
+              className="w-full mt-2 rounded-lg py-3 bg-gradient-to-r from-green via-[#37e449] to-green text-base font-semibold text-white shadow-md"
               disabled
             >
               Cashback Pending
@@ -223,22 +223,22 @@ const PerferTreatment = () => {
               <span className="text-[13px] text-green font-semibold tracking-wide uppercase">
                 Processing Reward
               </span>
-              <span className="inline-block w-1.5 h-1.5 bg-green/80 rounded-full"></span>
+              <span className="inline-block w-1.5 h-1.5 bg-amber-300 rounded-full"></span>
             </div>
           </div>
         </div>
       )}
 
       {order?.isTreatmentScheduled?.isCashBack?.status === "success" && (
-        <div className="w-full mx-auto max-w-[340px] rounded-2xl shadow-xl bg-gradient-to-br from-amber-300 via-green-200 to-green-500 p-[2px] relative overflow-hidden my-8">
+        <div className="w-full mx-auto max-w-[340px] rounded-2xl shadow-xl bg-gradient-to-br from-green via-[#37e449] to-yellow-600 p-[2px] relative overflow-hidden my-8">
           {/* Subtle glow overlay */}
           <div className="absolute inset-0 bg-gradient-to-tr from-white/30 to-transparent pointer-events-none rounded-2xl" />
           <div className="relative bg-white rounded-2xl py-7 px-4 flex flex-col items-center">
             {/* Circular icon on gold/green gradient */}
-            <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-green-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
+            <span className="inline-flex items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 via-yellow-300 to-yellow-500 shadow-lg w-16 h-16 mb-3">
               <FiGift className="text-white w-8 h-8" />
             </span>
-            <h2 className="text-2xl font-bold text-green-700 mb-1 tracking-wide drop-shadow">
+            <h2 className="text-2xl font-bold text-black mb-1 tracking-wide drop-shadow">
               Congratulations!
             </h2>
             <div className="font-bold text-green text-xl mb-2 text-center flex items-center justify-center gap-1">
@@ -256,7 +256,7 @@ const PerferTreatment = () => {
               <span className="text-[13px] text-green font-semibold tracking-wide uppercase">
                 Enjoy your reward!
               </span>
-              <span className="inline-block w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+              <span className="inline-block w-1.5 h-1.5 bg-amber-300 rounded-full"></span>
             </div>
           </div>
         </div>

@@ -28,7 +28,7 @@ const GiveRating = ({ onClose, order }) => {
       const response = await ratePhysio(payload);
 
       // Assuming your API returns success flag or message
-      if (response?.success || response?.status === "success") {
+      if (response?.success || response?.status === 200) {
         toast.success(response.message || "Rating submitted successfully!");
         if (onClose) onClose();
       } else {

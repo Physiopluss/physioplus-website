@@ -52,7 +52,7 @@ export default function TestPage() {
       {/* <TreatmentDetailPage /> */}
       {/* <PaymentHistory /> */}
       {/* <WalletPage /> */}
-      <PhysioProfile />
+      {/* <PhysioProfile /> */}
       {/* 3. Add your new components below to test */}
       {/* <MyNewComponent /> */}
     </div>
