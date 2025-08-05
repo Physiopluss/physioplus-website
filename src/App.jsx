@@ -53,6 +53,9 @@ const ViewConsultation = lazy(() =>
   import("./pages/homecare/patient/ViewConsultation")
 );
 const TaxInvoice = lazy(() => import("./components/homecare/comp/TaxInvoice"));
+const PhysioTaxInvoice = lazy(() =>
+  import("./components/homecare/comp/PhysioTaxInvoice")
+);
 const PerferTreatment = lazy(() =>
   import("./pages/homecare/patient/PerferTreatment")
 );
@@ -95,6 +98,11 @@ const TreatmentDetailPage = lazy(() =>
 const CreateTreatmentPage = lazy(() =>
   import("./pages/homecare/physio/CreateTreatmentPage")
 );
+const PhysioHomeScreen = lazy(() =>
+  import("./pages/homecare/physio/PhysioHomeScreen")
+);
+// const  =lazy(()=>import("./pages/homecare/physio/"))
+// const  =lazy(()=>import("./pages/homecare/physio/"))
 // const  =lazy(()=>import("./pages/homecare/physio/"))
 const PhysioAccount = lazy(() =>
   import("./pages/homecare/physio/PhysioAccount")
@@ -580,6 +588,22 @@ const router = createBrowserRouter([
         element: (
           <Suspense fallback={<Loading />}>
             <PhysioOrderHistory />
+          </Suspense>
+        ),
+      },
+      {
+        path: "physio-current",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PhysioHomeScreen />
+          </Suspense>
+        ),
+      },
+      {
+        path: "get-invoice",
+        element: (
+          <Suspense fallback={<Loading />}>
+            <PhysioTaxInvoice />
           </Suspense>
         ),
       },

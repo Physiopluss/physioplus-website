@@ -40,7 +40,7 @@ export default function TestPage() {
       {/* <AppointmentCard {...DEMO_DATA} onStart={handleStart} /> */}
 
       {/* 2. Test full Physio Home Screen */}
-      {/* <PhysioHomeScreen /> */}
+      <PhysioHomeScreen />
 
       {/* 3. Add your new components below to test */}
       {/* <PhysioTabsPage /> */}

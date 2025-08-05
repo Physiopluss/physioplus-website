@@ -155,3 +155,44 @@ export async function markTreatmentComplete(treatmentId) {
     appointmentId:treatmentId,
   });
 }
+
+export const updateTreatmentPlan = async ({
+  treatmentId,
+  dateIds,
+  dates,
+  startTime,
+  endTime,
+}) => {
+  try {
+    const response = await instanceHomeCare.put(
+      `/web/physio/rescheduleTreatment`,
+      {appointmentId:treatmentId,
+        treatmentIds:dateIds,
+        updatedDates:dates, // Array of ISO or string dates
+        startTime,
+        endTime,
+       
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating treatment plan:", error?.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+export const updateConsultationDate = ({ consultationId, newDate }) => {
+  return instanceHomeCare.put(`/web/physio/consultation-reschedule`, {appointmentId:consultationId,
+    date:newDate,
+  });
+};
+
+// ✅ Get all consultations for a physio
+export const getAllTodayConsultations = async ({ physioId }) => {
+  const response = await instanceHomeCare.get(
+    `/web/physio/getTodayAppointment/?physioId=${physioId}`
+  );
+
+  return response?.data?.data;
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { ChevronDown, ChevronUp, MoreVertical } from "lucide-react";
 import {
@@ -7,6 +7,7 @@ import {
   markTreatmentDaysPaid,
 } from "../../../api/homecare/physio";
 import toast from "react-hot-toast";
+import RescheduleModal from "../../../components/homecare/comp/RescheduleModal";
 
 function formatDateRange(treatmentDates = []) {
   if (!Array.isArray(treatmentDates) || treatmentDates.length === 0)
@@ -33,6 +34,7 @@ export default function TreatmentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [showPrescription, setShowPrescription] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showRescheduleModal, setShowRescheduleModal] = useState(false); // ⬅️ State for Reschedule Modal
   const [selectedDates, setSelectedDates] = useState([]);
   const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -73,7 +75,6 @@ export default function TreatmentDetailPage() {
       if (!id) return;
       await markTreatmentComplete(id);
       toast.success("Treatment marked as completed!");
-      // Optional: refetch data or redirect
       await fetchTreatment();
     } catch (err) {
       console.error("Failed to complete treatment:", err);
@@ -100,8 +101,9 @@ export default function TreatmentDetailPage() {
   return (
     <div className="max-w-md mx-auto min-h-screen bg-white px-4 py-6 pb-32">
       <div className="font-semibold text-md mb-4 flex justify-center">
-        patient Details
+        Patient Details
       </div>
+
       {/* Header */}
       <div className="bg-white border rounded-xl p-4 shadow-sm flex flex-col gap-4">
         <div className="flex items-start justify-between">
@@ -126,7 +128,7 @@ export default function TreatmentDetailPage() {
           </button>
         </div>
         <button
-          disabled
+          onClick={() => setShowRescheduleModal(true)}
           className="border border-green text-green text-sm rounded-lg px-5 py-1 font-semibold w-full"
         >
           Reschedule
@@ -207,7 +209,7 @@ export default function TreatmentDetailPage() {
         </div>
       </div>
 
-      {/* Payment Overview */}
+      {/* Confirm Payment + Complete Button */}
       <div className="bg-white mt-4 px-4 py-3 rounded-xl border shadow">
         <div className="font-semibold text-base mb-2">Payment Overview</div>
         <div className="flex flex-col gap-2">
@@ -244,13 +246,13 @@ export default function TreatmentDetailPage() {
             ))}
         </div>
 
-        {/* Trigger Modal */}
         <button
           className="mt-4 w-full bg-green text-white rounded-lg py-3 font-semibold"
           onClick={() => setShowModal(true)}
         >
           Confirm Payment
         </button>
+
         {patient?.isTreatmentScheduled?.isTreatmentCompleted ? (
           <button
             disabled
@@ -268,7 +270,7 @@ export default function TreatmentDetailPage() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Payment Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex justify-center items-center px-3">
           <div className="bg-white rounded-xl p-4 w-full max-w-sm shadow-xl relative">
@@ -336,6 +338,19 @@ export default function TreatmentDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {showRescheduleModal && (
+        <RescheduleModal
+          patient={patient}
+          treatmentId={id}
+          onClose={() => setShowRescheduleModal(false)}
+          onRescheduleSuccess={async () => {
+            await fetchTreatment();
+            setShowRescheduleModal(false);
+          }}
+        />
       )}
     </div>
   );

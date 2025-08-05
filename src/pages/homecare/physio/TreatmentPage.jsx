@@ -54,7 +54,11 @@ export default function TreatmentPage() {
 
     fetchTreatments();
   }, [physioId]);
-
+  const handleInvoiceDownload = (item) => {
+    navigate("/homecare/get-invoice", {
+      state: { order: item, type: "treatment" },
+    });
+  };
   return (
     <div className="max-w-md mx-auto min-h-screen flex flex-col bg-white pb-4">
       {/* AppBar Title */}
@@ -172,8 +176,8 @@ export default function TreatmentPage() {
 
               <button
                 className="mt-3 bg-green text-white w-full py-2 rounded-md text-sm font-semibold shadow hover:bg-green-600 transition"
-                // Optional: add invoice navigation here
-                onClick={() => {}}
+                disabled={!item?.status}
+                onClick={() => handleInvoiceDownload(item)}
               >
                 Invoice
               </button>

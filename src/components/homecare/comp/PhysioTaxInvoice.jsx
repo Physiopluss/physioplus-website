@@ -6,6 +6,7 @@ import { getInvoiceByOrderId } from "../../../api/homecare";
 
 const orgName = "Home Care";
 
+// Utility to reverse calculate original amount & discount
 function reverseCoupon({ paid, couponType, couponValue }) {
   let original = paid,
     discount = 0;
@@ -16,13 +17,12 @@ function reverseCoupon({ paid, couponType, couponValue }) {
     original = paid + couponValue;
     discount = couponValue;
   }
-  return {
-    original: Math.round(original * 100) / 100,
-    discount: Math.round(discount * 100) / 100,
-  };
+  original = Math.round(original * 100) / 100;
+  discount = Math.round(discount * 100) / 100;
+  return { original, discount };
 }
 
-const TaxInvoice = () => {
+const PhysioTaxInvoice = () => {
   const invoiceRef = useRef();
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -32,12 +32,12 @@ const TaxInvoice = () => {
 
   const [invoice, setInvoice] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // fallback state
+  const [error, setError] = useState(null); // Fallback state
 
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const res = await getInvoiceByOrderId(order?._id, type);
+        const res = await getInvoiceByOrderId(order?.id, type);
         setInvoice(res.data);
       } catch (err) {
         console.error("Invoice fetch failed:", err);
@@ -51,12 +51,12 @@ const TaxInvoice = () => {
       }
     };
 
-    if (order?._id) fetchInvoice();
+    if (order?.id) fetchInvoice();
     else {
       setLoading(false);
       setError("Invalid order details.");
     }
-  }, [order, type]);
+  }, [order, type, navigate]);
 
   const paid = Number(invoice?.amount ?? 0);
   const couponType = Number(invoice?.couponType ?? 0);
@@ -89,6 +89,7 @@ const TaxInvoice = () => {
     const imgData = canvas.toDataURL("image/png");
     const pdf = new jsPDF("p", "mm", "a4");
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pageWidth - 20;
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
@@ -97,13 +98,13 @@ const TaxInvoice = () => {
     let position = 10;
 
     pdf.addImage(imgData, "PNG", 10, position, pdfWidth, pdfHeight);
-    heightLeft -= pdf.internal.pageSize.getHeight();
+    heightLeft -= pageHeight;
 
     while (heightLeft > 0) {
       position = heightLeft - pdfHeight;
       pdf.addPage();
       pdf.addImage(imgData, "PNG", 10, position, pdfWidth, pdfHeight);
-      heightLeft -= pdf.internal.pageSize.getHeight();
+      heightLeft -= pageHeight;
     }
 
     pdf.save(
@@ -111,7 +112,7 @@ const TaxInvoice = () => {
     );
   };
 
-  // === Loading state ===
+  // === Loading fallback ===
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-center py-6 text-gray-500">
@@ -173,12 +174,12 @@ const TaxInvoice = () => {
                 <div>
                   <span className="font-medium">Service Days :</span>{" "}
                   {
-                    invoice.appointmentId.isTreatmentScheduled.treatmentDate
-                      .length
+                    invoice?.appointmentId?.isTreatmentScheduled?.treatmentDate
+                      ?.length
                   }{" "}
                   Day(s)
                 </div>
-                {invoice.appointmentId.isTreatmentScheduled.treatmentDate.map(
+                {invoice?.appointmentId?.isTreatmentScheduled.treatmentDate.map(
                   (day, index) => (
                     <div
                       key={day._id || index}
@@ -267,4 +268,4 @@ const TaxInvoice = () => {
   );
 };
 
-export default TaxInvoice;
+export default PhysioTaxInvoice;

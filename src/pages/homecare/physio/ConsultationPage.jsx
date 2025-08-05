@@ -53,6 +53,11 @@ export default function ConsultationPage() {
 
     fetchConsultations();
   }, [physioId]);
+  const handleInvoiceDownload = (item) => {
+    navigate("/homecare/get-invoice", {
+      state: { order: item, type: "appointment" },
+    });
+  };
 
   const renderCard = (item, isCompleted) => (
     <div
@@ -89,7 +94,11 @@ export default function ConsultationPage() {
       {/* Action buttons */}
       {isCompleted ? (
         <div className="flex flex-col gap-2 mt-5">
-          <button className="flex-1 border border-green text-green py-2 rounded-xl text-sm font-semibold shadow-sm">
+          <button
+            disabled={!item?.status}
+            onClick={() => handleInvoiceDownload(item)}
+            className="flex-1 border border-green text-green py-2 rounded-xl text-sm font-semibold shadow-sm"
+          >
             Invoice
           </button>
 
