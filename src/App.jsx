@@ -7,6 +7,7 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import "leaflet/dist/leaflet.css";
 import { LoadScript } from "@react-google-maps/api";
 const apiKey = import.meta.env.VITE_GOOGLE_KEY;
+import ScrollToTop from "./components/ScrollToTop"; // adjust path if needed
 
 // main or ui
 import Navbar from "./components/Navbar";
@@ -167,6 +168,7 @@ const router = createBrowserRouter([
         </Helmet>
         <div className="font-Urbanist text-black min-h-screen flex flex-wrap flex-col justify-between">
           <Navbar />
+
           <div>
             <Outlet />
             <Cta />
