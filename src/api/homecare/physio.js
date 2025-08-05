@@ -53,33 +53,7 @@ export async function getPhysioDetails(id) {
 }
 
 
-export async function getPhysioWalletRevenue({ mode, physioId }) {
-  try {
-    const res = await instanceHomeCare.get("/web/physio/getPhysioWalletRevenue", {
-      params: {    
-        physioId,   
-      },
-    });
-    return res?.data?.data;
-  } catch (error) {
-    console.error("Error fetching wallet details:", error);
-    throw error;
-  }
-}
-export async function getPhysioWalletDetails({ mode, physioId }) {
-  try {
-    const res = await instanceHomeCare.get("/web/physio/getPhysioWallet", {
-      params: {
-        mode,       // "online" or "cash"
-        physioId,   // physio's user ID
-      },
-    });
-    return res?.data?.data;
-  } catch (error) {
-    console.error("Error fetching wallet details:", error);
-    throw error;
-  }
-}
+
 
 export async function getAllPhysioConsultations(physioId) {
   try {
@@ -195,4 +169,146 @@ export const getAllTodayConsultations = async ({ physioId }) => {
   );
 
   return response?.data?.data;
+};
+export const makePhysioWithdrawal = async ({ physioId, amount }) => {
+  return instanceHomeCare.post("web/physio/wallet-withdraw", { physioId, amount });
+};
+export async function getPhysioWalletRevenue({  physioId }) {
+  try {
+    const res = await instanceHomeCare.get("/web/physio/getPhysioWalletRevenue", {
+      params: {    
+        physioId,   
+      },
+    });
+    return res?.data?.data;
+  } catch (error) {
+    console.error("Error fetching wallet details:", error);
+    throw error;
+  }
+}
+export async function getPhysioWithdrawTransactions({ physioId }) {
+  try {
+    const res = await instanceHomeCare.get("/web/physio/getWithdrawHistory", {
+      params: {
+ // "online" or "cash"
+        physioId,   // physio's user ID
+      },
+    });
+    return res?.data?.data;
+  } catch (error) {
+    console.error("Error fetching wallet details:", error);
+    throw error;
+  }
+}
+export async function getPhysioRepayTransactions({ physioId }) {
+  try {
+    const res = await instanceHomeCare.get("/web/physio/payToPhysioPlusHistory", {
+      params: {
+        physioId,   // physio's user ID
+      },
+    });
+    return res?.data?.data;
+  } catch (error) {
+    console.error("Error fetching wallet details:", error);
+    throw error;
+  }
+}
+
+export const payToAdminByRazorpay = async ({
+  amount,
+  physioId,
+  userToken,
+}) => {
+  if (!userToken) throw new Error("userToken is required");
+  if (!physioId) throw new Error("physioId is required");
+  if (!amount) throw new Error("amount is required");
+
+  try {
+    const response = await instanceHomeCare.post(
+      "/web/physio/payToAdmin",
+      {
+        amount,
+        physioId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+
+    if (response.status >= 200 && response.status < 300) {
+      const data = response.data.data;
+   
+      
+      const result = await verifyPayToAdminPayment({ data, userToken });
+      return result;
+    } else {
+      throw new Error(response?.data?.message || "Payment initiation failed");
+    }
+  } catch (error) {
+    console.error("Razorpay Payment Error:", error);
+    throw error;
+  }
+};
+
+export const verifyPayToAdminPayment = async ({ data, userToken }) => {
+  return new Promise((resolve, reject) => {
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY,
+      amount: data.notes.amount,
+      currency: data.currency,
+    
+      name: "Physioplus Healthcare",
+      address:data.notes.appointmentAddress,
+      description: `Payment to Physio-Plus`,
+      order_id: data.id,
+      prefill: {
+        name: data.notes.patientName,
+        contact: data.notes.phone,
+      },
+      handler: async (response) => {
+        try {
+          const verifyRes = await instanceHomeCare.post(
+            "web/physio/verifyPayToAdmin",
+            {
+              orderId: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+              },
+            }
+          );
+
+          if (verifyRes.status >= 200 && verifyRes.status < 300) {
+            resolve(verifyRes.data);
+          } else {
+            reject(
+              new Error(
+                verifyRes.data?.message || "Payment verification failed"
+              )
+            );
+          }
+        } catch (error) {
+          console.error("Payment verification error:", error);
+          reject(error);
+        }
+      },
+      theme: {
+        color: "#039342",
+      },
+    };
+
+    if (window.Razorpay) {
+      const razorpayInstance = new window.Razorpay(options);
+      razorpayInstance.open();
+    } else {
+      reject(new Error("Razorpay is not available"));
+    }
+  });
 };

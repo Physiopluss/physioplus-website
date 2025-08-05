@@ -148,13 +148,23 @@ export default function NavbarNew() {
       {/* Main Navbar */}
       <div className="max-w-[100vw] p-3 text-black bg-[#e6ffeb] shadow-sm">
         <div className="mx-auto flex items-center justify-between px-2 md:px-8">
-          <Link to="/homecare">
-            <img
-              src="/logo-nobg.png"
-              alt="Physio_logo"
-              className="w-[100px] md:w-[120px]"
-            />
-          </Link>
+          {isPhysio ? (
+            <Link to="/homecare/physio-current">
+              <img
+                src="/logo-nobg.png"
+                alt="Physio_logo"
+                className="w-[100px] md:w-[120px]"
+              />
+            </Link>
+          ) : (
+            <Link to="/homecare">
+              <img
+                src="/logo-nobg.png"
+                alt="Physio_logo"
+                className="w-[100px] md:w-[120px]"
+              />
+            </Link>
+          )}
 
           <div className="hidden lg:block">
             <NewNavLinks />
@@ -168,13 +178,14 @@ export default function NavbarNew() {
           >
             {isNavOpen ? <IoMdClose /> : <IoMdMenu />}
           </IconButton>
-
-          <Button
-            onClick={() => navigate("/homecare")}
-            className="hidden md:block text-sm font-bold bg-white border-2 border-green text-black rounded-2xl px-8 py-2.5 hover:bg-green hover:text-white transition-colors"
-          >
-            Book an appointment
-          </Button>
+          {!isPhysio && (
+            <Button
+              onClick={() => navigate("/homecare")}
+              className="hidden md:block text-sm font-bold bg-white border-2 border-green text-black rounded-2xl px-8 py-2.5 hover:bg-green hover:text-white transition-colors"
+            >
+              Book an appointment
+            </Button>
+          )}
         </div>
 
         {/* Mobile Menu */}
