@@ -165,7 +165,7 @@ export default function Navbar() {
           </IconButton>
 
           <Button
-            onClick={() => navigate("/physios")}
+            onClick={() => navigate("/homecare")}
             className="hidden md:block text-nowrap text-sm lg:text-base font-bold  text-black  bg-white border-2  border-green w-fit rounded-2xl px-8 py-2.5 active:bg-green active:text-white   transition-colors duration-200"
           >
             Book an appointment
@@ -289,7 +289,7 @@ export default function Navbar() {
                 <Button
                   className="text-nowrap text-sm lg:text-base font-semibold w-full text-black bg-white border-2 border-green rounded-2xl px-8 py-2.5 active:bg-green active:text-white transition-colors duration-200 "
                   onClick={() => {
-                    navigate("/physios");
+                    navigate("/homecare");
                     setIsNavOpen(false);
                   }}
                 >

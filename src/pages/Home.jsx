@@ -232,7 +232,7 @@ const Home = () => {
                 "Convenient physiotherapy sessions in the comfort of your home"
               }
               onclickFn={() => {
-                navigate("/physios", { state: { serviceType: "home" } });
+                navigate("/homecare", { state: { serviceType: "home" } });
                 // dispatch(setBookingFilter("home"));
               }}
             />
