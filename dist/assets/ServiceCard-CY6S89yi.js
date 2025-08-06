@@ -1,1 +1,0 @@
-import{j as t}from"./index-B5YKgjKu.js";const l=({number:e,text:r})=>t.jsxs("div",{className:"pt-4 md:mt-0 flex flex-col items-center",children:[t.jsx("div",{className:"text-5xl text-transparent inline-block bg-clip-text bg-gradient-to-r from-[#6CB300] to-[#2E4D00]  font-bold mb-1",children:e}),t.jsx("div",{className:"text-black text-2xl",children:r})]});export{l as S};
