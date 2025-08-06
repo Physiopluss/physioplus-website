@@ -7,7 +7,7 @@ import { toast } from "react-hot-toast";
 
 export default function PhysioFinder() {
   const [speciality, setSpeciality] = useState("");
-  const [serviceType, setServiceType] = useState("");
+  const [serviceType, setServiceType] = useState("home");
   const [location, setLocation] = useState("");
   const [allSpecialization, setAllSpecialization] = useState([]);
 
@@ -136,7 +136,6 @@ export default function PhysioFinder() {
                   onChange={(e) => setServiceType(e.target.value)}
                   className="border-none bg-transparent focus:outline-none py-2 text-gray-700 w-full cursor-pointer appearance-none pr-8"
                 >
-                  <option value="">Select Type</option>
                   <option value="home">Home Care</option>
                 </select>
                 {/* Dropdown Icon */}

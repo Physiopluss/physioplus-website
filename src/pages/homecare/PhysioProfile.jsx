@@ -6,7 +6,7 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination } from "swiper/modules";
 import "swiper/css";
@@ -22,6 +22,10 @@ export default function PhysioProfile() {
   const [loading, setLoading] = useState(true);
   const [showFull, setShowFull] = useState(false);
   const isUser = useSelector((e) => e.authNew.user);
+  const location = useLocation();
+  const [previewImage, setPreviewImage] = useState(null);
+  const patientCount = location.state?.patientCount;
+
   useEffect(() => {
     const fetchPhysio = async () => {
       try {
@@ -83,8 +87,7 @@ export default function PhysioProfile() {
             </p>
 
             <div className="flex gap-2   text-sm">
-              <Users className="w-4 h-4" /> {physio?.patientCount} Patient
-              Treated
+              <Users className="w-4 h-4" /> {patientCount} Patient Treated
             </div>
             <p className="flex gap-2 text-sm">
               <Star className="w-4 h-4" />
@@ -199,7 +202,8 @@ export default function PhysioProfile() {
                   <img
                     src={patient?.patientImage}
                     alt={patient?.patientName}
-                    className="w-full h-40 object-cover"
+                    onClick={() => setPreviewImage(patient?.patientImage)}
+                    className="w-full h-40 object-cover transition-transform hover:scale-105"
                   />
                   <p className="text-center py-2 text-sm font-medium text-green">
                     {patient?.patientName}
@@ -209,6 +213,18 @@ export default function PhysioProfile() {
             ))}
           </Swiper>
         </div>
+        {previewImage && (
+          <div
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+            onClick={() => setPreviewImage(null)}
+          >
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="max-w-full max-h-full rounded-lg shadow-lg"
+            />
+          </div>
+        )}
       </div>
 
       {/* CTA Button */}
@@ -219,7 +235,7 @@ export default function PhysioProfile() {
             if (isUser) {
               navigate(`/homecare/book/${physio?._id}`, { state: { physio } });
             } else {
-              navigate(`/homecare/login-signup`);
+              navigate(`/homecare/signup-new`);
             }
           }}
         >

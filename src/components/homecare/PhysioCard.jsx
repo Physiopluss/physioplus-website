@@ -48,7 +48,13 @@ export default function PhysioCard({ physio }) {
           </div>
           <button
             className="w-fit ml-auto px-4 py-2 bg-[#189e3e] text-white rounded-xl text-sm hover:bg-green font-semibold"
-            onClick={() => navigate(`/homecare/profile/${physio?._id}`)}
+            onClick={() =>
+              navigate(`/homecare/profile/${physio?._id}`, {
+                state: {
+                  patientCount: physio?.patientCount,
+                },
+              })
+            }
           >
             Book your Session
           </button>

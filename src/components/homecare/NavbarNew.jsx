@@ -149,7 +149,7 @@ export default function NavbarNew() {
       <div className="max-w-[100vw] p-3 text-black bg-[#e6ffeb] shadow-sm">
         <div className="mx-auto flex items-center justify-between px-2 md:px-8">
           {isPhysio ? (
-            <Link to="/homecare/physio-current">
+            <Link to="/">
               <img
                 src="/logo-nobg.png"
                 alt="Physio_logo"
@@ -157,7 +157,7 @@ export default function NavbarNew() {
               />
             </Link>
           ) : (
-            <Link to="/homecare">
+            <Link to="/">
               <img
                 src="/logo-nobg.png"
                 alt="Physio_logo"
