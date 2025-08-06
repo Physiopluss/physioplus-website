@@ -4,8 +4,17 @@ import { FaChevronDown, FaTimes } from "react-icons/fa";
 import PromoBannerSwiper from "../../components/homecare/PromoBannerSwiper";
 import PhysioCard from "../../components/homecare/PhysioCard";
 import { getPhysios } from "../../api/homecare";
+import { useNavigate } from "react-router-dom";
 
 export default function HomePhysios() {
+  const navigate = useNavigate();
+  const userType = localStorage.getItem("homecareUserType");
+  useEffect(() => {
+    const userType = localStorage.getItem("homecareUserType");
+    if (userType === "physio") {
+      navigate("/homecare/physio-current", { replace: true });
+    }
+  }, [navigate]);
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [filter, setFilter] = useState("default");

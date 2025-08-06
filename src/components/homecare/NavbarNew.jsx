@@ -220,10 +220,16 @@ export default function NavbarNew() {
                   <Collapse open={isMobileMenuOpen}>
                     {isPatient && (
                       <>
-                        <Link to="/homecare/patient-profile">
+                        <Link
+                          to="/homecare/patient-profile"
+                          onClick={() => setIsNavOpen(false)} // 👈 Add this
+                        >
                           <MenuItem className="text-sm">Profile</MenuItem>
                         </Link>
-                        <Link to="/homecare/patient-order-history">
+                        <Link
+                          to="/homecare/patient-order-history"
+                          onClick={() => setIsNavOpen(false)} // 👈 Add this
+                        >
                           <MenuItem className="text-sm">
                             Booking History
                           </MenuItem>
@@ -232,10 +238,16 @@ export default function NavbarNew() {
                     )}
                     {isPhysio && (
                       <>
-                        <Link to="/homecare/physio-profile">
+                        <Link
+                          to="/homecare/physio-profile"
+                          onClick={() => setIsNavOpen(false)} // 👈 Add this
+                        >
                           <MenuItem className="text-sm">Profile</MenuItem>
                         </Link>
-                        <Link to="/homecare/physio-order-history">
+                        <Link
+                          to="/homecare/physio-order-history"
+                          onClick={() => setIsNavOpen(false)} // 👈 Add this
+                        >
                           <MenuItem className="text-sm">
                             Booking History
                           </MenuItem>
@@ -244,7 +256,10 @@ export default function NavbarNew() {
                     )}
                     <MenuItem
                       className="text-sm text-red-600 hover:text-red-900"
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setIsNavOpen(false); // 👈 Also close after logout
+                      }}
                     >
                       Sign Out
                     </MenuItem>
@@ -253,21 +268,31 @@ export default function NavbarNew() {
               </>
             ) : (
               <>
+                <Link
+                  to="/homecare/contact"
+                  onClick={() => setIsNavOpen(false)}
+                >
+                  <MenuItem className="border-b">Support</MenuItem>
+                </Link>
+
                 <Link to="/homecare/login-new">
                   <MenuItem
-                    onClick={() =>
-                      localStorage.setItem("homecareUserType", "patient")
-                    }
+                    onClick={() => {
+                      localStorage.setItem("homecareUserType", "patient");
+                      setIsNavOpen(false); // 👈
+                    }}
                     className="text-green"
                   >
                     Patient Login
                   </MenuItem>
                 </Link>
+
                 <Link to="/homecare/login-physio">
                   <MenuItem
-                    onClick={() =>
-                      localStorage.setItem("homecareUserType", "physio")
-                    }
+                    onClick={() => {
+                      localStorage.setItem("homecareUserType", "physio");
+                      setIsNavOpen(false); // 👈
+                    }}
                     className="text-blue-800"
                   >
                     Physio Login

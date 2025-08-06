@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowRight, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PatientOrderHistory = () => {
   const navigate = useNavigate();
-
+  const userType = localStorage.getItem("homecareUserType");
+  useEffect(() => {
+    if (userType !== "patient") {
+      navigate("/homecare/login-new", { replace: true });
+    }
+  }, [navigate]);
   const handleNavigate = (path) => {
     navigate(path);
   };
