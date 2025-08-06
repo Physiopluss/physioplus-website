@@ -162,7 +162,7 @@ const Home = () => {
         <meta name="robots" content="index, follow" />
       </Helmet>
       <div className="max-w-[100vw]">
-        <div className="bg-[url('home/bannerDesign.png')] bg-no-repeat bg-left max-w-[99vw] mx-auto relative mb-5 sm:mb-12 md:mb-0 min-h-[500px] sm:min-h-[600px] bg-cover ">
+        <div className="bg-[url('/home/bannerDesign.png')] bg-no-repeat bg-left max-w-[99vw] mx-auto relative mb-5 sm:mb-12 md:mb-0 min-h-[500px] sm:min-h-[600px] bg-cover ">
           <BannerComponent />
         </div>
 
