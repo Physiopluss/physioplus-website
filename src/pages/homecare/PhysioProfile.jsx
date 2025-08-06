@@ -218,11 +218,27 @@ export default function PhysioProfile() {
             className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
             onClick={() => setPreviewImage(null)}
           >
-            <img
-              src={previewImage}
-              alt="Preview"
-              className="max-w-full max-h-full rounded-lg shadow-lg"
-            />
+            {/* Stop click propagation so clicking on the image or button doesn’t close modal */}
+            <div
+              className="relative max-w-full max-h-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="absolute -top-10 right-2 bg-white text-black rounded-full w-8 h-8 flex items-center justify-center font-bold text-xl shadow-md hover:bg-gray-200 transition"
+                title="Close"
+              >
+                &times;
+              </button>
+
+              {/* Image Preview */}
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-lg"
+              />
+            </div>
           </div>
         )}
       </div>
