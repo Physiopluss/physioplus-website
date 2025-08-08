@@ -1,0 +1,1 @@
+import{i as s}from"./index-CWqE7d4E.js";const n=async t=>{try{const e=await s.get(`web/patient/patient-by-id?patientId=${t}`);return e.status>=200&&e.status<300||e.status>=400&&e.status<500?e:new Error("Something went wrong")}catch(e){return e.response?e.response:e.message}};export{n as s};

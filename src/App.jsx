@@ -28,9 +28,10 @@ const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 
 // homecare
 // auth new for homecare
-import HomecareLayout from "./pages/layout/HomecareLayout";
+
 import TestPage from "./pages/TestPage";
 // for patient
+const HomecareLayout = lazy(() => import("./pages/layout/HomecareLayout"));
 const LoginNew = lazy(() => import("./pages/homecare/auth/LoginNew"));
 const SignUpNew = lazy(() => import("./pages/homecare/auth/SignUpNew"));
 const HomecareSupport = lazy(() => import("./pages/homecare/HomecareSupport"));
@@ -658,22 +659,7 @@ const router = createBrowserRouter([
           </Suspense>
         ),
       },
-      {
-        path: "",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <br />
-          </Suspense>
-        ),
-      },
-      {
-        path: "",
-        element: (
-          <Suspense fallback={<Loading />}>
-            <br />
-          </Suspense>
-        ),
-      },
+
       {
         path: "physio",
         element: (
