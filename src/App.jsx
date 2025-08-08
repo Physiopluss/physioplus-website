@@ -20,6 +20,7 @@ import OrderDetails from "./pages/Booking/OrderDetails";
 
 import PhysioRefundPolicy from "./pages/PhysioRefundPolicy";
 import TreatmentDetails from "./pages/Booking/TreatmentDetails";
+import HomecareLayout from "./pages/layout/HomecareLayout";
 
 // auth
 const Login = lazy(() => import("./pages/Auth/Login"));
@@ -31,7 +32,7 @@ const SignUp = lazy(() => import("./pages/Auth/SignUp"));
 
 import TestPage from "./pages/TestPage";
 // for patient
-const HomecareLayout = lazy(() => import("./pages/layout/HomecareLayout"));
+
 const LoginNew = lazy(() => import("./pages/homecare/auth/LoginNew"));
 const SignUpNew = lazy(() => import("./pages/homecare/auth/SignUpNew"));
 const HomecareSupport = lazy(() => import("./pages/homecare/HomecareSupport"));
